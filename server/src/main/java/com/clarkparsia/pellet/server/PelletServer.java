@@ -1,11 +1,18 @@
 package com.clarkparsia.pellet.server;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import javax.net.ssl.SSLContext;
+
+import org.protege.editor.owl.server.security.SSLContextFactory;
+import org.protege.editor.owl.server.security.SSLContextInitializationException;
 
 import com.clarkparsia.pellet.server.ConfigurationReader.PelletSettings;
 import com.clarkparsia.pellet.server.exceptions.ServerException;
@@ -87,14 +94,37 @@ public final class PelletServer {
 		final ConfigurationReader aConfig = ConfigurationReader.of(serverInjector.getInstance(Configuration.class));
 
 		final PelletSettings aPelletSettings = aConfig.pelletSettings();
-
-		server = Undertow.builder()
-		                 .addHttpListener(aPelletSettings.port(), aPelletSettings.host())
+		
+		URI hostUri;
+		try {
+			hostUri = new URI(aPelletSettings.host());
+		} catch (URISyntaxException e) {
+			e.printStackTrace();
+			throw new ServerException(500, "Bad URL in host settings");
+		}
+		
+		
+		if (hostUri.getScheme().equalsIgnoreCase("https")) {
+			SSLContext ctx;
+			try {
+				ctx = new SSLContextFactory().createSslContext();
+				server = Undertow.builder()
+		                 .addHttpsListener(aPelletSettings.port(), aPelletSettings.host(), ctx)
 		                 .setServerOption(UndertowOptions.ALWAYS_SET_DATE, true)
 		                 .setHandler(aShutdownHandler)
 		                 .build();
-
-
+			} catch (SSLContextInitializationException e) {
+				e.printStackTrace();
+				throw new ServerException(500, "Unable to initialize SSL context");
+			}
+		} else {
+			server = Undertow.builder()
+	                 .addHttpListener(aPelletSettings.port(), aPelletSettings.host())
+	                 .setServerOption(UndertowOptions.ALWAYS_SET_DATE, true)
+	                 .setHandler(aShutdownHandler)
+	                 .build();
+		}
+		
 		System.out.println(String.format("Pellet Home: %s", aPelletSettings.home()));
 		System.out.println(String.format("Listening at: http://%s:%s", aPelletSettings.host(), aPelletSettings.port()));
 
