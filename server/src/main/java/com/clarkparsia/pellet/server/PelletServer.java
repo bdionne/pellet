@@ -109,7 +109,7 @@ public final class PelletServer {
 			try {
 				ctx = new SSLContextFactory().createSslContext();
 				server = Undertow.builder()
-		                 .addHttpsListener(aPelletSettings.port(), aPelletSettings.host(), ctx)
+		                 .addHttpsListener(aPelletSettings.port(), hostUri.getHost(), ctx)
 		                 .setServerOption(UndertowOptions.ALWAYS_SET_DATE, true)
 		                 .setHandler(aShutdownHandler)
 		                 .build();
@@ -119,7 +119,7 @@ public final class PelletServer {
 			}
 		} else {
 			server = Undertow.builder()
-	                 .addHttpListener(aPelletSettings.port(), aPelletSettings.host())
+	                 .addHttpListener(aPelletSettings.port(), hostUri.getHost())
 	                 .setServerOption(UndertowOptions.ALWAYS_SET_DATE, true)
 	                 .setHandler(aShutdownHandler)
 	                 .build();
