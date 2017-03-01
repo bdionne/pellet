@@ -34,6 +34,7 @@ import org.semanticweb.owlapi.model.OWLLiteral;
 import org.semanticweb.owlapi.model.OWLLogicalEntity;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.semanticweb.owlapi.model.OWLObject;
+import org.semanticweb.owlapi.model.OWLObjectComplementOf;
 import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyChange;
@@ -149,6 +150,10 @@ public class SchemaOWLReasoner implements OWLReasoner {
 	private OWLLogicalEntity requireNamedObject(OWLObject o) {
 		if (o instanceof OWLLogicalEntity) {
 			return (OWLLogicalEntity) o;
+		}
+		
+		if (o instanceof OWLObjectComplementOf) {
+			return (OWLLogicalEntity) ((OWLObjectComplementOf) o).getOperand();
 		}
 		
 		throw new IllegalArgumentException("This reasoner only supports named entities");
