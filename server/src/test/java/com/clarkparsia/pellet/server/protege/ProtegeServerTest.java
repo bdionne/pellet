@@ -17,6 +17,7 @@ import edu.stanford.protege.metaproject.api.PolicyFactory;
 import edu.stanford.protege.metaproject.api.Project;
 import edu.stanford.protege.metaproject.api.ProjectOptions;
 import org.apache.commons.io.FileUtils;
+import org.apache.log4j.BasicConfigurator;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -84,9 +85,10 @@ public abstract class ProtegeServerTest extends TestUtilities {
 
 	@Before
 	public void before() throws Exception {
+		BasicConfigurator.configure();
 		Files.write(CONFIG, CONFIG_FILE, Charsets.UTF_8);
 		mServer = new HTTPServer(CONFIG_FILE.getAbsolutePath());
-//		mServer.start();
+		mServer.start();
 	}
 
 	@After
