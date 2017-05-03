@@ -24,7 +24,7 @@ public final class ProtegeServiceUtils {
 		}
 		else {
 			try {
-				LocalHttpClient aClient = new LocalHttpClient(protege.username(), protege.password(), "https://" + protege.host() + ":" + protege.port());
+				LocalHttpClient aClient = new LocalHttpClient(protege.username(), protege.password(), "http://" + protege.host() + ":" + protege.port());
 
 				return aClient;
 			}
