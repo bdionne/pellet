@@ -514,5 +514,18 @@
     }
   ],
   "properties": {
+    "login_timeout_period": "1800000",
+    "codegen_file": "gencode",
+    "authenticate": "org.protege.editor.owl.server.security.DefaultLoginService",
+    "ldap_port": "636",
+    "ldap_dn_suffix": ",OU\u003dUsers,OU\u003dNCI,OU\u003dNIH,OU\u003dAD,DC\u003dNih,DC\u003dGOV",
+    "evshistory_file": "evs_history",
+    "current_evshistory_file": "current_evs_history",
+    "codegen_prefix": "C",
+    "autoupdate_interval": "60",
+    "ldap_dn_prefix": "CN\u003d",
+    "ldap_host": "localhost",
+    "root_archive": "root/archive",
+    "conhistory_file": "con_history"
   }
 }
