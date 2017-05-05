@@ -105,7 +105,7 @@ public final class PelletServer {
 		}
 
 		if (Strings.isNullOrEmpty(hostUri.getHost())) {
-			throw new IllegalArgumentException(hostUri + "doesn't have a host. Unable to listen");
+			throw new IllegalArgumentException("uri " + hostUri + " doesn't have a host. Unable to listen");
 		}
 
 		if ("https".equalsIgnoreCase(hostUri.getScheme())) {
