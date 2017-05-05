@@ -11,6 +11,7 @@ import java.util.logging.Logger;
 
 import javax.net.ssl.SSLContext;
 
+import com.google.common.base.Strings;
 import org.protege.editor.owl.server.security.SSLContextFactory;
 import org.protege.editor.owl.server.security.SSLContextInitializationException;
 
@@ -101,6 +102,10 @@ public final class PelletServer {
 		} catch (URISyntaxException e) {
 			e.printStackTrace();
 			throw new ServerException(500, "Bad URL in host settings");
+		}
+
+		if (Strings.isNullOrEmpty(hostUri.getHost())) {
+			throw new IllegalArgumentException(hostUri + "doesn't have a host. Unable to listen");
 		}
 
 		if ("https".equalsIgnoreCase(hostUri.getScheme())) {
