@@ -98,7 +98,7 @@ public final class PelletServer {
 		
 		URI hostUri;
 		try {
-			hostUri = new URI("http://" + aPelletSettings.host());
+			hostUri = new URI(aPelletSettings.host());
 		} catch (URISyntaxException e) {
 			e.printStackTrace();
 			throw new ServerException(500, "Bad URL in host settings");
