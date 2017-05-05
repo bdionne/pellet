@@ -90,7 +90,7 @@ public class RemoteReasonerTest extends PelletClientTest {
 
 		File f = File.createTempFile("tmp", ".owl");
 		ont.saveOntology(new FileOutputStream(f));
-		createOntology("test", f, mClient);
+		createOntology("test", f, managerClient);
 
 		startPelletServer("test");
 

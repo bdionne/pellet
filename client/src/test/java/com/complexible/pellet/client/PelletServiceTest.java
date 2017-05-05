@@ -39,8 +39,8 @@ public class PelletServiceTest extends PelletClientTest {
 		super.before();
 
 		// create test ontology
-		agencyOntId = createAgenciesOntology(mClient);
-		owl2OntId = createOwl2Ontology(mClient);
+		agencyOntId = createAgenciesOntology(managerClient);
+		owl2OntId = createOwl2Ontology(managerClient);
 
 		startPelletServer(AGENCIES_ONT);
 	}
