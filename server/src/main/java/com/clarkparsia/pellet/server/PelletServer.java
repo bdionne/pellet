@@ -123,7 +123,7 @@ public final class PelletServer {
 			}
 		} else {
 			server = Undertow.builder()
-	                 .addHttpListener(aPelletSettings.port(), hostUri.getHost())
+				.addHttpListener(aPelletSettings.port(), "localhost")
 	                 .setServerOption(UndertowOptions.ALWAYS_SET_DATE, true)
 	                 .setHandler(aShutdownHandler)
 	                 .build();
