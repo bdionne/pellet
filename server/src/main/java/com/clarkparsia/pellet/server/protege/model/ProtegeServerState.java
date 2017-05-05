@@ -1,13 +1,5 @@
 package com.clarkparsia.pellet.server.protege.model;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Set;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.ReentrantLock;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import com.clarkparsia.pellet.server.Configuration;
 import com.clarkparsia.pellet.server.ConfigurationReader;
 import com.clarkparsia.pellet.server.model.OntologyState;
@@ -19,9 +11,15 @@ import com.google.inject.Singleton;
 import edu.stanford.protege.metaproject.api.ProjectId;
 import edu.stanford.protege.metaproject.impl.ProjectIdImpl;
 import org.protege.editor.owl.client.LocalHttpClient;
-import org.protege.editor.owl.client.api.exception.ClientRequestException;
-import org.protege.editor.owl.server.versioning.api.ServerDocument;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
+
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.ReentrantLock;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * @author Edgar Rodriguez-Diaz
