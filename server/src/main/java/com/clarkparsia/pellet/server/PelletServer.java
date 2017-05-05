@@ -102,9 +102,8 @@ public final class PelletServer {
 			e.printStackTrace();
 			throw new ServerException(500, "Bad URL in host settings");
 		}
-		
-		
-		if (hostUri.getScheme().equalsIgnoreCase("https")) {
+
+		if ("https".equalsIgnoreCase(hostUri.getScheme())) {
 			SSLContext ctx;
 			try {
 				ctx = new SSLContextFactory().createSslContext();
