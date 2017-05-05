@@ -8,7 +8,11 @@ import com.clarkparsia.pellet.server.protege.ProtegeServiceUtils;
 import com.google.common.collect.ImmutableSet;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import edu.stanford.protege.metaproject.ConfigurationManager;
+import edu.stanford.protege.metaproject.api.PlainPassword;
+import edu.stanford.protege.metaproject.api.PolicyFactory;
 import edu.stanford.protege.metaproject.api.ProjectId;
+import edu.stanford.protege.metaproject.api.UserId;
 import edu.stanford.protege.metaproject.impl.ProjectIdImpl;
 import org.protege.editor.owl.client.LocalHttpClient;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
@@ -30,6 +34,7 @@ public final class ProtegeServerState extends ServerStateImpl {
 	private static final Logger LOGGER = Logger.getLogger(ProtegeServerState.class.getName());
 
 	private final LocalHttpClient mClient;
+	final LocalHttpClient managerClient;
 
 	private final Path mHome;
 
@@ -49,6 +54,11 @@ public final class ProtegeServerState extends ServerStateImpl {
 		mHome = Paths.get(theConfigReader.pelletSettings().home());
 
 		mClient = ProtegeServiceUtils.connect(theConfigReader);
+
+		PolicyFactory f = ConfigurationManager.getFactory();
+		UserId managerId = f.getUserId("bob");
+		PlainPassword managerPassword = f.getPlainPassword("bob");
+		managerClient = new LocalHttpClient(managerId.get(), managerPassword.getPassword(), "http://localhost:8081");
 
 		Set<String> onts = theConfigReader.protegeSettings().ontologies();
 		for (String ont : onts) {

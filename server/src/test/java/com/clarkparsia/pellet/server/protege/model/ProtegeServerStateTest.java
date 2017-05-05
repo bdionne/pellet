@@ -88,10 +88,8 @@ public class ProtegeServerStateTest extends ProtegeServerTest {
 	public void shouldHaveOntologies() throws Exception {
 		assertNotNull(mServerState);
 
-		LocalHttpClient aClient = mServerState.getClient();
-
 		// create ontologies
-		loadOntologies(aClient);
+		loadOntologies(mServerState.managerClient);
 
 		recreateServerState(OWL2_ONT, AGENCIES_ONT);
 
@@ -102,10 +100,8 @@ public class ProtegeServerStateTest extends ProtegeServerTest {
 	public void addRemoveOntologies() throws Exception {
 		assertNotNull(mServerState);
 
-		LocalHttpClient aClient = mServerState.getClient();
-
 		// create ontologies
-		loadOntologies(aClient);
+		loadOntologies(mServerState.managerClient);
 
 		OntologyState s = mServerState.addOntology(OWL2_ONT);
 		assertOntologies("http://www.example.org/test");
@@ -132,9 +128,7 @@ public class ProtegeServerStateTest extends ProtegeServerTest {
 	public void shouldSaveOntologyStates() throws Exception {
 		assertNotNull(mServerState);
 
-		LocalHttpClient aClient = mServerState.getClient();
-
-		loadOntologies(aClient);
+		loadOntologies(mServerState.managerClient);
 
 		recreateServerState(OWL2_ONT, AGENCIES_ONT);
 
@@ -152,9 +146,7 @@ public class ProtegeServerStateTest extends ProtegeServerTest {
 	public void shouldSaveAndLoadOntologyStates() throws Exception {
 		assertNotNull(mServerState);
 
-		LocalHttpClient aClient = mServerState.getClient();
-
-		loadOntologies(aClient);
+		loadOntologies(mServerState.managerClient);
 
 		recreateServerState(OWL2_ONT, AGENCIES_ONT);
 
