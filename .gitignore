@@ -14,3 +14,5 @@ target/
 *.iws
 *.ipr
 test-persistence-classification.zip
+client/root
+server/root
