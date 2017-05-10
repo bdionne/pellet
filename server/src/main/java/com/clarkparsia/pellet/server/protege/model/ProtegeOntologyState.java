@@ -112,6 +112,7 @@ public class ProtegeOntologyState extends OntologyStateImpl {
 		}
 	}
 
+	@Override
 	protected int getVersion() {
 		return revision.getRevisionNumber();
 	}
