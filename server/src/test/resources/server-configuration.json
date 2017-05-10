@@ -3,7 +3,7 @@
     "uri": "http://localhost:8080",
     "secondaryPort": "8081"
   },
-  "root": "root/data",
+  "root": "_ROOT_/data",
   "policy": {
     "root": {
       "all-projects": [
@@ -525,7 +525,7 @@
     "autoupdate_interval": "60",
     "ldap_dn_prefix": "CN\u003d",
     "ldap_host": "localhost",
-    "root_archive": "root/archive",
+    "root_archive": "_ROOT_/archive",
     "conhistory_file": "con_history"
   }
 }
