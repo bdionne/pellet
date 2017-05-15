@@ -8,7 +8,7 @@ import java.io.File;
 public class TestUtilities {
 	public static final String BASE = "file:test/data/";
 
-	public static final String PROTEGE_HOST = "localhost";
+	public static final String PROTEGE_HOST = "http://localhost";
 	public static final String PROTEGE_PORT = "8080";
 	public static final String PROTEGE_USERNAME = "root";
 	public static final String PROTEGE_PASSWORD = "rootpwd";
