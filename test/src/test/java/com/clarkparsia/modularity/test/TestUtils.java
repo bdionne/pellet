@@ -55,7 +55,7 @@ import static org.junit.Assert.fail;
  * <p>
  * Company: Clark & Parsia, LLC. <http://www.clarkparsia.com>
  * </p>
- * 
+ *
  * @author Evren Sirin
  */
 public class TestUtils {
@@ -63,10 +63,10 @@ public class TestUtils {
 	 * Checks if there is a difference between two array of elements and prints
 	 * a sorted, easy to read message showing the differences between two
 	 * arrays. The elements of the array are compared with toString() values
-	 * so this function is suitable only if the array elements have a unique 
+	 * so this function is suitable only if the array elements have a unique
 	 * string representation. For example, if the array element is a set then
-	 * this function cannot be used reliabily. 
-	 * 
+	 * this function cannot be used reliabily.
+	 *
 	 * @param expected
 	 *            expected values
 	 * @param computed
@@ -75,15 +75,15 @@ public class TestUtils {
 	 */
 	public static <T> void assertToStringEquals(String msg, T[] expected, T[] computed) {
 		Comparator<Object> comparator = Comparators.stringComparator;
-		
+
 		List<T> onlyInComputed = new ArrayList<T>();
 		List<T> onlyInExpected = new ArrayList<T>();
 		List<T> both = new ArrayList<T>();
-		
+
 		Arrays.sort( expected, comparator );
-		
+
 		Arrays.sort( computed, comparator );
-		
+
 		int i = 0, j = 0;
 		while( i < computed.length && j < expected.length ) {
 			if( computed[i].equals( expected[j] ) ) {
@@ -100,7 +100,7 @@ public class TestUtils {
 				j++;
 			}
 		}
-		
+
 		while( i < computed.length ) {
 			onlyInComputed.add( computed[i++] );
 		}
@@ -108,7 +108,7 @@ public class TestUtils {
 		while( j < expected.length ) {
 			onlyInExpected.add( expected[j++] );
 		}
-		
+
 		if( !onlyInComputed.isEmpty() || !onlyInExpected.isEmpty() ) {
 			System.err.println( msg );
 			System.err.println( "Both " + both.size() + " " + both );
@@ -119,7 +119,7 @@ public class TestUtils {
 			fail( msg );
 		}
 	}
-	
+
 	public static List<OWLOntologyChange> createChanges(OWLOntology ontology,
 			Collection<? extends OWLAxiom> axioms, boolean add) {
 		List<OWLOntologyChange> changes = new ArrayList<OWLOntologyChange>();
@@ -193,12 +193,12 @@ public class TestUtils {
 
 	public static void assertClassificationEquals(OWLReasoner expected, OWLReasoner actual) {
 //		assertClassificationEquals( expected, actual, OWL.Nothing );
-		
+
 		for( OWLClass cls : expected.getRootOntology().getClassesInSignature() ) {
 			assertClassificationEquals( expected, actual, cls );
 		}
 	}
-	
+
 	public static void assertClassificationEquals(OWLReasoner expected, OWLReasoner actual, OWLClass cls) {
 		Set<OWLClass> expectedEquivalents = expected.getEquivalentClasses( cls ).getEntities();
 		Set<OWLClass> actualEquivalents = actual.getEquivalentClasses( cls ).getEntities();
@@ -208,9 +208,9 @@ public class TestUtils {
 		Set<OWLClass> expectedSupers = expected.getSuperClasses( cls, true ).getFlattened();
 		Set<OWLClass> actualSupers = actual.getSuperClasses( cls, true ).getFlattened();
 
-		assertEquals( "Supers different for Class: " + cls, expectedSupers, actualSupers );		
+		assertEquals( "Supers different for Class: " + cls, expectedSupers, actualSupers );
 	}
-	
+
 	public static void assertDisjointnessEquals(OWLReasoner expected, OWLReasoner actual) {
 		for( OWLClass cls : actual.getRootOntology().getClassesInSignature() ) {
 			assertDisjointnessEquals( expected, actual, cls );
@@ -220,7 +220,7 @@ public class TestUtils {
 	public static void assertDisjointnessEquals(OWLReasoner expected, OWLReasoner actual, OWLClass cls) {
 		Set<OWLClass> expectedDisjoints = expected.getDisjointClasses( cls ).getFlattened();
 		Set<OWLClass> actualDisjoints = actual.getDisjointClasses( cls ).getFlattened();
-			
+
 		assertEquals( "Disjoint classes different for Class: " + cls, expectedDisjoints, actualDisjoints );
 	}
 
@@ -229,110 +229,43 @@ public class TestUtils {
 			assertInstancesEquals( expected, actual, cls );
 		}
 	}
-	
+
 	public static void assertInstancesEquals(OWLReasoner expected, OWLReasoner actual, OWLClass cls) {
 		Set<OWLNamedIndividual> expectedIndividuals = expected.getInstances( cls, true ).getFlattened();
 		Set<OWLNamedIndividual> actualIndividuals = actual.getInstances( cls, true ).getFlattened();
-		
+
 		assertEquals( "Instances different for Class: " + cls, expectedIndividuals, actualIndividuals );
 	}
-	
+
 	public static void assertTypesEquals(OWLReasoner expected, OWLReasoner actual) {
 		for( OWLNamedIndividual ind : actual.getInstances( OWL.Thing, false ).getFlattened() ) {
 			assertTypesEquals( expected, actual, ind );
 		}
 	}
-	
+
 	public static void assertTypesEquals(OWLReasoner expected, OWLReasoner actual, OWLNamedIndividual individual) {
 		Set<OWLClass> expectedTypes = expected.getTypes( individual, true ).getFlattened();
 		Set<OWLClass> actualTypes = actual.getTypes( individual, true ).getFlattened();
-		
+
 		assertEquals( "Types different for individual: " + individual, expectedTypes, actualTypes );
 	}
 
-	
-	public static void runDisjointnessTest(OWLOntology ontology, ModuleExtractor modExtractor) {
-		runComparisonTest(ontology, modExtractor, new ReasonerComparisonMethod() {
-			public void compare(OWLReasoner expected, OWLReasoner actual) {
-				assertDisjointnessEquals(expected, actual);
-			}
-		});
-	}
-	
-	public static void runDisjointnessUpdateTest(OWLOntology ontology, ModuleExtractor modExtractor, Collection<OWLAxiom> additions, Collection<OWLAxiom> deletions) {
-		runComparisonUpdateTest(ontology, modExtractor, additions, deletions, false, new ReasonerComparisonMethod() {
-			public void compare(OWLReasoner expected, OWLReasoner actual) {
-				assertDisjointnessEquals(expected, actual);
-			}
-		});
-	}
-	
-	public static void runInstancesTest(OWLOntology ontology, ModuleExtractor modExtractor) {
-		runComparisonTest(ontology, modExtractor, new ReasonerComparisonMethod() {
-			public void compare(OWLReasoner expected, OWLReasoner actual) {
-				assertInstancesEquals(expected, actual);
-			}
-		});
-	}
-	
-	public static void runInstancesUpdateTest(OWLOntology ontology, ModuleExtractor modExtractor, Collection<OWLAxiom> additions, Collection<OWLAxiom> deletions) {
-		runComparisonUpdateTest(ontology, modExtractor, additions, deletions, false, new ReasonerComparisonMethod() {
-			public void compare(OWLReasoner expected, OWLReasoner actual) {
-				assertInstancesEquals(expected, actual);
-			}
-		});
-	}
 
-	public static void runTypesTest(OWLOntology ontology, ModuleExtractor modExtractor) {
-		runComparisonTest(ontology, modExtractor, new ReasonerComparisonMethod() {
-			public void compare(OWLReasoner expected, OWLReasoner actual) {
-				assertTypesEquals(expected, actual);
-			}
-		});
-	}
-	
-	public static void runTypesUpdateTest(OWLOntology ontology, ModuleExtractor modExtractor, Collection<OWLAxiom> additions, Collection<OWLAxiom> deletions) {
-		runComparisonUpdateTest(ontology, modExtractor, additions, deletions, false, new ReasonerComparisonMethod() {
-			public void compare(OWLReasoner expected, OWLReasoner actual) {
-				assertTypesEquals(expected, actual);
-			}
-		});
-	}
-	
-	public static void runUpdateTestOnCopy(OWLOntology ontology, ModuleExtractor modExtractor,
-			Collection<OWLAxiom> additions, Collection<OWLAxiom> deletions) throws OWLException {
-		runComparisonUpdateTest(ontology, modExtractor, additions, deletions, true, new ReasonerComparisonMethod() {
-			public void compare(OWLReasoner expected, OWLReasoner actual) {
-				assertClassificationEquals(expected, actual);
-			}
-		});
-	}
-
-	public static void runUpdateTest(OWLOntology ontology, ModuleExtractor modExtractor,
-	                                 Collection<OWLAxiom> additions, Collection<OWLAxiom> deletions) throws OWLException {
-		runComparisonUpdateTest(ontology, modExtractor, additions, deletions, false, new ReasonerComparisonMethod() {
-			public void compare(OWLReasoner expected, OWLReasoner actual) {
-				assertClassificationEquals( expected, actual );
-			}
-		});
-	}
-	
-	private static void runComparisonTest(OWLOntology ontology, ModuleExtractor modExtractor, ReasonerComparisonMethod comparisonMethod) {
+	public static void runComparisonTest(OWLOntology ontology, ModuleExtractor modExtractor, ReasonerComparisonMethod comparisonMethod) {
 		PelletReasoner unified = PelletReasonerFactory.getInstance().createNonBufferingReasoner( ontology );
-		IncrementalReasoner modular = IncremantalReasonerFactory.getInstance().createReasoner( ontology, new IncrementalReasonerConfiguration().extractor(modExtractor));
-		
+		IncrementalReasoner modular = IncremantalReasonerFactory.getInstance().createReasoner(
+			ontology, new IncrementalReasonerConfiguration().extractor(modExtractor));
+
 		PelletOptions.USE_CLASSIFICATION_MONITOR = PelletOptions.MonitorType.CONSOLE;
 		modular.classify();
 		unified.getKB().classify();
-		
+
 		comparisonMethod.compare( unified, modular );
-		
+
 		modular.dispose();
 	}
 
-	private static void runComparisonUpdateTest(OWLOntology ontology, ModuleExtractor modExtractor,
-	                                            Collection<OWLAxiom> additions, Collection<OWLAxiom> deletions,
-	                                            boolean updateCopy, ReasonerComparisonMethod comparisonMethod) {
+	public static void runComparisonUpdateTest(OWLOntology ontology, ModuleExtractor modExtractor, Collection<OWLAxiom> additions, Collection<OWLAxiom> deletions, boolean updateCopy, ReasonerComparisonMethod comparisonMethod) {
 		PelletReasoner regular = PelletReasonerFactory.getInstance().createNonBufferingReasoner( ontology );
 		IncrementalReasoner incremental = IncremantalReasonerFactory.getInstance().createReasoner(ontology, new IncrementalReasonerConfiguration().extractor(modExtractor));
 
@@ -353,7 +286,7 @@ public class TestUtils {
 			updateIncremental = incremental;
 			updateOntology = ontology;
 		}
-		
+
 		OntologyUtils.addAxioms(updateOntology, additions);
 		OntologyUtils.removeAxioms(updateOntology, deletions);
 
@@ -365,14 +298,14 @@ public class TestUtils {
 		updateIncremental.timers.print();
 
 		comparisonMethod.compare(updateRegular, updateIncremental);
-		
+
 		incremental.dispose();
 		if (updateCopy) {
 			updateIncremental.dispose();
 			OWL.manager.removeOntology(updateOntology);
 		}
 	}
-	
+
 	public static <T> Set<T> set(T... elements) {
 		switch ( elements.length ) {
 		case 0:
@@ -383,8 +316,8 @@ public class TestUtils {
 			return new HashSet<T>( Arrays.asList( elements ) );
 		}
 	}
-	
-	private interface ReasonerComparisonMethod {
+
+	public interface ReasonerComparisonMethod {
 		public void compare(OWLReasoner expected, OWLReasoner actual);
 	}
 }

@@ -13,14 +13,13 @@ import java.util.Arrays;
 import com.clarkparsia.modularity.ModuleExtractor;
 import com.google.common.base.Supplier;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
 import org.semanticweb.owlapi.model.AddImport;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLException;
 import org.semanticweb.owlapi.model.OWLOntology;
 
 import com.clarkparsia.owlapiv3.OWL;
+import org.semanticweb.owlapi.reasoner.OWLReasoner;
 
 /**
  * <p>
@@ -47,44 +46,73 @@ public class IncrementalClassifierTest extends AbstractModularityTest {
 			throws OWLException {
 		createOntology( axioms );
 
-		TestUtils.runUpdateTest( ontology, createModuleExtractor(), Arrays.asList( additions ), Arrays.asList( deletions ) );
+		TestUtils.runComparisonUpdateTest(ontology, createModuleExtractor(), Arrays.asList( additions ), Arrays.asList( deletions ), false, new TestUtils.ReasonerComparisonMethod() {
+			public void compare(OWLReasoner expected, OWLReasoner actual) {
+				TestUtils.assertClassificationEquals( expected, actual );
+			}
+		});
 	}
 	
 	private void disjointnessTest(OWLAxiom[] axioms) {
 		createOntology( axioms );
-		
-		TestUtils.runDisjointnessTest( ontology, createModuleExtractor() );
+
+		TestUtils.runComparisonTest(ontology, createModuleExtractor(), new TestUtils.ReasonerComparisonMethod() {
+			public void compare(OWLReasoner expected, OWLReasoner actual) {
+				TestUtils.assertDisjointnessEquals(expected, actual);
+			}
+		});
 	}
 	
 	private void disjointnessUpdateTest(OWLAxiom[] axioms, OWLAxiom[] additions, OWLAxiom[] deletions) {
 		createOntology( axioms );
-		
-		TestUtils.runDisjointnessUpdateTest( ontology, createModuleExtractor(), Arrays.asList( additions ), Arrays.asList( deletions ) );
+		TestUtils.runComparisonUpdateTest(ontology, createModuleExtractor(), Arrays.asList(additions),
+			Arrays.asList(deletions), false, new TestUtils.ReasonerComparisonMethod() {
+			public void compare(OWLReasoner expected, OWLReasoner actual) {
+				TestUtils.assertDisjointnessEquals(expected, actual);
+			}
+		});
 	}
 	
 	private void instancesTest(OWLAxiom[] axioms) {
 		createOntology( axioms );
-		
-		TestUtils.runInstancesTest( ontology, createModuleExtractor() );
+
+		TestUtils.runComparisonTest(ontology, createModuleExtractor(), new TestUtils.ReasonerComparisonMethod() {
+			public void compare(OWLReasoner expected, OWLReasoner actual) {
+				TestUtils.assertInstancesEquals(expected, actual);
+			}
+		});
 	}
 
 	private void typesTest(OWLAxiom[] axioms) {
 		createOntology( axioms );
-		
-		TestUtils.runTypesTest( ontology, createModuleExtractor() );
-	}	
+
+		TestUtils.runComparisonTest(ontology, createModuleExtractor(), new TestUtils.ReasonerComparisonMethod() {
+			public void compare(OWLReasoner expected, OWLReasoner actual) {
+				TestUtils.assertTypesEquals(expected, actual);
+			}
+		});
+	}
 
 	private void instancesUpdateTest(OWLAxiom[] axioms, OWLAxiom[] additions, OWLAxiom[] deletions) {
 		createOntology( axioms );
-		
-		TestUtils.runInstancesUpdateTest( ontology, createModuleExtractor(), Arrays.asList( additions ), Arrays.asList( deletions ) );
+
+		TestUtils.runComparisonUpdateTest(ontology, createModuleExtractor(), Arrays.asList(additions),
+			Arrays.asList(deletions), false, new TestUtils.ReasonerComparisonMethod() {
+			public void compare(OWLReasoner expected, OWLReasoner actual) {
+				TestUtils.assertInstancesEquals(expected, actual);
+			}
+		});
 	}
 
 	private void typesUpdateTest(OWLAxiom[] axioms, OWLAxiom[] additions, OWLAxiom[] deletions) {
 		createOntology( axioms );
-		
-		TestUtils.runTypesUpdateTest( ontology, createModuleExtractor(), Arrays.asList( additions ), Arrays.asList( deletions ) );
-	}	
+
+		TestUtils.runComparisonUpdateTest(ontology, createModuleExtractor(), Arrays.asList( additions ), Arrays.asList( deletions ), false, new TestUtils.ReasonerComparisonMethod() {
+			public void compare(OWLReasoner expected, OWLReasoner actual) {
+				TestUtils.assertTypesEquals(expected, actual);
+			}
+		});
+	}
 	
 	@Test
 	public void unsatisfiableTest1() throws OWLException {
@@ -368,8 +396,13 @@ public class IncrementalClassifierTest extends AbstractModularityTest {
 		try {
 			OWL.manager.applyChange(new AddImport(ontology1, OWL.factory.getOWLImportsDeclaration(ontology2.getOntologyID()
                             .getOntologyIRI().get())));
-	
-			TestUtils.runUpdateTest(ontology1, createModuleExtractor(), Arrays.asList(additions), Arrays.asList(deletions));
+
+			TestUtils.runComparisonUpdateTest(ontology1, createModuleExtractor(), Arrays.asList(additions),
+				Arrays.asList(deletions), false, new TestUtils.ReasonerComparisonMethod() {
+                public void compare(OWLReasoner expected, OWLReasoner actual) {
+                    TestUtils.assertClassificationEquals( expected, actual );
+                }
+            });
 		}
 		finally {
 			OWL.manager.removeOntology(ontology1);
