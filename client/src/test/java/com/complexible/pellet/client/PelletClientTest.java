@@ -21,7 +21,7 @@ public abstract class PelletClientTest extends PelletServerTest {
 	public void before() throws Exception {
 		super.before();
 
-		mClient = new LocalHttpClient(PROTEGE_USERNAME, PROTEGE_PASSWORD, "http://" + PROTEGE_HOST + ":" + PROTEGE_PORT);
+		mClient = new LocalHttpClient(PROTEGE_USERNAME, PROTEGE_PASSWORD, PROTEGE_HOST + ":" + PROTEGE_PORT);
 		PolicyFactory f = ConfigurationManager.getFactory();
 		UserId managerId = f.getUserId("bob");
 		PlainPassword managerPassword = f.getPlainPassword("bob");
