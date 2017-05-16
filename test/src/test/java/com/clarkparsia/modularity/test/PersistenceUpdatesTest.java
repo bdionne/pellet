@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import com.clarkparsia.modularity.GraphBasedModuleExtractor;
 import com.clarkparsia.modularity.IncrementalReasoner;
@@ -94,11 +95,13 @@ public class PersistenceUpdatesTest {
 		try {		
 			ModuleExtractor moduleExtractor = createModuleExtractor();
 
-			IncrementalReasoner modular = IncremantalReasonerFactory.getInstance()
-			                                                                .createReasoner(ontology, IncrementalReasoner.config().extractor(moduleExtractor));
+			IncrementalReasoner modular =
+				IncremantalReasonerFactory.getInstance().createReasoner(
+					ontology, IncrementalReasoner.config().extractor(moduleExtractor));
 			modular.classify();
 
-			List<OWLAxiom> axiomsToRemove = new ArrayList<OWLAxiom>( TestUtils.selectRandomAxioms( ontology, 1 ) );
+			List<OWLAxiom> axiomsToRemove = new ArrayList<OWLAxiom>(
+				TestUtils.selectRandomAxioms( ontology, 1, System.currentTimeMillis() ));
 
 			for( OWLAxiom axiomToRemove : axiomsToRemove ) {
 				OWL.manager.applyChange( new RemoveAxiom(ontology, axiomToRemove ) );
@@ -130,10 +133,11 @@ public class PersistenceUpdatesTest {
 			ModuleExtractor moduleExtractor = createModuleExtractor();
 
 			IncrementalReasoner modular = IncremantalReasonerFactory.getInstance()
-			                                                                .createReasoner(ontology, IncrementalReasoner.config().extractor(moduleExtractor));
+				.createReasoner(ontology, IncrementalReasoner.config().extractor(moduleExtractor));
 
 			// first remove a random axiom
-			List<OWLAxiom> axiomsToRemove = new ArrayList<OWLAxiom>( TestUtils.selectRandomAxioms( ontology, 1 ) );
+			Set<OWLAxiom> owlAxioms = TestUtils.selectRandomAxioms(ontology, 1, System.currentTimeMillis());
+			List<OWLAxiom> axiomsToRemove = new ArrayList<OWLAxiom>(owlAxioms);
 
 			for( OWLAxiom axiomToRemove : axiomsToRemove ) {
 				OWL.manager.applyChange( new RemoveAxiom(ontology, axiomToRemove ) );
@@ -175,27 +179,17 @@ public class PersistenceUpdatesTest {
 			ModuleExtractor moduleExtractor = createModuleExtractor();
 
 			IncrementalReasoner modular = IncremantalReasonerFactory.getInstance()
-			                                                                .createReasoner(ontology, IncrementalReasoner.config().extractor(moduleExtractor));
+				.createReasoner(ontology, IncrementalReasoner.config().extractor(moduleExtractor));
 			modular.classify();
 
 			// first remove a random axiom
-			List<OWLAxiom> axiomsToRemove = new ArrayList<OWLAxiom>( TestUtils.selectRandomAxioms( ontology, 1 ) );
+			Set<OWLAxiom> owlAxioms = TestUtils.selectRandomAxioms(ontology, 2, System.currentTimeMillis());
+			List<OWLAxiom> axiomsToRemove = new ArrayList<OWLAxiom>(owlAxioms);
 
-			for( OWLAxiom axiomToRemove : axiomsToRemove ) {
-				OWL.manager.applyChange( new RemoveAxiom(ontology, axiomToRemove ) );
-			}
+			OWL.manager.applyChange( new RemoveAxiom(ontology, axiomsToRemove.get(0) ) );
+			OWL.manager.applyChange( new AddAxiom(ontology, axiomsToRemove.get(0) ) );
 
-			// add the axiom back but do not classify		
-			for( OWLAxiom axiomToAdd : axiomsToRemove ) {
-				OWL.manager.applyChange( new AddAxiom(ontology, axiomToAdd ) );
-			}
-
-			// remove another random axiom
-			List<OWLAxiom> axiomsToRemove2 = new ArrayList<OWLAxiom>( TestUtils.selectRandomAxioms( ontology, 1 ) );
-
-			for( OWLAxiom axiomToRemove : axiomsToRemove2 ) {
-				OWL.manager.applyChange( new RemoveAxiom(ontology, axiomToRemove ) );
-			}
+			OWL.manager.applyChange( new RemoveAxiom(ontology, axiomsToRemove.get(1) ) );
 
 			// classify (i.e., update)
 			modular.classify();
@@ -235,7 +229,8 @@ public class PersistenceUpdatesTest {
 			modular = IncrementalReasoner.config().file(testFile).manager(manager).createIncrementalReasoner();
 
 			// first remove a random axiom
-			List<OWLAxiom> axiomsToRemove = new ArrayList<OWLAxiom>( TestUtils.selectRandomAxioms( ontology, 1 ) );
+			Set<OWLAxiom> owlAxioms = TestUtils.selectRandomAxioms(ontology, 1, System.currentTimeMillis());
+			List<OWLAxiom> axiomsToRemove = new ArrayList<OWLAxiom>(owlAxioms);
 
 			for( OWLAxiom axiomToRemove : axiomsToRemove ) {
 				manager.applyChange( new RemoveAxiom( modular.getRootOntology(), axiomToRemove) );
@@ -266,14 +261,15 @@ public class PersistenceUpdatesTest {
 		
 		try {
 			IncrementalReasoner modular = IncremantalReasonerFactory.getInstance()
-			                                                                .createReasoner(ontology, IncrementalReasoner.config().extractor(createModuleExtractor()));
+				.createReasoner(ontology, IncrementalReasoner.config().extractor(createModuleExtractor()));
 			modular.classify();
 
 			modular.save(testFile);
 			modular = IncrementalReasoner.config().file(testFile).createIncrementalReasoner(ontology);
 
 			// first remove a random axiom
-			List<OWLAxiom> axiomsToRemove = new ArrayList<OWLAxiom>( TestUtils.selectRandomAxioms( ontology, 1 ) );
+			Set<OWLAxiom> owlAxioms = TestUtils.selectRandomAxioms(ontology, 1, System.currentTimeMillis());
+			List<OWLAxiom> axiomsToRemove = new ArrayList<OWLAxiom>(owlAxioms);
 
 			for( OWLAxiom axiomToRemove : axiomsToRemove ) {
 				OWL.manager.applyChange( new RemoveAxiom(ontology, axiomToRemove ) );
@@ -301,7 +297,8 @@ public class PersistenceUpdatesTest {
 
 			// perform changes while the classifier is stored on disk
 			// first remove a random axiom
-			List<OWLAxiom> axiomsToRemove = new ArrayList<OWLAxiom>( TestUtils.selectRandomAxioms( ontology, 1 ) );
+			Set<OWLAxiom> owlAxioms = TestUtils.selectRandomAxioms(ontology, 1, System.currentTimeMillis());
+			List<OWLAxiom> axiomsToRemove = new ArrayList<OWLAxiom>(owlAxioms);
 
 			for( OWLAxiom axiomToRemove : axiomsToRemove ) {
 				OWL.manager.applyChange( new RemoveAxiom(ontology, axiomToRemove ) );

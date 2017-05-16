@@ -6,11 +6,13 @@
 
 package com.clarkparsia.modularity.test;
 
+import com.clarkparsia.modularity.AxiomBasedModuleExtractor;
 import com.clarkparsia.modularity.ModuleExtractor;
 import com.clarkparsia.owlapiv3.OWL;
 import com.clarkparsia.owlapiv3.OntologyUtils;
 import com.google.common.base.Supplier;
 import com.google.common.base.Throwables;
+import org.junit.Assert;
 import org.junit.Test;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLException;
@@ -20,6 +22,7 @@ import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 /**
  * <p>
@@ -34,27 +37,30 @@ import java.util.List;
  * <p>
  * Company: Clark & Parsia, LLC. <http://www.clarkparsia.com>
  * </p>
- * 
+ *
  * @author Mike Smith
  */
 public class RandomizedIncrementalClassifierTest extends AbstractModularityTest {
-public RandomizedIncrementalClassifierTest(final Supplier<ModuleExtractor> theModExtractorSupplier) {
+	public RandomizedIncrementalClassifierTest(final Supplier<ModuleExtractor> theModExtractorSupplier) {
 		super(theModExtractorSupplier);
 	}
 
 	private void classifyCorrectnessTest(String file, boolean copy) throws OWLException {
 		OWLOntology ontology = OntologyUtils.loadOntology( "file:" + base + file, false );
 
-		long seed = System.currentTimeMillis();
+		// We are setting the seed to constant here to always get the same failures
+//		long seed = System.currentTimeMillis();
+		long seed = 1182;
 
-		List<OWLAxiom> axioms = new ArrayList<OWLAxiom>( TestUtils.selectRandomAxioms( ontology, 10 ) );
+		Set<OWLAxiom> owlAxioms = TestUtils.selectRandomAxioms(ontology, 10, seed);
+		List<OWLAxiom> axioms = new ArrayList<OWLAxiom>(owlAxioms);
 
 		// Delete 5 axioms before the test
-		OntologyUtils.removeAxioms( ontology, axioms.subList( 0, 5 ) );		
-		
+		OntologyUtils.removeAxioms( ontology, axioms.subList( 0, 5 ) );
+
 		// Update test will add 5 axioms and remove 5 axioms
-		List<OWLAxiom> additions = axioms.subList( 0, 5 );		
-		List<OWLAxiom> deletions = axioms.subList( 5, 10 );	
+		List<OWLAxiom> additions = axioms.subList( 0, 5 );
+		List<OWLAxiom> deletions = axioms.subList( 5, 10 );
 		try {
 			TestUtils.runComparisonUpdateTest(ontology, modExtractor, (Collection<OWLAxiom>) additions,
 				(Collection<OWLAxiom>) deletions, copy, new TestUtils.ReasonerComparisonMethod() {
@@ -62,8 +68,7 @@ public RandomizedIncrementalClassifierTest(final Supplier<ModuleExtractor> theMo
 					TestUtils.assertClassificationEquals(expected, actual);
 				}
 			});
-		}
-		catch(Throwable t) {
+		} catch(Throwable t) {
 			System.err.println("Seed = " + seed);
 			System.err.println("Additions: " + additions);
 			System.err.println("Deletions: " + deletions);
@@ -101,7 +106,7 @@ public RandomizedIncrementalClassifierTest(final Supplier<ModuleExtractor> theMo
 
 	@Test
 	public void koalaTestCopy() throws OWLException {
-		classifyCorrectnessTest( "koala.owl", true );
+		classifyCorrectnessTest("koala.owl", true);
 	}
 
 	@Test
