@@ -6,17 +6,6 @@
 
 package com.clarkparsia.modularity.test;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Random;
-import java.util.RandomAccess;
-import java.util.Set;
-
 import com.clarkparsia.modularity.IncremantalReasonerFactory;
 import com.clarkparsia.modularity.IncrementalReasoner;
 import com.clarkparsia.modularity.IncrementalReasonerConfiguration;
@@ -25,21 +14,21 @@ import com.clarkparsia.owlapiv3.OWL;
 import com.clarkparsia.owlapiv3.OntologyUtils;
 import com.clarkparsia.pellet.owlapiv3.PelletReasoner;
 import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
 import org.mindswap.pellet.PelletOptions;
 import org.mindswap.pellet.utils.Comparators;
-import org.semanticweb.owlapi.model.AddAxiom;
-import org.semanticweb.owlapi.model.OWLAxiom;
-import org.semanticweb.owlapi.model.OWLClass;
-import org.semanticweb.owlapi.model.OWLException;
-import org.semanticweb.owlapi.model.OWLNamedIndividual;
-import org.semanticweb.owlapi.model.OWLOntology;
-import org.semanticweb.owlapi.model.OWLOntologyChange;
-import org.semanticweb.owlapi.model.RemoveAxiom;
+import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
+
+import java.util.*;
 
 import static java.util.Collections.emptySet;
 import static java.util.Collections.singleton;
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
 /**
@@ -155,8 +144,8 @@ public class TestUtils {
 	/**
 	 * Selects a random axiom from an ontology
 	 */
-	public static OWLAxiom selectRandomAxiom(OWLOntology ontology) throws OWLException {
-		Set<OWLAxiom> selectedAxioms = selectRandomAxioms( ontology, 1 );
+	public static OWLAxiom selectRandomAxiom(OWLOntology ontology, final long seed) throws OWLException {
+		Set<OWLAxiom> selectedAxioms = selectRandomAxioms( ontology, 1 , seed);
 
 		return selectedAxioms.iterator().next();
 	}
@@ -164,10 +153,10 @@ public class TestUtils {
 	/**
 	 * Selects a set of random axioms from an ontology
 	 */
-	public static Set<OWLAxiom> selectRandomAxioms(OWLOntology ontology, int count) {
+	public static Set<OWLAxiom> selectRandomAxioms(OWLOntology ontology, int count, final long seed) {
 		Set<OWLAxiom> axioms = ontology.getAxioms();
 
-		return selectRandomElements(axioms, count, System.currentTimeMillis());
+		return selectRandomElements(axioms, count, seed);
 	}
 
 	public static <T> Set<T> selectRandomElements(Collection<T> coll, int K, final long seed) {
@@ -192,62 +181,96 @@ public class TestUtils {
 	}
 
 	public static void assertClassificationEquals(OWLReasoner expected, OWLReasoner actual) {
-//		assertClassificationEquals( expected, actual, OWL.Nothing );
+//		classificationResults( expected, actual, OWL.Nothing );
 
+		Multimap<OWLClass, ClassificationResult> expectedResult = ArrayListMultimap.create();
+		Multimap<OWLClass, ClassificationResult> actualResult = ArrayListMultimap.create();
 		for( OWLClass cls : expected.getRootOntology().getClassesInSignature() ) {
-			assertClassificationEquals( expected, actual, cls );
+			ComparisonResult result = classificationResults( expected, actual, cls );
+			expectedResult.put(cls, (ClassificationResult) result.expected);
+			actualResult.put(cls, (ClassificationResult) result.actual);
+		}
+
+		assertThat(actualResult.asMap(), is(equalTo(expectedResult.asMap())));
+	}
+
+	private static class ClassificationResult {
+		Set<OWLClass> supers;
+		Set<OWLClass> equivalents;
+
+		@Override
+		public boolean equals(Object o) {
+			if (this == o) return true;
+			if (o == null || getClass() != o.getClass()) return false;
+
+			ClassificationResult that = (ClassificationResult) o;
+
+			if (!supers.equals(that.supers)) return false;
+			if (!equivalents.equals(that.equivalents)) return false;
+
+			return true;
+		}
+
+		@Override
+		public int hashCode() {
+			int result = supers.hashCode();
+			result = 31 * result + equivalents.hashCode();
+			return result;
+		}
+
+		public ClassificationResult(Set<OWLClass> supers, Set<OWLClass> equivalents) {
+			this.supers = supers;
+			this.equivalents = equivalents;
 		}
 	}
 
-	public static void assertClassificationEquals(OWLReasoner expected, OWLReasoner actual, OWLClass cls) {
+	public static ComparisonResult classificationResults(OWLReasoner expected, OWLReasoner actual, OWLClass cls) {
 		Set<OWLClass> expectedEquivalents = expected.getEquivalentClasses( cls ).getEntities();
 		Set<OWLClass> actualEquivalents = actual.getEquivalentClasses( cls ).getEntities();
-
-		assertEquals( "Equivalents different for Class: " + cls, expectedEquivalents, actualEquivalents );
 
 		Set<OWLClass> expectedSupers = expected.getSuperClasses( cls, true ).getFlattened();
 		Set<OWLClass> actualSupers = actual.getSuperClasses( cls, true ).getFlattened();
 
-		assertEquals( "Supers different for Class: " + cls, expectedSupers, actualSupers );
+		ClassificationResult expectedResult = new ClassificationResult(expectedSupers, expectedEquivalents);
+		ClassificationResult actualResult = new ClassificationResult(actualSupers, actualEquivalents);
+
+		return new ComparisonResult(expectedResult, actualResult);
 	}
 
 	public static void assertDisjointnessEquals(OWLReasoner expected, OWLReasoner actual) {
+		Multimap<OWLClass, Set<OWLClass>> expectedResult = ArrayListMultimap.create();
+		Multimap<OWLClass, Set<OWLClass>> actualResult = ArrayListMultimap.create();
 		for( OWLClass cls : actual.getRootOntology().getClassesInSignature() ) {
-			assertDisjointnessEquals( expected, actual, cls );
+			Set<OWLClass> expectedDisjoints = expected.getDisjointClasses(cls).getFlattened();
+			Set<OWLClass> actualDisjoints = actual.getDisjointClasses(cls).getFlattened();
+			expectedResult.put(cls, expectedDisjoints);
+			actualResult.put(cls, actualDisjoints);
 		}
-	}
-
-	public static void assertDisjointnessEquals(OWLReasoner expected, OWLReasoner actual, OWLClass cls) {
-		Set<OWLClass> expectedDisjoints = expected.getDisjointClasses( cls ).getFlattened();
-		Set<OWLClass> actualDisjoints = actual.getDisjointClasses( cls ).getFlattened();
-
-		assertEquals( "Disjoint classes different for Class: " + cls, expectedDisjoints, actualDisjoints );
+		assertEquals(expectedResult, actualResult);
 	}
 
 	public static void assertInstancesEquals(OWLReasoner expected, OWLReasoner actual) {
+		Multimap<OWLClass, Set<OWLNamedIndividual>> expectedResult = ArrayListMultimap.create();
+		Multimap<OWLClass, Set<OWLNamedIndividual>> actualResult = ArrayListMultimap.create();
 		for( OWLClass cls : actual.getRootOntology().getClassesInSignature() ) {
-			assertInstancesEquals( expected, actual, cls );
+			Set<OWLNamedIndividual> expectedIndividuals = expected.getInstances(cls, true ).getFlattened();
+			Set<OWLNamedIndividual> actualIndividuals = actual.getInstances(cls, true ).getFlattened();
+			expectedResult.put(cls, expectedIndividuals);
+			actualResult.put(cls, actualIndividuals);
 		}
-	}
-
-	public static void assertInstancesEquals(OWLReasoner expected, OWLReasoner actual, OWLClass cls) {
-		Set<OWLNamedIndividual> expectedIndividuals = expected.getInstances( cls, true ).getFlattened();
-		Set<OWLNamedIndividual> actualIndividuals = actual.getInstances( cls, true ).getFlattened();
-
-		assertEquals( "Instances different for Class: " + cls, expectedIndividuals, actualIndividuals );
+		assertEquals(expectedResult, actualResult);
 	}
 
 	public static void assertTypesEquals(OWLReasoner expected, OWLReasoner actual) {
+		Multimap<OWLNamedIndividual, Set<OWLClass>> expectedResult = ArrayListMultimap.create();
+		Multimap<OWLNamedIndividual, Set<OWLClass>> actualResult = ArrayListMultimap.create();
 		for( OWLNamedIndividual ind : actual.getInstances( OWL.Thing, false ).getFlattened() ) {
-			assertTypesEquals( expected, actual, ind );
+			Set<OWLClass> expectedTypes = expected.getTypes(ind, true ).getFlattened();
+			Set<OWLClass> actualTypes = actual.getTypes(ind, true ).getFlattened();
+			expectedResult.put(ind, expectedTypes);
+			actualResult.put(ind, actualTypes);
 		}
-	}
-
-	public static void assertTypesEquals(OWLReasoner expected, OWLReasoner actual, OWLNamedIndividual individual) {
-		Set<OWLClass> expectedTypes = expected.getTypes( individual, true ).getFlattened();
-		Set<OWLClass> actualTypes = actual.getTypes( individual, true ).getFlattened();
-
-		assertEquals( "Types different for individual: " + individual, expectedTypes, actualTypes );
+		assertEquals(expectedResult, actualResult);
 	}
 
 
@@ -314,6 +337,36 @@ public class TestUtils {
 			return singleton( elements[0] );
 		default:
 			return new HashSet<T>( Arrays.asList( elements ) );
+		}
+	}
+
+	public static class ComparisonResult {
+		Object expected;
+		Object actual;
+
+		@Override
+		public boolean equals(Object o) {
+			if (this == o) return true;
+			if (o == null || getClass() != o.getClass()) return false;
+
+			ComparisonResult that = (ComparisonResult) o;
+
+			if (expected != null ? !expected.equals(that.expected) : that.expected != null) return false;
+			if (actual != null ? !actual.equals(that.actual) : that.actual != null) return false;
+
+			return true;
+		}
+
+		@Override
+		public int hashCode() {
+			int result = expected != null ? expected.hashCode() : 0;
+			result = 31 * result + (actual != null ? actual.hashCode() : 0);
+			return result;
+		}
+
+		public ComparisonResult(Object expected, Object actual) {
+			this.expected = expected;
+			this.actual = actual;
 		}
 	}
 
