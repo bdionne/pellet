@@ -26,6 +26,7 @@ public class TestProtegeServerConfiguration implements Configuration {
 		mProperties.setProperty(Configuration.PROTEGE_ONTOLOGIES, Joiner.on(",").join(ontologies));
 
 		mProperties.setProperty(Configuration.PELLET_HOME, PelletServerTest.TEST_HOME.toString());
+		mProperties.setProperty(Configuration.PELLET_HOST, "http://127.0.0.1");
 	}
 
 	@Override

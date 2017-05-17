@@ -1,15 +1,7 @@
 package com.clarkparsia.pellet.server.protege;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.List;
-import java.util.Optional;
-
 import com.clarkparsia.owlapiv3.OntologyUtils;
 import com.google.common.base.Charsets;
-import com.google.common.io.ByteStreams;
 import com.google.common.io.Files;
 import com.google.common.io.Resources;
 import edu.stanford.protege.metaproject.ConfigurationManager;
@@ -17,21 +9,21 @@ import edu.stanford.protege.metaproject.api.PolicyFactory;
 import edu.stanford.protege.metaproject.api.Project;
 import edu.stanford.protege.metaproject.api.ProjectOptions;
 import org.apache.commons.io.FileUtils;
+import org.apache.log4j.BasicConfigurator;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.protege.editor.owl.client.LocalHttpClient;
-import org.protege.editor.owl.client.util.ClientUtils;
-import org.protege.editor.owl.server.api.CommitBundle;
 import org.protege.editor.owl.server.http.HTTPServer;
-import org.protege.editor.owl.server.policy.CommitBundleImpl;
-import org.protege.editor.owl.server.versioning.Commit;
-import org.protege.editor.owl.server.versioning.api.DocumentRevision;
 import org.protege.editor.owl.server.versioning.api.ServerDocument;
 import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLOntology;
-import org.semanticweb.owlapi.model.OWLOntologyChange;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.Optional;
 
 /**
  * @author Edgar Rodriguez-Diaz
@@ -84,9 +76,10 @@ public abstract class ProtegeServerTest extends TestUtilities {
 
 	@Before
 	public void before() throws Exception {
+		BasicConfigurator.configure();
 		Files.write(CONFIG, CONFIG_FILE, Charsets.UTF_8);
 		mServer = new HTTPServer(CONFIG_FILE.getAbsolutePath());
-//		mServer.start();
+		mServer.start();
 	}
 
 	@After

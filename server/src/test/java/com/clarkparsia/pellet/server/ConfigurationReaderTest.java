@@ -47,7 +47,7 @@ public class ConfigurationReaderTest {
 
 		AllSettingsConfiguration() {
 			mProperties = new Properties();
-			mProperties.setProperty(Configuration.PROTEGE_HOST, "test-protege.com");
+			mProperties.setProperty(Configuration.PROTEGE_HOST, "http://test-protege.com");
 			mProperties.setProperty(Configuration.PROTEGE_PORT, "5000");
 			mProperties.setProperty(Configuration.PROTEGE_USERNAME, "admin");
 			mProperties.setProperty(Configuration.PROTEGE_PASSWORD, "secret");
@@ -86,7 +86,7 @@ public class ConfigurationReaderTest {
 	public void shouldGetAllConfigs() {
 		final ConfigurationReader configReader = ConfigurationReader.of(AllSettingsConfiguration.INSTANCE);
 
-		assertEquals("test-protege.com", configReader.protegeSettings().host());
+		assertEquals("http://test-protege.com", configReader.protegeSettings().host());
 		assertEquals(5000, configReader.protegeSettings().port());
 		assertEquals("admin", configReader.protegeSettings().username());
 		assertEquals("secret", configReader.protegeSettings().password());

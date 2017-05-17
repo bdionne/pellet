@@ -31,6 +31,9 @@ import com.clarkparsia.pellet.test.tbox.TBoxTests;
 import com.clarkparsia.pellet.test.transtree.TransTreeTestSuite;
 import com.clarkparsia.pellint.test.PellintTestSuite;
 
+import java.io.File;
+import java.nio.file.Paths;
+
 @RunWith(Suite.class)
 @SuiteClasses( { 
 	ATermTests.class,
@@ -69,5 +72,7 @@ import com.clarkparsia.pellint.test.PellintTestSuite;
 	pellet.test.CLITests.class
 })
 public class PelletTestSuite {
-	public static String	base	= "test/data/";
+	// we need the slash at the end because we are concatenating paths like strings rather than using the Paths class
+	public static String base = Paths.get(PelletTestSuite.class.getClassLoader().getResource(".").getPath(),
+		"test/data").toString() + "/";
 }

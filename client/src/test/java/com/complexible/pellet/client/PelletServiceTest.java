@@ -1,15 +1,9 @@
 package com.complexible.pellet.client;
 
-import java.util.Arrays;
-import java.util.UUID;
-
 import com.clarkparsia.owlapiv3.OWL;
-import com.clarkparsia.owlapiv3.OntologyUtils;
-
 import edu.stanford.protege.metaproject.ConfigurationManager;
 import org.junit.Before;
 import org.junit.Test;
-import org.openrdf.model.vocabulary.RDFS;
 import org.protege.editor.owl.client.util.ClientUtils;
 import org.protege.editor.owl.server.api.CommitBundle;
 import org.protege.editor.owl.server.policy.CommitBundleImpl;
@@ -19,9 +13,11 @@ import org.semanticweb.owlapi.model.AddAxiom;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyChange;
-import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import retrofit2.Call;
 import retrofit2.Response;
+
+import java.util.Arrays;
+import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
 
@@ -39,8 +35,8 @@ public class PelletServiceTest extends PelletClientTest {
 		super.before();
 
 		// create test ontology
-		agencyOntId = createAgenciesOntology(mClient);
-		owl2OntId = createOwl2Ontology(mClient);
+		agencyOntId = createAgenciesOntology(managerClient);
+		owl2OntId = createOwl2Ontology(managerClient);
 
 		startPelletServer(AGENCIES_ONT);
 	}
