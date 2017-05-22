@@ -11,14 +11,9 @@ import com.google.inject.Singleton;
 import edu.stanford.protege.metaproject.ConfigurationManager;
 import edu.stanford.protege.metaproject.api.PlainPassword;
 import edu.stanford.protege.metaproject.api.PolicyFactory;
-import edu.stanford.protege.metaproject.api.ProjectId;
 import edu.stanford.protege.metaproject.api.UserId;
-import edu.stanford.protege.metaproject.impl.ProjectIdImpl;
 import org.protege.editor.owl.client.LocalHttpClient;
-import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
@@ -36,8 +31,6 @@ public final class ProtegeServerState extends ServerStateImpl {
 	private final LocalHttpClient mClient;
 	final LocalHttpClient managerClient;
 
-	private final Path mHome;
-
 	/**
 	 * Lock to control reloads of the state
 	 */
@@ -50,8 +43,6 @@ public final class ProtegeServerState extends ServerStateImpl {
 
 	ProtegeServerState(final ConfigurationReader theConfigReader) throws Exception {
 		super(ImmutableSet.<OntologyState>of());
-
-		mHome = Paths.get(theConfigReader.pelletSettings().home());
 
 		mClient = ProtegeServiceUtils.connect(theConfigReader);
 
