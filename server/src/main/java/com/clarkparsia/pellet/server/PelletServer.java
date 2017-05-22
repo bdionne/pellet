@@ -92,6 +92,30 @@ public final class PelletServer {
 			}
 		});
 
+		// add restart handler
+		router.add("GET", "/admin/restart", new HttpHandler() {
+			@Override
+			public void handleRequest(HttpServerExchange exchange) throws Exception {
+				aShutdownHandler.shutdown();
+				aShutdownHandler.addShutdownListener(new GracefulShutdownHandler.ShutdownListener() {
+					@Override
+					public void shutdown(final boolean isDown) {
+						if (isDown) {
+							stop();
+							try {
+								start();
+							} catch (ServerException e) {
+								throw new RuntimeException(e);
+							}
+						} else {
+							Logger.getLogger(PelletServer.class.getName()).warning("Failed to shutown when restarting");
+						}
+					}
+				});
+				exchange.endExchange();
+			}
+		});
+
 		final ConfigurationReader aConfig = ConfigurationReader.of(serverInjector.getInstance(Configuration.class));
 
 		final PelletSettings aPelletSettings = aConfig.pelletSettings();
