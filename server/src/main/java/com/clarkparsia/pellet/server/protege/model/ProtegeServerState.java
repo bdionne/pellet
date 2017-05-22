@@ -70,7 +70,11 @@ public final class ProtegeServerState extends ServerStateImpl {
 	public boolean update() {
 		try {
 			if (updateLock.tryLock(1, TimeUnit.SECONDS)) {
-				return super.update();
+				boolean updated = false;
+				for (OntologyState ontState : ontologies()) {
+					updated |= ontState.update();
+				}
+				return updated;
 			}
 			else {
 				LOGGER.info("Skipping update, there's another state update still happening");

@@ -71,13 +71,7 @@ public abstract class ServerStateImpl implements ServerState {
 	}
 
 	@Override
-	public boolean update() {
-		boolean updated = false;
-		for (OntologyState ontState : ontologies()) {
-			updated |= ontState.update();
-		}
-		return updated;
-	}
+	public abstract boolean update();
 
 	@Override
 	public void save() {
