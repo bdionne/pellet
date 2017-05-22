@@ -8,21 +8,20 @@
 
 package com.clarkparsia.pellet.server.model.impl;
 
-import java.io.File;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Map;
-
 import com.clarkparsia.pellet.server.model.OntologyState;
 import com.clarkparsia.pellet.server.model.ServerState;
 import com.google.common.base.Optional;
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
+
+import java.io.File;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
 
 /**
  * Immutable implementation of a ontology server state.
@@ -48,14 +47,10 @@ public class ServerStateImpl implements ServerState {
 		return Optional.fromNullable(ontologies.get(ontology));
 	}
 
-	protected OntologyState createOntologyState(final String ontologyPath) throws OWLOntologyCreationException {
-		OWLOntology ont = manager.loadOntologyFromOntologyDocument(new File(ontologyPath));
-		return new OntologyStateImpl(ont);
-	}
-
 	@Override
 	public OntologyState addOntology(final String ontologyPath) throws OWLOntologyCreationException {
-		OntologyState state = createOntologyState(ontologyPath);
+		OWLOntology ont = manager.loadOntologyFromOntologyDocument(new File(ontologyPath));
+		OntologyState state = new OntologyStateImpl(ont);
 		ontologies.put(state.getIRI(), state);
 		return state;
 	}

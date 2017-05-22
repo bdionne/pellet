@@ -66,7 +66,6 @@ public final class ProtegeServerState extends ServerStateImpl {
 		}
 	}
 
-	@Override
 	protected OntologyState createOntologyState(final String ontologyPath) throws OWLOntologyCreationException {
 		LOGGER.info("Loading ontology " + ontologyPath);
 
