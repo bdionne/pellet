@@ -54,6 +54,10 @@ public final class ConfigurationReader {
 			return getProperty(settings, Configuration.PELLET_HOST, PelletServer.DEFAULT_HOST);
 		}
 
+		public String endpoint() {
+			return host() + ":" + port();
+		}
+
 		public int port() {
 			return getPropertyAsInteger(settings, Configuration.PELLET_PORT, PelletServer.DEFAULT_PORT);
 		}
