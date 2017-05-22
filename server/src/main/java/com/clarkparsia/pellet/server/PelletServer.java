@@ -130,7 +130,7 @@ public final class PelletServer {
 		}
 		
 		System.out.println(String.format("Pellet Home: %s", aPelletSettings.home()));
-		System.out.println(String.format("Listening at: http://%s:%s", aPelletSettings.host(), aPelletSettings.port()));
+		System.out.println(String.format("Listening at: %s:%s", aPelletSettings.host(), aPelletSettings.port()));
 
 		isRunning = true;
 		server.start();
