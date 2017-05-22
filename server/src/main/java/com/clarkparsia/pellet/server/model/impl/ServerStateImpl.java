@@ -28,7 +28,7 @@ import java.util.Map;
  *
  * @author Evren Sirin
  */
-public class ServerStateImpl implements ServerState {
+public abstract class ServerStateImpl implements ServerState {
 	protected final OWLOntologyManager manager;
 
 	private final Map<IRI, OntologyState> ontologies;
