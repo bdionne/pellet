@@ -66,26 +66,6 @@ public final class ProtegeServerState extends ServerStateImpl {
 		}
 	}
 
-	protected OntologyState createOntologyState(final String ontologyPath) throws OWLOntologyCreationException {
-		LOGGER.info("Loading ontology " + ontologyPath);
-
-		try {
-			ProjectId projectID = new ProjectIdImpl(ontologyPath);
-
-			ProtegeOntologyState state = new ProtegeOntologyState(mClient, projectID, mHome.resolve(projectID.get()).resolve("reasoner_state.bin"));
-
-			LOGGER.info("Loaded revision " + state.getVersion());
-
-			state.update();
-
-			return state;
-		}
-		catch (Exception e) {
-			System.out.println(e.getMessage());
-			throw new OWLOntologyCreationException("Could not load ontology from Protege server: " + ontologyPath, e);
-		}
-	}
-
 	@Override
 	public boolean update() {
 		try {
