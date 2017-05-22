@@ -18,7 +18,10 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import org.mindswap.pellet.PelletOptions;
 import org.mindswap.pellet.utils.Comparators;
-import org.semanticweb.owlapi.model.*;
+import org.semanticweb.owlapi.model.OWLAxiom;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLNamedIndividual;
+import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 
 import java.util.*;
@@ -27,9 +30,7 @@ import static java.util.Collections.emptySet;
 import static java.util.Collections.singleton;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 /**
  * <p>
@@ -107,47 +108,6 @@ public class TestUtils {
 
 			fail( msg );
 		}
-	}
-
-	public static List<OWLOntologyChange> createChanges(OWLOntology ontology,
-			Collection<? extends OWLAxiom> axioms, boolean add) {
-		List<OWLOntologyChange> changes = new ArrayList<OWLOntologyChange>();
-		for( OWLAxiom axiom : axioms ) {
-			OWLOntologyChange change = add
-				? new AddAxiom( ontology, axiom )
-				: new RemoveAxiom( ontology, axiom );
-			changes.add( change );
-		}
-
-		return changes;
-	}
-
-	public static <E> Set<E> flatten(Set<Set<E>> setOfSets) {
-		Set<E> result = new HashSet<E>();
-		for( Set<E> set : setOfSets ) {
-			result.addAll(set);
-		}
-		return result;
-	}
-
-	public static double[] getSizes(Collection<? extends Collection<?>> collections) {
-		double[] sizes = new double[collections.size()];
-
-		int i = 0;
-		for( Collection<?> collection : collections ) {
-			sizes[i++] = collection.size();
-		}
-
-		return sizes;
-	}
-
-	/**
-	 * Selects a random axiom from an ontology
-	 */
-	public static OWLAxiom selectRandomAxiom(OWLOntology ontology, final long seed) throws OWLException {
-		Set<OWLAxiom> selectedAxioms = selectRandomAxioms( ontology, 1 , seed);
-
-		return selectedAxioms.iterator().next();
 	}
 
 	/**

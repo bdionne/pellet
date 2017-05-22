@@ -6,13 +6,11 @@
 
 package com.clarkparsia.modularity.test;
 
-import com.clarkparsia.modularity.AxiomBasedModuleExtractor;
 import com.clarkparsia.modularity.ModuleExtractor;
 import com.clarkparsia.owlapiv3.OWL;
 import com.clarkparsia.owlapiv3.OntologyUtils;
 import com.google.common.base.Supplier;
 import com.google.common.base.Throwables;
-import org.junit.Assert;
 import org.junit.Test;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLException;
