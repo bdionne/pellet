@@ -1,35 +1,5 @@
 package com.clarkparsia.pellet.protege;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.LayoutManager;
-import java.awt.Rectangle;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Set;
-
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JSeparator;
-import javax.swing.JTextField;
-import javax.swing.Scrollable;
-import javax.swing.border.Border;
-import javax.swing.border.CompoundBorder;
-import javax.swing.border.EmptyBorder;
-import javax.swing.border.MatteBorder;
-import javax.swing.border.TitledBorder;
-import javax.swing.plaf.BorderUIResource;
-
 import com.clarkparsia.modularity.IncrementalReasoner;
 import com.clarkparsia.owlapi.explanation.PelletExplanation;
 import com.clarkparsia.pellet.owlapiv3.PelletReasoner;
@@ -42,17 +12,10 @@ import org.protege.editor.core.ui.list.MListButton;
 import org.protege.editor.core.ui.list.MListItem;
 import org.protege.editor.owl.OWLEditorKit;
 import org.protege.editor.owl.model.inference.OWLReasonerManager;
-import org.protege.editor.owl.ui.OWLAxiomTypeFramePanel;
 import org.protege.editor.owl.ui.editor.OWLObjectEditor;
 import org.protege.editor.owl.ui.explanation.ExplanationResult;
 import org.protege.editor.owl.ui.explanation.ExplanationService;
-import org.protege.editor.owl.ui.frame.AbstractOWLFrame;
-import org.protege.editor.owl.ui.frame.AbstractOWLFrameSection;
-import org.protege.editor.owl.ui.frame.AbstractOWLFrameSectionRow;
-import org.protege.editor.owl.ui.frame.AxiomListFrame;
-import org.protege.editor.owl.ui.frame.OWLFrame;
-import org.protege.editor.owl.ui.frame.OWLFrameSection;
-import org.protege.editor.owl.ui.frame.OWLFrameSectionRow;
+import org.protege.editor.owl.ui.frame.*;
 import org.protege.editor.owl.ui.framelist.OWLFrameList;
 import org.protege.editor.owl.ui.framelist.OWLFrameListPopupMenuAction;
 import org.semanticweb.owl.explanation.api.Explanation;
@@ -62,6 +25,13 @@ import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import uk.ac.manchester.cs.owl.explanation.JustificationFormattingManager;
 import uk.ac.manchester.cs.owl.explanation.JustificationFrameListRenderer;
+
+import javax.swing.*;
+import javax.swing.border.Border;
+import javax.swing.border.EmptyBorder;
+import java.awt.*;
+import java.util.*;
+import java.util.List;
 
 
 /**

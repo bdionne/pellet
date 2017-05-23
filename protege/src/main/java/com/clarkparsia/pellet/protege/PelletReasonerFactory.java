@@ -1,7 +1,6 @@
 package com.clarkparsia.pellet.protege;
 
 import com.clarkparsia.modularity.IncremantalReasonerFactory;
-import com.clarkparsia.owlapi.explanation.PelletExplanation;
 import com.clarkparsia.pellet.service.reasoner.SchemaReasonerFactory;
 import com.complexible.pellet.client.ClientModule;
 import com.google.inject.Guice;
