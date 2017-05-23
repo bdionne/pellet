@@ -112,7 +112,7 @@ public class PelletServer extends PelletCmdApp {
 		}
 		else {
 			ConfigurationReader.PelletSettings settings = ConfigurationReader.of(getServerConfig()).pelletSettings();
-			endpoint = "http://"+ settings.host() + ":" + settings.port();
+			endpoint = settings.endpoint();
 		}
 
 		Call<Void> shutdownCall = service(endpoint).shutdown();
