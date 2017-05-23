@@ -28,7 +28,7 @@ import java.util.Optional;
 /**
  * @author Edgar Rodriguez-Diaz
  */
-public abstract class ProtegeServerTest extends TestUtilities {
+public abstract class ProtegeServerTest {
 	private static HTTPServer mServer;
 
 	protected static File TEST_HOME;
