@@ -3,22 +3,29 @@ package com.clarkparsia.pellet.server.protege.model;
 import com.clarkparsia.pellet.server.Configuration;
 import com.clarkparsia.pellet.server.ConfigurationReader;
 import com.clarkparsia.pellet.server.model.OntologyState;
-import com.clarkparsia.pellet.server.model.impl.ServerStateImpl;
+import com.clarkparsia.pellet.server.model.ServerState;
+import com.clarkparsia.pellet.server.model.impl.OntologyStateImpl;
 import com.clarkparsia.pellet.server.protege.ProtegeServiceUtils;
+import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import edu.stanford.protege.metaproject.ConfigurationManager;
 import edu.stanford.protege.metaproject.api.PlainPassword;
 import edu.stanford.protege.metaproject.api.PolicyFactory;
-import edu.stanford.protege.metaproject.api.ProjectId;
 import edu.stanford.protege.metaproject.api.UserId;
-import edu.stanford.protege.metaproject.impl.ProjectIdImpl;
 import org.protege.editor.owl.client.LocalHttpClient;
+import org.semanticweb.owlapi.apibinding.OWLManager;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
+import org.semanticweb.owlapi.model.OWLOntologyManager;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.io.File;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
@@ -29,19 +36,19 @@ import java.util.logging.Logger;
  * @author Edgar Rodriguez-Diaz
  */
 @Singleton
-public final class ProtegeServerState extends ServerStateImpl {
+public final class ProtegeServerState implements ServerState {
 
 	private static final Logger LOGGER = Logger.getLogger(ProtegeServerState.class.getName());
+	protected final OWLOntologyManager manager;
 
 	private final LocalHttpClient mClient;
 	final LocalHttpClient managerClient;
-
-	private final Path mHome;
 
 	/**
 	 * Lock to control reloads of the state
 	 */
 	private final ReentrantLock updateLock = new ReentrantLock();
+	private final Map<IRI, OntologyState> ontologies;
 
 	@Inject
 	public ProtegeServerState(final Configuration theConfig) throws Exception {
@@ -49,9 +56,12 @@ public final class ProtegeServerState extends ServerStateImpl {
 	}
 
 	ProtegeServerState(final ConfigurationReader theConfigReader) throws Exception {
-		super(ImmutableSet.<OntologyState>of());
+		this.manager = OWLManager.createOWLOntologyManager();
 
-		mHome = Paths.get(theConfigReader.pelletSettings().home());
+		this.ontologies = Maps.newConcurrentMap();
+		for (OntologyState ontoState : ImmutableSet.<OntologyState>of()) {
+			this.ontologies.put(ontoState.getIRI(), ontoState);
+		}
 
 		mClient = ProtegeServiceUtils.connect(theConfigReader);
 
@@ -67,31 +77,14 @@ public final class ProtegeServerState extends ServerStateImpl {
 	}
 
 	@Override
-	protected OntologyState createOntologyState(final String ontologyPath) throws OWLOntologyCreationException {
-		LOGGER.info("Loading ontology " + ontologyPath);
-
-		try {
-			ProjectId projectID = new ProjectIdImpl(ontologyPath);
-
-			ProtegeOntologyState state = new ProtegeOntologyState(mClient, projectID, mHome.resolve(projectID.get()).resolve("reasoner_state.bin"));
-
-			LOGGER.info("Loaded revision " + state.getVersion());
-
-			state.update();
-
-			return state;
-		}
-		catch (Exception e) {
-			System.out.println(e.getMessage());
-			throw new OWLOntologyCreationException("Could not load ontology from Protege server: " + ontologyPath, e);
-		}
-	}
-
-	@Override
 	public boolean update() {
 		try {
 			if (updateLock.tryLock(1, TimeUnit.SECONDS)) {
-				return super.update();
+				boolean updated = false;
+				for (OntologyState ontState : ontologies()) {
+					updated |= ontState.update();
+				}
+				return updated;
 			}
 			else {
 				LOGGER.info("Skipping update, there's another state update still happening");
@@ -114,5 +107,47 @@ public final class ProtegeServerState extends ServerStateImpl {
 
 	public LocalHttpClient getClient() {
 		return mClient;
+	}
+
+	@Override
+	public Optional<OntologyState> getOntology(IRI ontology) {
+		return Optional.fromNullable(ontologies.get(ontology));
+	}
+
+	@Override
+	public OntologyState addOntology(final String ontologyPath) throws OWLOntologyCreationException {
+		OWLOntology ont = manager.loadOntologyFromOntologyDocument(new File(ontologyPath));
+		OntologyState state = new OntologyStateImpl(ont);
+		ontologies.put(state.getIRI(), state);
+		return state;
+	}
+
+	@Override
+	public boolean removeOntology(final IRI ontology) {
+		OntologyState state = ontologies.remove(ontology);
+		boolean removed = (state != null);
+		if (removed) {
+			state.close();
+		}
+		return removed;
+	}
+
+	@Override
+	public Collection<OntologyState> ontologies() {
+		return Collections.unmodifiableCollection(ontologies.values());
+	}
+
+	@Override
+	public void save() {
+		for (OntologyState aOntoState : ontologies()) {
+			aOntoState.save();
+		}
+	}
+
+	@Override
+	public void close() throws Exception {
+		for (OntologyState ontology : ontologies()) {
+			ontology.close();
+		}
 	}
 }
