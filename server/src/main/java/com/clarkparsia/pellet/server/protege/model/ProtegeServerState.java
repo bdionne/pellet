@@ -110,23 +110,24 @@ public final class ProtegeServerState implements ServerState {
 
 	@Override
 	public OntologyState addOntology(final String ontologyPath) throws OWLOntologyCreationException {
-		OntologyState result;
+		ProtegeOntologyState result;
 		LOGGER.info("Loading ontology " + ontologyPath);
 
 		try {
 			ProjectId projectID = new ProjectIdImpl(ontologyPath);
-			ProtegeOntologyState state1 = new ProtegeOntologyState(client, projectID, home.resolve(projectID.get()).resolve("reasoner_state.bin"));
-			LOGGER.info("Loaded revision " + state1.getVersion());
-			state1.update();
-			result = state1;
+			result = new ProtegeOntologyState(client, projectID, home.resolve(projectID.get()).resolve("reasoner_state.bin"));
+			LOGGER.info("Loaded revision " + result.getVersion());
+			result.update();
 		}
 		catch (Exception e) {
 			System.out.println(e.getMessage());
 			throw new OWLOntologyCreationException("Could not load ontology from Protege server: " + ontologyPath, e);
 		}
-		OntologyState state = result;
-		ontologies.put(state.getIRI(), state);
-		return state;
+		if (result.getIRI() == null) {
+			throw new RuntimeException("Failed to get IRI for " + ontologyPath);
+		}
+		ontologies.put(result.getIRI(), result);
+		return result;
 	}
 
 	@Override
