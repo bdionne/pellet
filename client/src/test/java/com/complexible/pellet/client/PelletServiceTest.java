@@ -4,6 +4,7 @@ import com.clarkparsia.owlapiv3.OWL;
 import edu.stanford.protege.metaproject.ConfigurationManager;
 import org.junit.Before;
 import org.junit.Test;
+import org.protege.editor.owl.client.api.Client;
 import org.protege.editor.owl.client.util.ClientUtils;
 import org.protege.editor.owl.server.api.CommitBundle;
 import org.protege.editor.owl.server.policy.CommitBundleImpl;
@@ -71,6 +72,15 @@ public class PelletServiceTest extends PelletClientTest {
 		aVersion = ClientTools.executeCall(aVersionCall);
 
 		assertEquals(1, aVersion);
+	}
+
+	@Test
+	public void restartPellet() {
+		PelletService aService = serviceProvider.get();
+		Integer v1 = ClientTools.executeCall(aService.version(agencyOntId, ID));
+		ClientTools.executeCall(serviceProvider.get().restart());
+		Integer v2 = ClientTools.executeCall(aService.version(agencyOntId, ID));
+		assertEquals(v1, v2);
 	}
 
 	@Test
