@@ -4,25 +4,25 @@ import com.clarkparsia.pellet.server.Configuration;
 import com.clarkparsia.pellet.server.ConfigurationReader;
 import com.clarkparsia.pellet.server.model.OntologyState;
 import com.clarkparsia.pellet.server.model.ServerState;
-import com.clarkparsia.pellet.server.model.impl.OntologyStateImpl;
 import com.clarkparsia.pellet.server.protege.ProtegeServiceUtils;
 import com.google.common.base.Optional;
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import edu.stanford.protege.metaproject.ConfigurationManager;
 import edu.stanford.protege.metaproject.api.PlainPassword;
 import edu.stanford.protege.metaproject.api.PolicyFactory;
+import edu.stanford.protege.metaproject.api.ProjectId;
 import edu.stanford.protege.metaproject.api.UserId;
+import edu.stanford.protege.metaproject.impl.ProjectIdImpl;
 import org.protege.editor.owl.client.LocalHttpClient;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 
-import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
@@ -41,7 +41,7 @@ public final class ProtegeServerState implements ServerState {
 	private static final Logger LOGGER = Logger.getLogger(ProtegeServerState.class.getName());
 	protected final OWLOntologyManager manager;
 
-	private final LocalHttpClient mClient;
+	private final LocalHttpClient client;
 	final LocalHttpClient managerClient;
 
 	/**
@@ -49,6 +49,7 @@ public final class ProtegeServerState implements ServerState {
 	 */
 	private final ReentrantLock updateLock = new ReentrantLock();
 	private final Map<IRI, OntologyState> ontologies;
+	private final Path home;
 
 	@Inject
 	public ProtegeServerState(final Configuration theConfig) throws Exception {
@@ -56,19 +57,16 @@ public final class ProtegeServerState implements ServerState {
 	}
 
 	ProtegeServerState(final ConfigurationReader theConfigReader) throws Exception {
+		this.home = Paths.get(theConfigReader.pelletSettings().home());
 		this.manager = OWLManager.createOWLOntologyManager();
-
 		this.ontologies = Maps.newConcurrentMap();
-		for (OntologyState ontoState : ImmutableSet.<OntologyState>of()) {
-			this.ontologies.put(ontoState.getIRI(), ontoState);
-		}
-
-		mClient = ProtegeServiceUtils.connect(theConfigReader);
+		this.client = ProtegeServiceUtils.connect(theConfigReader);
 
 		PolicyFactory f = ConfigurationManager.getFactory();
 		UserId managerId = f.getUserId("bob");
 		PlainPassword managerPassword = f.getPlainPassword("bob");
-		managerClient = new LocalHttpClient(managerId.get(), managerPassword.getPassword(), "http://localhost:8081");
+		// TODO this hard coding is incorrect. Should be fixed.
+		this.managerClient = new LocalHttpClient(managerId.get(), managerPassword.getPassword(), "http://localhost:8081");
 
 		Set<String> onts = theConfigReader.protegeSettings().ontologies();
 		for (String ont : onts) {
@@ -105,10 +103,6 @@ public final class ProtegeServerState implements ServerState {
 		return false;
 	}
 
-	public LocalHttpClient getClient() {
-		return mClient;
-	}
-
 	@Override
 	public Optional<OntologyState> getOntology(IRI ontology) {
 		return Optional.fromNullable(ontologies.get(ontology));
@@ -116,8 +110,21 @@ public final class ProtegeServerState implements ServerState {
 
 	@Override
 	public OntologyState addOntology(final String ontologyPath) throws OWLOntologyCreationException {
-		OWLOntology ont = manager.loadOntologyFromOntologyDocument(new File(ontologyPath));
-		OntologyState state = new OntologyStateImpl(ont);
+		OntologyState result;
+		LOGGER.info("Loading ontology " + ontologyPath);
+
+		try {
+			ProjectId projectID = new ProjectIdImpl(ontologyPath);
+			ProtegeOntologyState state1 = new ProtegeOntologyState(client, projectID, home.resolve(projectID.get()).resolve("reasoner_state.bin"));
+			LOGGER.info("Loaded revision " + state1.getVersion());
+			state1.update();
+			result = state1;
+		}
+		catch (Exception e) {
+			System.out.println(e.getMessage());
+			throw new OWLOntologyCreationException("Could not load ontology from Protege server: " + ontologyPath, e);
+		}
+		OntologyState state = result;
 		ontologies.put(state.getIRI(), state);
 		return state;
 	}
