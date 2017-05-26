@@ -31,7 +31,7 @@ import java.util.Optional;
 public abstract class ProtegeServerTest {
 	private static HTTPServer mServer;
 
-	protected static File TEST_HOME;
+	public static File TEST_HOME;
 	protected static File CONFIG_FILE;
 	protected static String CONFIG;
 
