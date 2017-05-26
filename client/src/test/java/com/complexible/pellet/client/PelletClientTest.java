@@ -8,6 +8,8 @@ import edu.stanford.protege.metaproject.api.UserId;
 import org.junit.Before;
 import org.protege.editor.owl.client.LocalHttpClient;
 
+import static com.clarkparsia.pellet.server.protege.TestUtilities.*;
+
 /**
  * @author Edgar Rodriguez-Diaz
  */
