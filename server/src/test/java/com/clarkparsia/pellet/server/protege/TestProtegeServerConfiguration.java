@@ -3,7 +3,6 @@ package com.clarkparsia.pellet.server.protege;
 import java.util.Properties;
 
 import com.clarkparsia.pellet.server.Configuration;
-import com.clarkparsia.pellet.server.PelletServerTest;
 import com.google.common.base.Joiner;
 
 /**
@@ -25,7 +24,7 @@ public class TestProtegeServerConfiguration implements Configuration {
 		mProperties.setProperty(Configuration.PROTEGE_PASSWORD, TestUtilities.PROTEGE_PASSWORD);
 		mProperties.setProperty(Configuration.PROTEGE_ONTOLOGIES, Joiner.on(",").join(ontologies));
 
-		mProperties.setProperty(Configuration.PELLET_HOME, PelletServerTest.TEST_HOME.toString());
+		mProperties.setProperty(Configuration.PELLET_HOME, PelletClientTest.TEST_HOME.toString());
 		mProperties.setProperty(Configuration.PELLET_HOST, "http://127.0.0.1");
 	}
 
