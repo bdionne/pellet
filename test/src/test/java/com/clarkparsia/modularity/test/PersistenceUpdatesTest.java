@@ -6,16 +6,10 @@
 
 package com.clarkparsia.modularity.test;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-
 import com.clarkparsia.modularity.GraphBasedModuleExtractor;
+import com.clarkparsia.modularity.IncremantalReasonerFactory;
 import com.clarkparsia.modularity.IncrementalReasoner;
 import com.clarkparsia.modularity.ModuleExtractor;
-import com.clarkparsia.modularity.IncremantalReasonerFactory;
 import com.clarkparsia.owlapiv3.OWL;
 import com.clarkparsia.owlapiv3.OntologyUtils;
 import com.clarkparsia.pellet.owlapiv3.PelletReasoner;
@@ -23,11 +17,13 @@ import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
 import org.junit.Test;
 import org.mindswap.pellet.test.PelletTestSuite;
 import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.semanticweb.owlapi.model.AddAxiom;
-import org.semanticweb.owlapi.model.OWLAxiom;
-import org.semanticweb.owlapi.model.OWLOntology;
-import org.semanticweb.owlapi.model.OWLOntologyManager;
-import org.semanticweb.owlapi.model.RemoveAxiom;
+import org.semanticweb.owlapi.model.*;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 import static com.clarkparsia.modularity.test.TestUtils.assertClassificationEquals;
 import static org.junit.Assert.assertTrue;
@@ -50,86 +46,21 @@ import static org.junit.Assert.fail;
  * @author Blazej Bulka
  */
 public class PersistenceUpdatesTest {
-	public static final String	base	= PelletTestSuite.base + "modularity/";
-	
+	public static final String base = PelletTestSuite.base + "modularity/";
+
 	private static final String TEST_FILE = "test-persistence-classification.zip";
-		
+
 	public ModuleExtractor createModuleExtractor() {
 		return new GraphBasedModuleExtractor();
 	}
-	
-	public void performPersistenceRemoves(String fileName) throws IOException {
-		String common = "file:"+ base + fileName;
-		testPersistenceRemoves( common + ".owl");
-	}
 
-	public void performPersistenceAdds(String fileName) throws IOException {
-		String common = "file:"+ base + fileName;
-		testPersistenceAdds( common + ".owl");
-	}
+	@Test
+	public void miniTambisPersistenceAddsTest() throws IOException {
+		String common = "file:" + base + "miniTambis";
+		File testFile = new File(TEST_FILE);
+		OWLOntology ontology = OntologyUtils.loadOntology(common + ".owl");
 
-	public void performPersistenceAllowedUpdates(String fileName) throws IOException {
-		String common = "file:"+ base + fileName;
-		testAllowedUpdates( common + ".owl" );
-	}
-
-	public void performUpdatesAfterPersistence(String fileName) throws IOException {
-		String common = "file:"+ base + fileName;
-		testUpdatesAfterPersistence( common + ".owl" );
-	}
-	
-	public void performUpdatesAfterPersistence2(String fileName) throws IOException {
-		String common = "file:"+ base + fileName;
-		testUpdatesAfterPersistence2( common + ".owl" );
-	}
-	
-	public void performUpdatesWhenPersisted(String fileName) throws IOException {
-		String common = "file:"+ base + fileName;
-		testUpdatesWhenPersisted( common + ".owl" );
-	}
-
-	public void testPersistenceRemoves(String inputOnt) throws IOException {
-		File testFile = new File( TEST_FILE );
-		OWLOntology ontology = OntologyUtils.loadOntology( inputOnt );
-		
-		try {		
-			ModuleExtractor moduleExtractor = createModuleExtractor();
-
-			IncrementalReasoner modular =
-				IncremantalReasonerFactory.getInstance().createReasoner(
-					ontology, IncrementalReasoner.config().extractor(moduleExtractor));
-			modular.classify();
-
-			List<OWLAxiom> axiomsToRemove = new ArrayList<OWLAxiom>(
-				TestUtils.selectRandomAxioms( ontology, 1, System.currentTimeMillis() ));
-
-			for( OWLAxiom axiomToRemove : axiomsToRemove ) {
-				OWL.manager.applyChange( new RemoveAxiom(ontology, axiomToRemove ) );
-			}
-
-			// at this point there should be a change to the ontology that is not applied yet to the classifier
-			// this should cause the save operation to fail
-
-			try {
-				modular.save(testFile);
-				fail("The incremental classifer must not allow itself to be persisted if there are any unapplied changes to the ontology");
-			} catch( IllegalStateException e ) {
-				assertTrue( testFile.delete() );
-				// correct behavior
-			}
-
-		} finally {
-			if( ontology != null ) {
-				OWL.manager.removeOntology( ontology );
-			}
-		}
-	}
-	
-	public void testPersistenceAdds(String inputOnt) throws IOException {
-		File testFile = new File( TEST_FILE );
-		OWLOntology ontology = OntologyUtils.loadOntology( inputOnt );
-		
-		try {		
+		try {
 			ModuleExtractor moduleExtractor = createModuleExtractor();
 
 			IncrementalReasoner modular = IncremantalReasonerFactory.getInstance()
@@ -139,17 +70,17 @@ public class PersistenceUpdatesTest {
 			Set<OWLAxiom> owlAxioms = TestUtils.selectRandomAxioms(ontology, 1, System.currentTimeMillis());
 			List<OWLAxiom> axiomsToRemove = new ArrayList<OWLAxiom>(owlAxioms);
 
-			for( OWLAxiom axiomToRemove : axiomsToRemove ) {
-				OWL.manager.applyChange( new RemoveAxiom(ontology, axiomToRemove ) );
+			for (OWLAxiom axiomToRemove : axiomsToRemove) {
+				OWL.manager.applyChange(new RemoveAxiom(ontology, axiomToRemove));
 			}
 
 			// classify (i.e., update)
-			modular.classify();		
+			modular.classify();
 
 			// add the axiom back but do not classify (do not cause an update)
 
-			for( OWLAxiom axiomToAdd : axiomsToRemove ) {
-				OWL.manager.applyChange( new AddAxiom(ontology, axiomToAdd ) );
+			for (OWLAxiom axiomToAdd : axiomsToRemove) {
+				OWL.manager.applyChange(new AddAxiom(ontology, axiomToAdd));
 			}
 
 			// at this point there should be a change to the ontology that is not applied yet to the classifier
@@ -158,23 +89,64 @@ public class PersistenceUpdatesTest {
 			try {
 				modular.save(testFile);
 				fail("The incremental classifer must not allow itself to be persisted if there are any unapplied changes to the ontology");
-			} catch( IllegalStateException e ) {
-				assertTrue( testFile.delete() );
+			} catch (IllegalStateException e) {
+				assertTrue(testFile.delete());
 				// correct behavior
-			} 		
-			
+			}
+
 			modular.dispose();
 		} finally {
-			if( ontology != null ) {
-				OWL.manager.removeOntology( ontology );
+			if (ontology != null) {
+				OWL.manager.removeOntology(ontology);
 			}
 		}
 	}
-	
-	public void testAllowedUpdates(String inputOnt) throws IOException {
-		File testFile = new File( TEST_FILE );
-		OWLOntology ontology = OntologyUtils.loadOntology( inputOnt );
-		
+
+	@Test
+	public void miniTambisPersistenceRemovesTest() throws IOException {
+		String common = "file:" + base + "miniTambis";
+		File testFile = new File(TEST_FILE);
+		OWLOntology ontology = OntologyUtils.loadOntology(common + ".owl");
+
+		try {
+			ModuleExtractor moduleExtractor = createModuleExtractor();
+
+			IncrementalReasoner modular =
+				IncremantalReasonerFactory.getInstance().createReasoner(
+					ontology, IncrementalReasoner.config().extractor(moduleExtractor));
+			modular.classify();
+
+			List<OWLAxiom> axiomsToRemove = new ArrayList<OWLAxiom>(
+				TestUtils.selectRandomAxioms(ontology, 1, System.currentTimeMillis()));
+
+			for (OWLAxiom axiomToRemove : axiomsToRemove) {
+				OWL.manager.applyChange(new RemoveAxiom(ontology, axiomToRemove));
+			}
+
+			// at this point there should be a change to the ontology that is not applied yet to the classifier
+			// this should cause the save operation to fail
+
+			try {
+				modular.save(testFile);
+				fail("The incremental classifer must not allow itself to be persisted if there are any unapplied changes to the ontology");
+			} catch (IllegalStateException e) {
+				assertTrue(testFile.delete());
+				// correct behavior
+			}
+
+		} finally {
+			if (ontology != null) {
+				OWL.manager.removeOntology(ontology);
+			}
+		}
+	}
+
+	@Test
+	public void miniTambisPersistenceAllowedUpdatesTest() throws IOException {
+		String common = "file:" + base + "miniTambis";
+		File testFile = new File(TEST_FILE);
+		OWLOntology ontology = OntologyUtils.loadOntology(common + ".owl");
+
 		try {
 			ModuleExtractor moduleExtractor = createModuleExtractor();
 
@@ -186,10 +158,9 @@ public class PersistenceUpdatesTest {
 			Set<OWLAxiom> owlAxioms = TestUtils.selectRandomAxioms(ontology, 2, System.currentTimeMillis());
 			List<OWLAxiom> axiomsToRemove = new ArrayList<OWLAxiom>(owlAxioms);
 
-			OWL.manager.applyChange( new RemoveAxiom(ontology, axiomsToRemove.get(0) ) );
-			OWL.manager.applyChange( new AddAxiom(ontology, axiomsToRemove.get(0) ) );
-
-			OWL.manager.applyChange( new RemoveAxiom(ontology, axiomsToRemove.get(1) ) );
+			OWL.manager.applyChange(new RemoveAxiom(ontology, axiomsToRemove.get(0)));
+			OWL.manager.applyChange(new AddAxiom(ontology, axiomsToRemove.get(0)));
+			OWL.manager.applyChange(new RemoveAxiom(ontology, axiomsToRemove.get(1)));
 
 			// classify (i.e., update)
 			modular.classify();
@@ -197,34 +168,26 @@ public class PersistenceUpdatesTest {
 			// at this point, the ontology should be updated (despite the changes), and the save should succeed.
 			modular.save(testFile);
 
-			assertTrue( testFile.delete() );		
+			assertTrue(testFile.delete());
 		} finally {
-			OWL.manager.removeOntology( ontology );	
-		}	
+			OWL.manager.removeOntology(ontology);
+		}
 	}
-	
-	/**
-	 * Tests whether the restored classifier can be updated.
-	 * 
-	 * The test creates one original classifier (modular), persists it, reads it back as another classifier (modular2).
-	 * Then it performs the same modifications of the ontology on them, and checks whether their behavior is identical.
-	 * 
-	 * @param inputOnt
-	 * @throws IOException 
-	 */
-	public void testUpdatesAfterPersistence(String inputOnt) throws IOException {
-		File testFile = new File( TEST_FILE );
-		OWLOntology ontology = OntologyUtils.loadOntology( inputOnt );
-		
-		try {		
+
+	@Test
+	public void miniTambisUpdatesAfterPersistenceTest() throws IOException {
+		String common = "file:" + base + "miniTambis";
+		File testFile = new File(TEST_FILE);
+		OWLOntology ontology = OntologyUtils.loadOntology(common + ".owl");
+
+		try {
 			ModuleExtractor moduleExtractor = createModuleExtractor();
 
-			IncrementalReasoner modular = IncremantalReasonerFactory.getInstance()
-			                                                                .createReasoner(ontology, IncrementalReasoner.config().extractor(moduleExtractor));
+			IncrementalReasoner modular = IncremantalReasonerFactory.getInstance().createReasoner(
+				ontology, IncrementalReasoner.config().extractor(moduleExtractor));
 			modular.classify();
 
 			modular.save(testFile);
-
 			OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
 			modular = IncrementalReasoner.config().file(testFile).manager(manager).createIncrementalReasoner();
 
@@ -232,33 +195,25 @@ public class PersistenceUpdatesTest {
 			Set<OWLAxiom> owlAxioms = TestUtils.selectRandomAxioms(ontology, 1, System.currentTimeMillis());
 			List<OWLAxiom> axiomsToRemove = new ArrayList<OWLAxiom>(owlAxioms);
 
-			for( OWLAxiom axiomToRemove : axiomsToRemove ) {
-				manager.applyChange( new RemoveAxiom( modular.getRootOntology(), axiomToRemove) );
+			for (OWLAxiom axiomToRemove : axiomsToRemove) {
+				manager.applyChange(new RemoveAxiom(modular.getRootOntology(), axiomToRemove));
 			}
 
 			modular.classify();
+			PelletReasoner expected = PelletReasonerFactory.getInstance().createReasoner(modular.getRootOntology());
 
-			PelletReasoner expected = PelletReasonerFactory.getInstance().createReasoner( modular.getRootOntology() );		
-
-			assertClassificationEquals( expected, modular );
+			assertClassificationEquals(expected, modular);
 		} finally {
-			OWL.manager.removeOntology( ontology );
+			OWL.manager.removeOntology(ontology);
 		}
 	}
-	
-	/**
-	 * Tests whether the restored classifier can be updated.
-	 * 
-	 * The test creates one original classifier (modular), persists it, reads it back as another classifier (modular2).
-	 * Then it performs the same modifications of the ontology on them, and checks whether their behavior is identical.
-	 * 
-	 * @param inputOnt
-	 * @throws IOException
-	 */
-	public void testUpdatesAfterPersistence2(String inputOnt) throws IOException {
-		File testFile = new File( TEST_FILE );
-		OWLOntology ontology = OntologyUtils.loadOntology( inputOnt );
-		
+
+	@Test
+	public void miniTambisUpdatesAfterPersistence2Test() throws IOException {
+		String common = "file:" + base + "miniTambis";
+		File testFile = new File(TEST_FILE);
+		OWLOntology ontology = OntologyUtils.loadOntology(common + ".owl");
+
 		try {
 			IncrementalReasoner modular = IncremantalReasonerFactory.getInstance()
 				.createReasoner(ontology, IncrementalReasoner.config().extractor(createModuleExtractor()));
@@ -271,28 +226,29 @@ public class PersistenceUpdatesTest {
 			Set<OWLAxiom> owlAxioms = TestUtils.selectRandomAxioms(ontology, 1, System.currentTimeMillis());
 			List<OWLAxiom> axiomsToRemove = new ArrayList<OWLAxiom>(owlAxioms);
 
-			for( OWLAxiom axiomToRemove : axiomsToRemove ) {
-				OWL.manager.applyChange( new RemoveAxiom(ontology, axiomToRemove ) );
+			for (OWLAxiom axiomToRemove : axiomsToRemove) {
+				OWL.manager.applyChange(new RemoveAxiom(ontology, axiomToRemove));
 			}
 
 			modular.classify();
 
-			PelletReasoner expected = PelletReasonerFactory.getInstance().createReasoner( ontology );
+			PelletReasoner expected = PelletReasonerFactory.getInstance().createReasoner(ontology);
 
-			assertClassificationEquals( expected, modular );
+			assertClassificationEquals(expected, modular);
 		} finally {
-			OWL.manager.removeOntology( ontology );
+			OWL.manager.removeOntology(ontology);
 		}
 	}
-	
-	public void testUpdatesWhenPersisted(String inputOnt) throws IOException {
-		File testFile = new File( TEST_FILE );
-		OWLOntology ontology = OntologyUtils.loadOntology( inputOnt );
-		
+
+	@Test
+	public void miniTambisUpdatesWhenPersistedTest() throws IOException {
+		String common = "file:" + base + "miniTambis";
+		File testFile = new File(TEST_FILE);
+		OWLOntology ontology = OntologyUtils.loadOntology(common + ".owl");
+
 		try {
 			IncrementalReasoner modular = IncrementalReasoner.config().extractor(createModuleExtractor()).createIncrementalReasoner(ontology);
 			modular.classify();
-
 			modular.save(testFile);
 
 			// perform changes while the classifier is stored on disk
@@ -300,48 +256,17 @@ public class PersistenceUpdatesTest {
 			Set<OWLAxiom> owlAxioms = TestUtils.selectRandomAxioms(ontology, 1, System.currentTimeMillis());
 			List<OWLAxiom> axiomsToRemove = new ArrayList<OWLAxiom>(owlAxioms);
 
-			for( OWLAxiom axiomToRemove : axiomsToRemove ) {
-				OWL.manager.applyChange( new RemoveAxiom(ontology, axiomToRemove ) );
+			for (OWLAxiom axiomToRemove : axiomsToRemove) {
+				OWL.manager.applyChange(new RemoveAxiom(ontology, axiomToRemove));
 			}
 
 			modular = IncrementalReasoner.config().file(testFile).createIncrementalReasoner(ontology);
+			PelletReasoner expected = PelletReasonerFactory.getInstance().createReasoner(ontology);
 
-			PelletReasoner expected = PelletReasonerFactory.getInstance().createReasoner( ontology );
-
-			assertClassificationEquals( expected, modular );
+			assertClassificationEquals(expected, modular);
 		} finally {
-			OWL.manager.removeOntology( ontology );
+			OWL.manager.removeOntology(ontology);
 		}
-	}
-
-	@Test
-	public void miniTambisPersistenceAddsTest() throws IOException {
-		performPersistenceAdds( "miniTambis" );
-	}
-	
-	@Test
-	public void miniTambisPersistenceRemovesTest() throws IOException {
-		performPersistenceRemoves( "miniTambis" );
-	}
-	
-	@Test
-	public void miniTambisPersistenceAllowedUpdatesTest() throws IOException {
-		performPersistenceAllowedUpdates( "miniTambis" );
-	}
-
-	@Test
-	public void miniTambisUpdatesAfterPersistenceTest() throws IOException {
-		performUpdatesAfterPersistence( "miniTambis" );
-	}
-	
-	@Test
-	public void miniTambisUpdatesAfterPersistence2Test() throws IOException {
-		performUpdatesAfterPersistence2( "miniTambis" );
-	}
-
-	@Test
-	public void miniTambisUpdatesWhenPersistedTest() throws IOException {
-		performUpdatesWhenPersisted( "miniTambis" );
 	}
 
 }
