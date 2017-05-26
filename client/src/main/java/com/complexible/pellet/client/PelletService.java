@@ -28,6 +28,9 @@ public interface PelletService {
 	@GET("/admin/shutdown")
 	Call<Void> shutdown();
 
+	@GET("/admin/restart")
+	Call<Void> restart();
+
 	@POST("/reasoner/{ontology}/query")
 	Call<NodeSet> query(@Path("ontology") IRI theOntology,
 	                    @Query("client") UUID theClientID,
