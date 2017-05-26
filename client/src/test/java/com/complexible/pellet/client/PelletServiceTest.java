@@ -75,10 +75,18 @@ public class PelletServiceTest extends PelletClientTest {
 	}
 
 	@Test
-	public void restartPellet() {
+	public void restartPellet() throws Exception {
 		PelletService aService = serviceProvider.get();
 		Integer v1 = ClientTools.executeCall(aService.version(agencyOntId, ID));
-		ClientTools.executeCall(serviceProvider.get().restart());
+		ClientTools.executeCall(aService.restart());
+
+		try {
+			Thread.sleep(500);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+
+		aService = serviceProvider.get();
 		Integer v2 = ClientTools.executeCall(aService.version(agencyOntId, ID));
 		assertEquals(v1, v2);
 	}
