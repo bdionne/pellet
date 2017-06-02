@@ -107,7 +107,7 @@ public class ReachabilityGraph<E> {
 		return andNode;
 	}
 
-	public EntityNode createEntityNode(E entity) {
+	public EntityNode<E> createEntityNode(E entity) {
 		EntityNode<E> node = entityNodes.get(entity);
 
 		if (node == null) {
@@ -144,10 +144,6 @@ public class ReachabilityGraph<E> {
 		}
 
 		return orNode;
-	}
-
-	public Set<E> getEntities() {
-		return entityNodes.keySet();
 	}
 
 	public Collection<EntityNode<E>> getEntityNodes() {
@@ -214,7 +210,7 @@ public class ReachabilityGraph<E> {
 
 	private void removeRedundancies() {
 		int removedNode = -1;
-		int removedEdge = -1;
+		int removedEdge;
 
 		while (removedNode != 0) {
 			removedNode = 0;

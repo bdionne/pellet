@@ -9,6 +9,7 @@ import com.clarkparsia.reachability.ReachabilityGraph;
 import com.clarkparsia.reachability.SCC;
 import com.clarkparsia.owlapiv3.OWL;
 import org.junit.Test;
+import org.semanticweb.owlapi.model.OWLClass;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -17,7 +18,7 @@ import static org.junit.Assert.assertTrue;
  * @author Evren Sirin
  */
 public class SCCTests {
-	private ReachabilityGraph graph;
+	private ReachabilityGraph<OWLClass> graph;
 
 	private EntityNode[]	nodes;
 
@@ -26,7 +27,7 @@ public class SCCTests {
 	}
 
 	private void createGraph(int n) {
-		graph = new ReachabilityGraph();
+		graph = new ReachabilityGraph<OWLClass>();
 
 		nodes = new EntityNode[n];
 		for( int i = 0; i < n; i++ ) {
@@ -35,7 +36,7 @@ public class SCCTests {
 	}
 
 	private void testSCC(int[][] expectedSCC) {
-		List<Set<EntityNode>> computed = SCC.computeSCC( graph );
+		List<Set<EntityNode<OWLClass>>> computed = SCC.computeSCC( graph );
 
 		assertEquals( "SCC count", expectedSCC.length, computed.size() );
 
