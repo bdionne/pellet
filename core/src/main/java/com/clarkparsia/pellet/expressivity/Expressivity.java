@@ -197,36 +197,15 @@ public class Expressivity {
 		return dl;
 	}
 
-	
-	/**
-	 * @return Returns the hasNegation.
-	 */
-	public boolean hasNegation() {
-		return hasNegation;
-	}
-	
+
 	public void setHasNegation(boolean v) {
 		hasNegation = v;
 	}
 
-	/**
-	 * @return Returns the hasAllValues.
-	 */
-	public boolean hasAllValues() {
-		return hasAllValues;
-	}
-	
 	public void setHasAllValues(boolean v) {
 		hasAllValues = v;
 	}
 
-	/**
-	 * @return Returns the hasDisjointClasses.
-	 */
-	public boolean hasDisjointClasses() {
-		return hasDisjointClasses;
-	}
-	
 	public void setHasDisjointClasses(boolean v) {
 		hasDisjointClasses = v;
 	}
@@ -310,27 +289,12 @@ public class Expressivity {
 		hasTransitivity = v;
 	}
 
-	/**
-	 * @return Returns the hasRoleHierarchy.
-	 */
-	public boolean hasRoleHierarchy() {
-		return hasRoleHierarchy;
-	}
-
 	public void setHasRoleHierarchy(boolean v) {
 		hasRoleHierarchy = v;
 	}
 
-	public boolean hasReflexivity() {
-		return hasReflexivity;
-	}
-
 	public void setHasReflexivity(boolean v) {
 		hasReflexivity = v;
-	}
-
-	public boolean hasIrreflexivity() {
-		return hasIrreflexivity;
 	}
 
 	public void setHasIrreflexivity(boolean v) {
@@ -344,18 +308,7 @@ public class Expressivity {
 	public void setHasDisjointRoles(boolean v) {
 		hasDisjointRoles = v;
 	}
-	
-	/**
-	 * @deprecated Use {@link #hasAsymmmetry()}
-	 */
-	public boolean hasAntiSymmmetry() {
-		return hasAsymmetry;
-	}
 
-	public boolean hasAsymmmetry() {
-		return hasAsymmetry;
-	}
-	
 	/**
 	 * @deprecated Use {@link #setHasAsymmetry(boolean)}
 	 */
@@ -373,13 +326,6 @@ public class Expressivity {
 
 	public void setHasComplexSubRoles(boolean v) {
 		hasComplexSubRoles = v;
-	}
-
-	/**
-	 * @return Returns the hasDatatype.
-	 */
-	public boolean hasDatatype() {
-		return hasDatatype;
 	}
 
 	public void setHasDatatype(boolean v) {
@@ -404,24 +350,12 @@ public class Expressivity {
 		hasKeys = v;
 	}
 
-	public boolean hasDomain() {
-		return hasDomain;
-	}
-
 	public void setHasDomain(boolean v) {
 		hasDomain = v;
 	}
 
-	public boolean hasRange() {
-		return hasRange;
-	}
-
 	public void setHasRange(boolean v) {
 		hasRange = v;
-	}
-	
-	public boolean hasIndividual() {
-		return hasIndividual;
 	}
 
 	public void setHasIndividual(boolean v) {

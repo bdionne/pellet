@@ -98,19 +98,6 @@ public class PelletCmdOption {
 
 	/**
 	 * Returns the option value as an integer and verifies that the value is a
-	 * positive integer (>= 1).
-	 * 
-	 * @return an integer value
-	 * @throws PelletCmdException
-	 *             If the option value does not exist or is a not a valid
-	 *             positive integer value (>= 1)
-	 */
-	public int getValueAsPositiveInteger() throws PelletCmdException {
-		return getValueAsInteger( 1, Integer.MAX_VALUE );
-	}
-
-	/**
-	 * Returns the option value as an integer and verifies that the value is a
 	 * non-negative integer (>= 0).
 	 * 
 	 * @return an integer value
@@ -120,18 +107,6 @@ public class PelletCmdOption {
 	 */
 	public int getValueAsNonNegativeInteger() throws PelletCmdException {
 		return getValueAsInteger( 0, Integer.MAX_VALUE );
-	}
-	
-	/**
-	 * Returns the option value as an integer
-	 * 
-	 * @return an integer value
-	 * @throws PelletCmdException
-	 *             If the option value does not exist or is a not a valid
-	 *             integer value
-	 */
-	public int getValueAsInteger() throws PelletCmdException {
-		return getValueAsInteger( Integer.MIN_VALUE, Integer.MAX_VALUE );
 	}
 
 	/**
