@@ -1,14 +1,5 @@
 package com.clarkparsia.pellet.server.handlers;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
-import java.util.Deque;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
-
 import com.clarkparsia.owlapiv3.OWL;
 import com.clarkparsia.pellet.server.PelletServer;
 import com.clarkparsia.pellet.server.exceptions.ServerException;
@@ -20,19 +11,19 @@ import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
 import com.google.common.base.Strings;
 import com.google.common.collect.Iterables;
-import com.google.common.io.ByteStreams;
 import io.undertow.server.HttpServerExchange;
-import io.undertow.util.HeaderValues;
-import io.undertow.util.Headers;
-import io.undertow.util.HttpString;
-import io.undertow.util.PathTemplateMatch;
-import io.undertow.util.StatusCodes;
+import io.undertow.util.*;
 import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLAxiom;
-import org.semanticweb.owlapi.model.OWLOntology;
-import org.semanticweb.owlapi.model.OWLOntologyCreationException;
-import org.semanticweb.owlapi.model.OWLOntologyManager;
+import org.semanticweb.owlapi.model.*;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
+import java.util.Deque;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
 /**
  * Abstract handler with tools for wrapping and setting up HttpHandlers implementing reasoner's functionality.
@@ -88,34 +79,6 @@ public abstract class AbstractRoutingHandler implements RoutingHandler {
 		return aOntoState.get();
 	}
 
-	private String getHeaderValue(final HttpServerExchange theExchange,
-	                              final HttpString theAttr,
-	                              final String theDefault) {
-		HeaderValues aVals = theExchange.getRequestHeaders().get(theAttr);
-
-		return !aVals.isEmpty() ? aVals.getFirst()
-		                        : theDefault;
-	}
-
-	/**
-	 * TODO: Extend to handle multiple Accepts (the encoding/decoding too)
-	 */
-	protected String getAccept(final HttpServerExchange theExchange) {
-		return getHeaderValue(theExchange,
-		                      Headers.ACCEPT,
-		                      null);
-	}
-
-	protected String getContentType(final HttpServerExchange theExchange) {
-		return getHeaderValue(theExchange,
-		                      Headers.CONTENT_TYPE,
-		                      null);
-	}
-
-	protected ServerException throwBadRequest(final String theMsg) throws ServerException {
-		throw new ServerException(StatusCodes.BAD_REQUEST, theMsg);
-	}
-
 	protected IRI getOntology(final HttpServerExchange theExchange) throws ServerException {
 		try {
 			return IRI.create(URLDecoder.decode(theExchange.getAttachment(PathTemplateMatch.ATTACHMENT_KEY)
@@ -141,50 +104,19 @@ public abstract class AbstractRoutingHandler implements RoutingHandler {
 		final Map<String, Deque<String>> queryParams = theExchange.getQueryParameters();
 
 		if (!queryParams.containsKey(paramName) || queryParams.get(paramName).isEmpty()) {
-			throwBadRequest("Missing required parameter: "+ paramName);
+			ServerException result;
+			throw new ServerException(StatusCodes.BAD_REQUEST, "Missing required parameter: "+ paramName);
 		}
 
 		final String paramVal = queryParams.get(paramName).getFirst();
 		if (Strings.isNullOrEmpty(paramVal)) {
-			throwBadRequest("Missing required parameter: " + paramName);
+			ServerException result;
+			throw new ServerException(StatusCodes.BAD_REQUEST, "Missing required parameter: " + paramName);
 		}
 
 		return paramVal;
 	}
 
-
-	protected <E extends Enum<E>> E getQueryParameter(final HttpServerExchange theExchange, String paramName, Class<E> enumType) throws ServerException {
-		final String paramVal =getQueryParameter(theExchange, paramName);
-
-		try {
-			return Enum.valueOf(enumType, paramVal);
-		}
-		catch (Exception e) {
-			throw throwBadRequest("Invalid parameter value: " + paramVal);
-		}
-	}
-
-	protected byte[] readInput(final InputStream theInStream,
-	                           final boolean theFailOnEmpty /* Signal to fail on empty input */) throws ServerException {
-		byte[] inBytes = {};
-		try {
-			try {
-				inBytes = ByteStreams.toByteArray(theInStream);
-			}
-			finally {
-				theInStream.close();
-			}
-		}
-		catch (IOException theE) {
-			throw new ServerException(500, "There was an IO error while reading input stream", theE);
-		}
-
-		if (theFailOnEmpty && inBytes.length == 0) {
-			throw new ServerException(StatusCodes.NOT_ACCEPTABLE, "Payload is empty");
-		}
-
-		return inBytes;
-	}
 
 	protected Set<OWLAxiom> readAxioms(final InputStream theInStream) throws ServerException {
 		OWLOntology ontology = null;
