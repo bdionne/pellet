@@ -96,6 +96,7 @@ public final class PelletServer {
 		router.add("GET", "/admin/restart", new HttpHandler() {
 			@Override
 			public void handleRequest(HttpServerExchange exchange) throws Exception {
+				LOGGER.info("Restarting server");
 				aShutdownHandler.shutdown();
 				aShutdownHandler.addShutdownListener(new GracefulShutdownHandler.ShutdownListener() {
 					@Override
@@ -108,7 +109,7 @@ public final class PelletServer {
 								throw new RuntimeException(e);
 							}
 						} else {
-							Logger.getLogger(PelletServer.class.getName()).warning("Failed to shutown when restarting");
+							LOGGER.warning("Failed to shutown when restarting");
 						}
 					}
 				});

@@ -43,16 +43,12 @@ public abstract class PelletClientTest extends ProtegeServerTest {
 		pelletServer.start();
 	}
 
-	public void stopPelletServer() {
+	@After
+	public void after() throws Exception {
 		if (pelletServer != null) {
 			pelletServer.stop();
 			pelletServer = null;
 		}
-	}
-
-	@After
-	public void after() throws Exception {
-		stopPelletServer();
 		super.after();
 	}
 }
