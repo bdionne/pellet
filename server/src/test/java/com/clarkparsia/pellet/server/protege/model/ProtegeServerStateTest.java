@@ -31,7 +31,6 @@ public class ProtegeServerStateTest extends ProtegeServerTest {
 	public static final String HTTP_WWW_EXAMPLE_ORG_TEST = "http://www.example.org/test";
 	public static final ArrayList<String> ONTOLOGIES1 = Lists.newArrayList(
 		HTTP_WWW_EXAMPLE_ORG_TEST, HTTP_WWW_OWL_ONTOLOGIES_COM_UNNAMED_OWL);
-	public static final ArrayList<String> ONTOLOGIES2 = Lists.newArrayList(HTTP_WWW_OWL_ONTOLOGIES_COM_UNNAMED_OWL);
 	ProtegeServerState mServerState;
 
 	@Before
@@ -88,27 +87,21 @@ public class ProtegeServerStateTest extends ProtegeServerTest {
 
 	@Test
 	public void addRemoveOntologies() throws Exception {
-		// create ontologies
-
-		OntologyState s = mServerState.addOntology(OWL2_ONT);
-		assertOntologies(Lists.newArrayList(HTTP_WWW_EXAMPLE_ORG_TEST));
-		assertNotNull(s);
-
-		s = mServerState.addOntology(AGENCIES_ONT);
+		for (String ontology : ONTOLOGIES) {
+			assertNotNull(mServerState.addOntology(ontology));
+		}
 		assertOntologies(ONTOLOGIES1);
-		assertNotNull(s);
 
-		boolean removed = mServerState.removeOntology(IRI.create(HTTP_WWW_EXAMPLE_ORG_TEST));
-		assertOntologies(ONTOLOGIES2);
-		assertTrue(removed);
-
-		removed = mServerState.removeOntology(IRI.create("http://www.example.com/does-not-exist"));
-		assertOntologies(ONTOLOGIES2);
-		assertFalse(removed);
-
-		removed = mServerState.removeOntology(IRI.create(HTTP_WWW_OWL_ONTOLOGIES_COM_UNNAMED_OWL));
+		for (String s : ONTOLOGIES1) {
+			assertTrue(mServerState.removeOntology(IRI.create(s)));
+		}
 		assertOntologies(Lists.<String>newArrayList());
-		assertTrue(removed);
+	}
+
+	@Test
+	public void removeNotExists() throws Exception {
+		recreateServerState(ONTOLOGIES);
+		assertFalse(mServerState.removeOntology(IRI.create("http://www.example.com/does-not-exist")));
 	}
 
 	@Test
