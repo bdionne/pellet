@@ -52,17 +52,6 @@ public class OntologyStateImpl implements OntologyState {
 
 	private final Path path;
 
-	public OntologyStateImpl(OWLOntology ontology) {
-		this.ontology = ontology;
-		this.path = null;
-
-		reasoner = IncrementalReasoner.config().createIncrementalReasoner(ontology);
-		reasoner.getReasoner().getKB().setTaxonomyBuilderProgressMonitor(new ConsoleProgressMonitor());
-		reasoner.classify();
-
-		clients = initClientCache();
-	}
-
 	public OntologyStateImpl(Path path) {
 		this.path = path;
 
