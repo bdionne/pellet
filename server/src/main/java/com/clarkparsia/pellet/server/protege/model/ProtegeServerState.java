@@ -53,10 +53,7 @@ public final class ProtegeServerState implements ServerState {
 
 	@Inject
 	public ProtegeServerState(final Configuration theConfig) throws Exception {
-		this(ConfigurationReader.of(theConfig));
-	}
-
-	ProtegeServerState(final ConfigurationReader theConfigReader) throws Exception {
+		ConfigurationReader theConfigReader = ConfigurationReader.of(theConfig);
 		this.home = Paths.get(theConfigReader.pelletSettings().home());
 		this.manager = OWLManager.createOWLOntologyManager();
 		this.ontologies = Maps.newConcurrentMap();

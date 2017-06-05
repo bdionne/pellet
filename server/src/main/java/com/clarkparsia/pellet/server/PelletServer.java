@@ -15,7 +15,6 @@ import com.google.common.base.Strings;
 import org.protege.editor.owl.server.security.SSLContextFactory;
 import org.protege.editor.owl.server.security.SSLContextInitializationException;
 
-import com.clarkparsia.pellet.server.ConfigurationReader.PelletSettings;
 import com.clarkparsia.pellet.server.exceptions.ServerException;
 import com.clarkparsia.pellet.server.handlers.RoutingHandler;
 import com.clarkparsia.pellet.server.jobs.ServerStateUpdate;
