@@ -1,11 +1,5 @@
 package com.clarkparsia.pellet.server.protege.model;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
-
 import com.clarkparsia.pellet.server.model.OntologyState;
 import com.clarkparsia.pellet.server.protege.ProtegeServerTest;
 import com.clarkparsia.pellet.server.protege.TestProtegeServerConfiguration;
@@ -16,10 +10,13 @@ import org.junit.Before;
 import org.junit.Test;
 import org.semanticweb.owlapi.model.IRI;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.Assert.*;
 
 /**
  * @author Edgar Rodriguez-Diaz
@@ -80,17 +77,13 @@ public class ProtegeServerStateTest extends ProtegeServerTest {
 
 	@Test
 	public void shouldHaveOntologies() throws Exception {
-		// create ontologies
 		recreateServerState(ONTOLOGIES);
 		assertOntologies(ONTOLOGIES1);
 	}
 
 	@Test
 	public void addRemoveOntologies() throws Exception {
-		for (String ontology : ONTOLOGIES) {
-			assertNotNull(mServerState.addOntology(ontology));
-		}
-		assertOntologies(ONTOLOGIES1);
+		recreateServerState(ONTOLOGIES);
 
 		for (String s : ONTOLOGIES1) {
 			assertTrue(mServerState.removeOntology(IRI.create(s)));
