@@ -41,10 +41,7 @@ public class ProtegeServerStateTest extends ProtegeServerTest {
 	@After
 	public void after() throws Exception {
 		super.after();
-
-		if (mServerState != null) {
-			mServerState.close();
-		}
+		mServerState.close();
 	}
 
 	private void recreateServerState(List<String> ontologies) throws Exception {
@@ -56,8 +53,6 @@ public class ProtegeServerStateTest extends ProtegeServerTest {
 
 	@Test
 	public void shouldBeEmpty() throws Exception {
-		assertNotNull(mServerState);
-
 		assertTrue(mServerState.ontologies().isEmpty());
 	}
 
@@ -88,20 +83,14 @@ public class ProtegeServerStateTest extends ProtegeServerTest {
 
 	@Test
 	public void shouldHaveOntologies() throws Exception {
-		assertNotNull(mServerState);
-
 		// create ontologies
 		loadOntologies(mServerState.managerClient);
-
 		recreateServerState(Lists.<String>newArrayList(OWL2_ONT, AGENCIES_ONT));
-
 		assertOntologies(Lists.newArrayList("http://www.example.org/test", "http://www.owl-ontologies.com/unnamed.owl"));
 	}
 
 	@Test
 	public void addRemoveOntologies() throws Exception {
-		assertNotNull(mServerState);
-
 		// create ontologies
 		loadOntologies(mServerState.managerClient);
 
@@ -128,12 +117,8 @@ public class ProtegeServerStateTest extends ProtegeServerTest {
 
 	@Test
 	public void shouldSaveOntologyStates() throws Exception {
-		assertNotNull(mServerState);
-
 		loadOntologies(mServerState.managerClient);
-
 		recreateServerState(Lists.<String>newArrayList(OWL2_ONT, AGENCIES_ONT));
-
 		mServerState.save();
 
 		assertFalse(mServerState.ontologies().isEmpty());
@@ -146,12 +131,8 @@ public class ProtegeServerStateTest extends ProtegeServerTest {
 
 	@Test
 	public void shouldSaveAndLoadOntologyStates() throws Exception {
-		assertNotNull(mServerState);
-
 		loadOntologies(mServerState.managerClient);
-
 		recreateServerState(Lists.<String>newArrayList(OWL2_ONT, AGENCIES_ONT));
-
 		mServerState.save();
 
 		assertFalse(mServerState.ontologies().isEmpty());
