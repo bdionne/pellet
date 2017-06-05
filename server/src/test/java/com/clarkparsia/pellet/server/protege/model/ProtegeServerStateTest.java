@@ -36,6 +36,8 @@ public class ProtegeServerStateTest extends ProtegeServerTest {
 		recreateServerState(Lists.<String>newArrayList());
 		createOwl2Ontology(mServerState.managerClient);
 		createAgenciesOntology(mServerState.managerClient);
+		assertTrue(mServerState.ontologies().isEmpty());
+		recreateServerState(ONTOLOGIES);
 	}
 
 	@After
@@ -49,11 +51,6 @@ public class ProtegeServerStateTest extends ProtegeServerTest {
 			mServerState.close();
 		}
 		mServerState = new ProtegeServerState(new TestProtegeServerConfiguration(ontologies));
-	}
-
-	@Test
-	public void shouldBeEmpty() throws Exception {
-		assertTrue(mServerState.ontologies().isEmpty());
 	}
 
 	private Path getOntologyHEAD(final OntologyState theState) throws IOException {
@@ -77,14 +74,11 @@ public class ProtegeServerStateTest extends ProtegeServerTest {
 
 	@Test
 	public void shouldHaveOntologies() throws Exception {
-		recreateServerState(ONTOLOGIES);
 		assertOntologies(ONTOLOGIES1);
 	}
 
 	@Test
 	public void addRemoveOntologies() throws Exception {
-		recreateServerState(ONTOLOGIES);
-
 		for (String s : ONTOLOGIES1) {
 			assertTrue(mServerState.removeOntology(IRI.create(s)));
 		}
@@ -93,13 +87,11 @@ public class ProtegeServerStateTest extends ProtegeServerTest {
 
 	@Test
 	public void removeNotExists() throws Exception {
-		recreateServerState(ONTOLOGIES);
 		assertFalse(mServerState.removeOntology(IRI.create("http://www.example.com/does-not-exist")));
 	}
 
 	@Test
 	public void shouldSaveOntologyStates() throws Exception {
-		recreateServerState(ONTOLOGIES);
 		mServerState.save();
 
 		assertFalse(mServerState.ontologies().isEmpty());
@@ -108,7 +100,6 @@ public class ProtegeServerStateTest extends ProtegeServerTest {
 
 	@Test
 	public void shouldSaveAndLoadOntologyStates() throws Exception {
-		recreateServerState(ONTOLOGIES);
 		assertFalse(mServerState.ontologies().isEmpty());
 
 		assertOntologyFilesExist(mServerState);
