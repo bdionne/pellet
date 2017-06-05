@@ -12,7 +12,6 @@ import org.semanticweb.owlapi.model.IRI;
 
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,11 +32,12 @@ public class ProtegeServerStateTest extends ProtegeServerTest {
 	@Before
 	public void before() throws Exception {
 		super.before();
-		recreateServerState(Lists.<String>newArrayList());
+		mServerState = new ProtegeServerState(new TestProtegeServerConfiguration(Lists.<String>newArrayList()));
+		assertTrue(mServerState.ontologies().isEmpty());
 		createOwl2Ontology(mServerState.managerClient);
 		createAgenciesOntology(mServerState.managerClient);
-		assertTrue(mServerState.ontologies().isEmpty());
-		recreateServerState(ONTOLOGIES);
+		mServerState.close();
+		mServerState = new ProtegeServerState(new TestProtegeServerConfiguration(ONTOLOGIES));
 	}
 
 	@After
@@ -46,24 +46,8 @@ public class ProtegeServerStateTest extends ProtegeServerTest {
 		mServerState.close();
 	}
 
-	private void recreateServerState(List<String> ontologies) throws Exception {
-		if (mServerState != null) {
-			mServerState.close();
-		}
-		mServerState = new ProtegeServerState(new TestProtegeServerConfiguration(ontologies));
-	}
-
-	private Path getOntologyHEAD(final OntologyState theState) throws IOException {
-		return ((ProtegeOntologyState) theState).getPath().resolveSibling("HEAD");
-	}
-
-	private Path getOntologyReasoner(final OntologyState theState) throws IOException {
-		return ((ProtegeOntologyState) theState).getPath();
-	}
-
 	private void assertOntologies(List<String> ontologies) {
 		assertEquals(ontologies.size(), mServerState.ontologies().size());
-
 		for (String ontology : ontologies) {
 			IRI ontologyIRI = IRI.create(ontology);
 			Optional<OntologyState> state = mServerState.getOntology(ontologyIRI);
@@ -93,7 +77,6 @@ public class ProtegeServerStateTest extends ProtegeServerTest {
 	@Test
 	public void shouldSaveOntologyStates() throws Exception {
 		mServerState.save();
-
 		assertFalse(mServerState.ontologies().isEmpty());
 		assertOntologyFilesExist(mServerState);
 	}
@@ -101,15 +84,14 @@ public class ProtegeServerStateTest extends ProtegeServerTest {
 	@Test
 	public void shouldSaveAndLoadOntologyStates() throws Exception {
 		assertFalse(mServerState.ontologies().isEmpty());
-
 		assertOntologyFilesExist(mServerState);
 		assertEquals(2, mServerState.ontologies().size());
 	}
 
 	private void assertOntologyFilesExist(ProtegeServerState state) throws IOException {
 		for (OntologyState aState : state.ontologies()) {
-			assertTrue(Files.exists(getOntologyHEAD(aState)));
-			assertTrue(Files.exists(getOntologyReasoner(aState)));
+			assertTrue(Files.exists(((ProtegeOntologyState) aState).getPath().resolveSibling("HEAD")));
+			assertTrue(Files.exists(((ProtegeOntologyState) aState).getPath()));
 		}
 	}
 }
