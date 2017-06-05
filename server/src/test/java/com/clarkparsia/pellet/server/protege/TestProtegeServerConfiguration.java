@@ -1,5 +1,6 @@
 package com.clarkparsia.pellet.server.protege;
 
+import java.util.List;
 import java.util.Properties;
 
 import com.clarkparsia.pellet.server.Configuration;
@@ -12,11 +13,7 @@ public class TestProtegeServerConfiguration implements Configuration {
 
 	private final Properties mProperties;
 
-	public TestProtegeServerConfiguration() {
-		this(new String[0]);
-	}
-
-	public TestProtegeServerConfiguration(String... ontologies) {
+	public TestProtegeServerConfiguration(List<String> ontologies) {
 		mProperties = new Properties();
 		mProperties.setProperty(Configuration.PROTEGE_HOST, TestUtilities.PROTEGE_HOST);
 		mProperties.setProperty(Configuration.PROTEGE_PORT, TestUtilities.PROTEGE_PORT);

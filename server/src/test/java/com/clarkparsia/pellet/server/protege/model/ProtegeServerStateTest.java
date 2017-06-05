@@ -3,11 +3,13 @@ package com.clarkparsia.pellet.server.protege.model;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 
 import com.clarkparsia.pellet.server.model.OntologyState;
 import com.clarkparsia.pellet.server.protege.ProtegeServerTest;
 import com.clarkparsia.pellet.server.protege.TestProtegeServerConfiguration;
 import com.google.common.base.Optional;
+import com.google.common.collect.Lists;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -33,7 +35,7 @@ public class ProtegeServerStateTest extends ProtegeServerTest {
 	@Before
 	public void before() throws Exception {
 		super.before();
-		recreateServerState();
+		recreateServerState(Lists.<String>newArrayList());
 	}
 
 	@After
@@ -45,7 +47,7 @@ public class ProtegeServerStateTest extends ProtegeServerTest {
 		}
 	}
 
-	private void recreateServerState(String... ontologies) throws Exception {
+	private void recreateServerState(List<String> ontologies) throws Exception {
 		if (mServerState != null) {
 			mServerState.close();
 		}
@@ -73,8 +75,8 @@ public class ProtegeServerStateTest extends ProtegeServerTest {
 		return ((ProtegeOntologyState) theState).getPath();
 	}
 
-	private void assertOntologies(String... ontologies) {
-		assertEquals(ontologies.length, mServerState.ontologies().size());
+	private void assertOntologies(List<String> ontologies) {
+		assertEquals(ontologies.size(), mServerState.ontologies().size());
 
 		for (String ontology : ontologies) {
 			IRI ontologyIRI = IRI.create(ontology);
@@ -91,9 +93,9 @@ public class ProtegeServerStateTest extends ProtegeServerTest {
 		// create ontologies
 		loadOntologies(mServerState.managerClient);
 
-		recreateServerState(OWL2_ONT, AGENCIES_ONT);
+		recreateServerState(Lists.<String>newArrayList(OWL2_ONT, AGENCIES_ONT));
 
-		assertOntologies("http://www.example.org/test", "http://www.owl-ontologies.com/unnamed.owl");
+		assertOntologies(Lists.newArrayList("http://www.example.org/test", "http://www.owl-ontologies.com/unnamed.owl"));
 	}
 
 	@Test
@@ -104,23 +106,23 @@ public class ProtegeServerStateTest extends ProtegeServerTest {
 		loadOntologies(mServerState.managerClient);
 
 		OntologyState s = mServerState.addOntology(OWL2_ONT);
-		assertOntologies("http://www.example.org/test");
+		assertOntologies(Lists.newArrayList("http://www.example.org/test"));
 		assertNotNull(s);
 
 		s = mServerState.addOntology(AGENCIES_ONT);
-		assertOntologies("http://www.example.org/test", "http://www.owl-ontologies.com/unnamed.owl");
+		assertOntologies(Lists.newArrayList("http://www.example.org/test", "http://www.owl-ontologies.com/unnamed.owl"));
 		assertNotNull(s);
 
 		boolean removed = mServerState.removeOntology(IRI.create("http://www.example.org/test"));
-		assertOntologies("http://www.owl-ontologies.com/unnamed.owl");
+		assertOntologies(Lists.newArrayList("http://www.owl-ontologies.com/unnamed.owl"));
 		assertTrue(removed);
 
 		removed = mServerState.removeOntology(IRI.create("http://www.example.com/does-not-exist"));
-		assertOntologies("http://www.owl-ontologies.com/unnamed.owl");
+		assertOntologies(Lists.newArrayList("http://www.owl-ontologies.com/unnamed.owl"));
 		assertFalse(removed);
 
 		removed = mServerState.removeOntology(IRI.create("http://www.owl-ontologies.com/unnamed.owl"));
-		assertOntologies();
+		assertOntologies(Lists.<String>newArrayList());
 		assertTrue(removed);
 	}
 
@@ -130,7 +132,7 @@ public class ProtegeServerStateTest extends ProtegeServerTest {
 
 		loadOntologies(mServerState.managerClient);
 
-		recreateServerState(OWL2_ONT, AGENCIES_ONT);
+		recreateServerState(Lists.<String>newArrayList(OWL2_ONT, AGENCIES_ONT));
 
 		mServerState.save();
 
@@ -148,7 +150,7 @@ public class ProtegeServerStateTest extends ProtegeServerTest {
 
 		loadOntologies(mServerState.managerClient);
 
-		recreateServerState(OWL2_ONT, AGENCIES_ONT);
+		recreateServerState(Lists.<String>newArrayList(OWL2_ONT, AGENCIES_ONT));
 
 		mServerState.save();
 
@@ -159,7 +161,7 @@ public class ProtegeServerStateTest extends ProtegeServerTest {
 			assertTrue(Files.exists(getOntologyReasoner(aState)));
 		}
 
-		recreateServerState(OWL2_ONT, AGENCIES_ONT);
+		recreateServerState(Lists.<String>newArrayList(OWL2_ONT, AGENCIES_ONT));
 
 		assertFalse(mServerState.ontologies().isEmpty());
 
