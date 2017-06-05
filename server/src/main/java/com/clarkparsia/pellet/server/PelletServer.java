@@ -103,6 +103,7 @@ public final class PelletServer {
 							stop();
 							try {
 								start();
+								getState().start();
 							} catch (ServerException e) {
 								throw new RuntimeException(e);
 							}
@@ -115,9 +116,8 @@ public final class PelletServer {
 			}
 		});
 
-		final ConfigurationReader aConfig = ConfigurationReader.of(serverInjector.getInstance(Configuration.class));
-
-		final PelletSettings aPelletSettings = aConfig.pelletSettings();
+		final PelletSettings aPelletSettings = ConfigurationReader.of(
+			serverInjector.getInstance(Configuration.class)).pelletSettings();
 		
 		URI hostUri;
 		try {
