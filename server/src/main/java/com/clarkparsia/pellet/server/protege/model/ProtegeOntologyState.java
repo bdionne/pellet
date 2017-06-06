@@ -123,7 +123,28 @@ public class ProtegeOntologyState implements OntologyState {
 		Files.write(String.valueOf(getVersion()), aHeadFile, Charsets.UTF_8);
 	}
 
-	protected boolean updateOntology(OWLOntology ontology) {
+	protected int getVersion() {
+		return revision.getRevisionNumber();
+	}
+
+	@Override
+	public ClientState getClient(UUID clientID) {
+		try {
+			return clients.get(clientID);
+		} catch (ExecutionException e) {
+			LOGGER.log(Level.SEVERE, "Cannot create state for client " + clientID, e);
+			throw new RuntimeException(e);
+		}
+	}
+
+	@Override
+	public IRI getIRI() {
+		return ontology.getOntologyID().getOntologyIRI().orNull();
+	}
+
+	@Override
+	public boolean update() {
+		boolean result;
 		try {
 			boolean loadSnapshot = !snapshotLoaded;
 			if (loadSnapshot) {
@@ -146,35 +167,12 @@ public class ProtegeOntologyState implements OntologyState {
 				revision = headRevision;
 			}
 
-			return loadSnapshot || update;
+			result = loadSnapshot || update;
 		} catch (Exception e) {
 			LOGGER.warning("Cannot retrieve changes from the server");
-			return false;
+			result = false;
 		}
-	}
-
-	protected int getVersion() {
-		return revision.getRevisionNumber();
-	}
-
-	@Override
-	public ClientState getClient(UUID clientID) {
-		try {
-			return clients.get(clientID);
-		} catch (ExecutionException e) {
-			LOGGER.log(Level.SEVERE, "Cannot create state for client " + clientID, e);
-			throw new RuntimeException(e);
-		}
-	}
-
-	@Override
-	public IRI getIRI() {
-		return ontology.getOntologyID().getOntologyIRI().orNull();
-	}
-
-	@Override
-	public boolean update() {
-		boolean updated = updateOntology(ontology);
+		boolean updated = result;
 
 		if (updated) {
 			LOGGER.info("Classifying updated ontology " + ontology);
