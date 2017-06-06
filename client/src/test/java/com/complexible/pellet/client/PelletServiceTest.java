@@ -2,6 +2,7 @@ package com.complexible.pellet.client;
 
 import com.clarkparsia.owlapiv3.OWL;
 import edu.stanford.protege.metaproject.ConfigurationManager;
+import edu.stanford.protege.metaproject.api.ProjectId;
 import org.junit.Before;
 import org.junit.Test;
 import org.protege.editor.owl.client.util.ClientUtils;
@@ -39,6 +40,9 @@ public class PelletServiceTest extends PelletClientTest {
 		owl2OntId = createOwl2Ontology(managerClient);
 
 		startPelletServer(AGENCIES_ONT);
+
+		ProjectId projectId = ConfigurationManager.getFactory().getProjectId(AGENCIES_ONT);
+		mClient.setProjectId(projectId);
 	}
 
 	@Test

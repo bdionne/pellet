@@ -7,6 +7,7 @@ import com.google.common.io.Resources;
 import edu.stanford.protege.metaproject.ConfigurationManager;
 import edu.stanford.protege.metaproject.api.PolicyFactory;
 import edu.stanford.protege.metaproject.api.Project;
+import edu.stanford.protege.metaproject.api.ProjectId;
 import edu.stanford.protege.metaproject.api.ProjectOptions;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.BasicConfigurator;
@@ -101,7 +102,9 @@ public abstract class ProtegeServerTest extends TestUtilities {
 
 	protected static void createOntology(final String resourceName, final File ont, final LocalHttpClient client) throws Exception {
 		PolicyFactory f = ConfigurationManager.getFactory();
-		Project p = f.getProject(f.getProjectId(resourceName),
+		ProjectId projectId = f.getProjectId(resourceName);
+		client.setProjectId(projectId);
+		Project p = f.getProject(projectId,
 		                         f.getName(resourceName),
 		                         f.getDescription(resourceName),
 		                         f.getUserId("admin"),

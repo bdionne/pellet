@@ -60,6 +60,7 @@ public class OWLPrimerTests extends AbstractOWLAPITests {
 	public void resetOntologyManager() {
 		super.resetOntologyManager();
 
+
 		ontology = OntologyUtils.loadOntology("file:" + PelletTestSuite.base + "modularity/OWL2Primer.owl");
 		reasoner = PelletReasonerFactory.getInstance().createReasoner(ontology);
 	}

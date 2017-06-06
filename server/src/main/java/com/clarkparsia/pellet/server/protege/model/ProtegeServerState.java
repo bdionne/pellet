@@ -115,6 +115,7 @@ public final class ProtegeServerState implements ServerState {
 
 		try {
 			ProjectId projectID = new ProjectIdImpl(ontologyPath);
+			client.setProjectId(projectID);
 			result = new ProtegeOntologyState(client, projectID, home.resolve(projectID.get()).resolve("reasoner_state.bin"));
 			LOGGER.info("Loaded revision " + result.getVersion());
 			result.update();
