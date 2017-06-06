@@ -168,9 +168,8 @@ public class ProtegeOntologyState implements OntologyState {
 			}
 
 			result = loadSnapshot || update;
-		} catch (Exception e) {
-			LOGGER.warning("Cannot retrieve changes from the server");
-			result = false;
+		} catch (ClientRequestException | AuthorizationException e) {
+			throw new RuntimeException(e);
 		}
 		boolean updated = result;
 
