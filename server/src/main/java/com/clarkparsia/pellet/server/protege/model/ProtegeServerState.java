@@ -16,6 +16,8 @@ import edu.stanford.protege.metaproject.api.ProjectId;
 import edu.stanford.protege.metaproject.api.UserId;
 import edu.stanford.protege.metaproject.impl.ProjectIdImpl;
 import org.protege.editor.owl.client.LocalHttpClient;
+import org.protege.editor.owl.client.api.exception.AuthorizationException;
+import org.protege.editor.owl.client.api.exception.ClientRequestException;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
@@ -39,24 +41,28 @@ import java.util.logging.Logger;
 public final class ProtegeServerState implements ServerState {
 
 	private static final Logger LOGGER = Logger.getLogger(ProtegeServerState.class.getName());
-	protected final OWLOntologyManager manager;
+	protected OWLOntologyManager manager;
 
-	private final LocalHttpClient client;
-	final LocalHttpClient managerClient;
+	private LocalHttpClient client;
+	LocalHttpClient managerClient;
 
 	/**
 	 * Lock to control reloads of the state
 	 */
-	private final ReentrantLock updateLock = new ReentrantLock();
-	private final Map<IRI, OntologyState> ontologies;
-	private final Path home;
+	private ReentrantLock updateLock;
+	private Map<IRI, OntologyState> ontologies;
+	private Path home;
+	private final Configuration config;
 
 	@Inject
-	public ProtegeServerState(final Configuration theConfig) throws Exception {
-		this(ConfigurationReader.of(theConfig));
+	public ProtegeServerState(final Configuration config) throws Exception {
+		this.config = config;
+		start();
 	}
 
-	ProtegeServerState(final ConfigurationReader theConfigReader) throws Exception {
+	public void start() {
+		ConfigurationReader theConfigReader = ConfigurationReader.of(config);
+		this.updateLock = new ReentrantLock();
 		this.home = Paths.get(theConfigReader.pelletSettings().home());
 		this.manager = OWLManager.createOWLOntologyManager();
 		this.ontologies = Maps.newConcurrentMap();
@@ -66,11 +72,21 @@ public final class ProtegeServerState implements ServerState {
 		UserId managerId = f.getUserId("bob");
 		PlainPassword managerPassword = f.getPlainPassword("bob");
 		// TODO this hard coding is incorrect. Should be fixed.
-		this.managerClient = new LocalHttpClient(managerId.get(), managerPassword.getPassword(), "http://localhost:8081");
+		try {
+			this.managerClient = new LocalHttpClient(managerId.get(), managerPassword.getPassword(), "http://localhost:8081");
+		} catch (AuthorizationException e) {
+			throw new RuntimeException(e);
+		} catch (ClientRequestException e) {
+			throw new RuntimeException(e);
+		}
 
 		Set<String> onts = theConfigReader.protegeSettings().ontologies();
 		for (String ont : onts) {
-			addOntology(ont);
+			try {
+				addOntology(ont);
+			} catch (OWLOntologyCreationException e) {
+				throw new RuntimeException(e);
+			}
 		}
 	}
 

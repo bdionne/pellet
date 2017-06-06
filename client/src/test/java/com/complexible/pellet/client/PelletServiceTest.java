@@ -1,10 +1,10 @@
 package com.complexible.pellet.client;
 
 import com.clarkparsia.owlapiv3.OWL;
+import com.google.common.collect.Lists;
 import edu.stanford.protege.metaproject.ConfigurationManager;
 import org.junit.Before;
 import org.junit.Test;
-import org.protege.editor.owl.client.api.Client;
 import org.protege.editor.owl.client.util.ClientUtils;
 import org.protege.editor.owl.server.api.CommitBundle;
 import org.protege.editor.owl.server.policy.CommitBundleImpl;
@@ -39,7 +39,7 @@ public class PelletServiceTest extends PelletClientTest {
 		agencyOntId = createAgenciesOntology(managerClient);
 		owl2OntId = createOwl2Ontology(managerClient);
 
-		startPelletServer(AGENCIES_ONT);
+		startPelletServer(Lists.newArrayList(AGENCIES_ONT));
 	}
 
 	@Test

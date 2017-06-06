@@ -14,6 +14,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 import com.google.inject.Inject;
 import io.undertow.server.HttpServerExchange;
+import io.undertow.util.StatusCodes;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAnnotation;
 import org.semanticweb.owlapi.model.OWLAxiom;
@@ -74,14 +75,11 @@ public class ReasonerExplainHandler extends AbstractRoutingHandler {
 	}
 
 	private int getLimit(final HttpServerExchange theExchange) throws ServerException {
-		int limit = 0;
 		try {
-			limit = Integer.parseInt(getQueryParameter(theExchange, "limit"));
+			return Integer.parseInt(getQueryParameter(theExchange, "limit"));
 		}
 		catch (Exception e) {
-			throwBadRequest("Query 'limit' parameter is not valid, it must be an Integer.");
+			throw new ServerException(StatusCodes.BAD_REQUEST, "Query 'limit' parameter is not valid, it must be an Integer.");
 		}
-
-		return limit;
 	}
 }

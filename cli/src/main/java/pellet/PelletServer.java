@@ -7,6 +7,7 @@ import com.clarkparsia.owlapi.explanation.PelletExplanation;
 import com.clarkparsia.pellet.server.Configuration;
 import com.clarkparsia.pellet.server.ConfigurationReader;
 import com.clarkparsia.pellet.server.PelletServerModule;
+import com.clarkparsia.pellet.server.PelletSettings;
 import com.clarkparsia.pellet.server.protege.ProtegeServerConfiguration;
 import com.complexible.pellet.client.ClientModule;
 import com.complexible.pellet.client.ClientTools;
@@ -111,7 +112,7 @@ public class PelletServer extends PelletCmdApp {
 			endpoint = args[1];
 		}
 		else {
-			ConfigurationReader.PelletSettings settings = ConfigurationReader.of(getServerConfig()).pelletSettings();
+			PelletSettings settings = ConfigurationReader.of(getServerConfig()).pelletSettings();
 			endpoint = settings.endpoint();
 		}
 

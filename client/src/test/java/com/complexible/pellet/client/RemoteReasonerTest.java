@@ -15,6 +15,7 @@ import com.complexible.pellet.client.reasoner.RemoteSchemaReasoner;
 import com.complexible.pellet.client.reasoner.SchemaOWLReasoner;
 import com.complexible.pellet.client.reasoner.SchemaOWLReasonerFactory;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Lists;
 import org.junit.Before;
 import org.junit.Test;
 import org.semanticweb.owlapi.apibinding.OWLManager;
@@ -92,7 +93,7 @@ public class RemoteReasonerTest extends PelletClientTest {
 		ont.saveOntology(new FileOutputStream(f));
 		createOntology("test", f, managerClient);
 
-		startPelletServer("test");
+		startPelletServer(Lists.newArrayList("test"));
 
 		reasoner = new SchemaOWLReasonerFactory(FACTORY).createReasoner(ont);
 	}

@@ -8,10 +8,7 @@
 
 package com.clarkparsia.owlapiv3;
 
-import org.semanticweb.owlapi.model.OWLOntology;
-import org.semanticweb.owlapi.model.OWLOntologyChangeListener;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
-import org.semanticweb.owlapi.reasoner.OWLReasoner;
 
 /**
  * @author Evren Sirin
