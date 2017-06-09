@@ -97,8 +97,8 @@ public class ProtegeOntologyState implements OntologyState {
 
 		this.client = client;
 		this.projectId = projectId;
-		this.remoteOnt = client.openProject(projectId);
-		;
+		this.remoteOnt = client.openProject(projectId).serverDocument;
+
 		this.revision = readRevision(path);
 		this.snapshotLoaded = revision.getRevisionNumber() > 0;
 		writeRevision();
