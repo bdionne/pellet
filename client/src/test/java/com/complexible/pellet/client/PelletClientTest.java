@@ -14,6 +14,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.protege.editor.owl.client.LocalHttpClient;
 
+import java.util.List;
+
 import static com.clarkparsia.pellet.server.protege.TestUtilities.*;
 
 /**
@@ -37,9 +39,9 @@ public abstract class PelletClientTest extends ProtegeServerTest {
 		managerClient = new LocalHttpClient(managerId.get(), managerPassword.getPassword(), "http://localhost:8081");
 	}
 
-	public void startPelletServer(String... ontologies) throws Exception {
+	public void startPelletServer(List<String> ontologies) throws Exception {
 		pelletServer = new PelletServer(Guice.createInjector(Modules.override(new PelletServerModule())
-		                                                            .with(new TestModule(ontologies))));
+			.with(new TestModule(ontologies))));
 		pelletServer.start();
 	}
 

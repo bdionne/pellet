@@ -1,6 +1,7 @@
 package com.clarkparsia.pellet.server.protege;
 
 import com.clarkparsia.pellet.server.ConfigurationReader;
+import com.clarkparsia.pellet.server.ProtegeSettings;
 import com.google.common.base.Strings;
 import com.google.common.base.Throwables;
 import org.protege.editor.owl.client.LocalHttpClient;
@@ -15,7 +16,7 @@ public final class ProtegeServiceUtils {
 	}
 
 	public static LocalHttpClient connect(final ConfigurationReader config) {
-		final ConfigurationReader.ProtegeSettings protege = config.protegeSettings();
+		final ProtegeSettings protege = config.protegeSettings();
 		final String aHost = protege.host();
 
 		if (Strings.isNullOrEmpty(aHost) || "local".equals(aHost)) {

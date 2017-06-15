@@ -44,4 +44,6 @@ public interface ServerState extends AutoCloseable {
 	 * Persists the state.
 	 */
 	void save();
+
+	void start();
 }

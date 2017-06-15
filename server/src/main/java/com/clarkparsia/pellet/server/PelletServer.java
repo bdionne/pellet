@@ -15,7 +15,6 @@ import com.google.common.base.Strings;
 import org.protege.editor.owl.server.security.SSLContextFactory;
 import org.protege.editor.owl.server.security.SSLContextInitializationException;
 
-import com.clarkparsia.pellet.server.ConfigurationReader.PelletSettings;
 import com.clarkparsia.pellet.server.exceptions.ServerException;
 import com.clarkparsia.pellet.server.handlers.RoutingHandler;
 import com.clarkparsia.pellet.server.jobs.ServerStateUpdate;
@@ -104,6 +103,7 @@ public final class PelletServer {
 							stop();
 							try {
 								start();
+								getState().start();
 							} catch (ServerException e) {
 								throw new RuntimeException(e);
 							}
@@ -116,9 +116,8 @@ public final class PelletServer {
 			}
 		});
 
-		final ConfigurationReader aConfig = ConfigurationReader.of(serverInjector.getInstance(Configuration.class));
-
-		final PelletSettings aPelletSettings = aConfig.pelletSettings();
+		final PelletSettings aPelletSettings = ConfigurationReader.of(
+			serverInjector.getInstance(Configuration.class)).pelletSettings();
 		
 		URI hostUri;
 		try {
