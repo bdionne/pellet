@@ -134,7 +134,7 @@ public class ProtegeOntologyState implements OntologyState {
 				snapshotLoaded = true;
 			}
 
-			ChangeHistory history = client.getLatestChanges(remoteOnt, revision);
+			ChangeHistory history = client.getLatestChanges(remoteOnt, revision, projectId);
 			boolean update = !history.isEmpty();
 			if (update) {
 				DocumentRevision headRevision = history.getHeadRevision();
