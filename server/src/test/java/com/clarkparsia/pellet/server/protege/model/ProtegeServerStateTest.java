@@ -105,7 +105,7 @@ public class ProtegeServerStateTest extends ProtegeServerTest {
 
 	private void assertOntologyFilesExist(ProtegeServerState state) throws IOException {
 		for (OntologyState aState : state.ontologies()) {
-			assertTrue(Files.exists(((ProtegeOntologyState) aState).path.resolveSibling("HEAD")));
+			assertTrue(((ProtegeOntologyState) aState).revisionFile().exists());
 			assertTrue(Files.exists(((ProtegeOntologyState) aState).path));
 		}
 	}
