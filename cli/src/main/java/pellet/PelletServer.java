@@ -100,12 +100,6 @@ public class PelletServer extends PelletCmdApp {
 		aPelletServer.start();
 	}
 
-	private PelletService service(String endpoint) {
-		Injector aInjector = Guice.createInjector(new ClientModule(endpoint));
-
-		return aInjector.getInstance(PelletService.class);
-	}
-
 	private void stopServer(final String[] args) throws IOException {
 		String endpoint;
 		if (args.length > 1) {
@@ -116,7 +110,9 @@ public class PelletServer extends PelletCmdApp {
 			endpoint = settings.endpoint();
 		}
 
-		Call<Void> shutdownCall = service(endpoint).shutdown();
+		Injector aInjector = Guice.createInjector(new ClientModule(endpoint));
+
+		Call<Void> shutdownCall = aInjector.getInstance(PelletService.class).shutdown();
 		ClientTools.executeCall(shutdownCall);
 
 		System.out.println("Pellet server is shutting down");
