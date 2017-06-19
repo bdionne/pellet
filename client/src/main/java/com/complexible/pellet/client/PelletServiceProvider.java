@@ -10,15 +10,13 @@ import java.util.concurrent.TimeUnit;
 import com.clarkparsia.owlapiv3.OWL;
 import com.clarkparsia.pellet.service.messages.JsonMessage;
 import com.clarkparsia.pellet.service.reasoner.SchemaQuery;
+import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableSet;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.name.Named;
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.RequestBody;
-import okhttp3.ResponseBody;
+import okhttp3.*;
 import org.semanticweb.owlapi.formats.TurtleDocumentFormat;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLOntology;
@@ -42,36 +40,43 @@ public class PelletServiceProvider implements Provider<PelletService> {
 	private final long mReadTimeoutMin;
 
 	private final long mWriteTimeoutMin;
+	private final Optional<String> mangementPassword;
 
 	@Inject
 	public PelletServiceProvider(@Named("endpoint") final String theEndpoint,
-	                             @Named("conn_timeout") final long theConnTimeout,
-	                             @Named("read_timeout") final long theReadTimeout,
-	                             @Named("write_timeout") final long theWriteTimeout) {
+															 @Named("conn_timeout") final long theConnTimeout,
+															 @Named("read_timeout") final long theReadTimeout,
+															 @Named("write_timeout") final long theWriteTimeout,
+															 @Named("management_password") final Optional<String> managementPassword) {
 		mEndpoint = !Strings.isNullOrEmpty(theEndpoint) ? theEndpoint
 		                                                : PelletService.DEFAULT_LOCAL_ENDPOINT;
 		mConnTimeoutMin = theConnTimeout;
 		mReadTimeoutMin = theReadTimeout;
 		mWriteTimeoutMin = theWriteTimeout;
+		this.mangementPassword = managementPassword;
 	}
 
 	@Override
 	public PelletService get() {
-		final OkHttpClient httpClient = new OkHttpClient.Builder()
-												.connectTimeout(mConnTimeoutMin, TimeUnit.MINUTES)
-												.readTimeout(mReadTimeoutMin, TimeUnit.MINUTES)
-												.writeTimeout(mWriteTimeoutMin, TimeUnit.MINUTES)
-				                                .build();
+		final OkHttpClient.Builder httpClientBuilder = new OkHttpClient.Builder()
+			.connectTimeout(mConnTimeoutMin, TimeUnit.MINUTES)
+			.readTimeout(mReadTimeoutMin, TimeUnit.MINUTES)
+			.writeTimeout(mWriteTimeoutMin, TimeUnit.MINUTES);
+
+		if (this.mangementPassword.isPresent()) {
+			httpClientBuilder.interceptors().add(new PelletAuthClient.AuthBasicInterceptor(mangementPassword.get()));
+		}
+
+		final OkHttpClient httpClient = httpClientBuilder.build();
 
 		final Retrofit aRetrofit = new Retrofit.Builder().baseUrl(mEndpoint)
-		                                                 .client(httpClient)
-		                                                 .addConverterFactory(PRIMITIVE_FACTORY)
-		                                                 .addConverterFactory(ONTOLOGY_FACTORY)
-		                                                 .addConverterFactory(AXIOM_FACTORY)
-		                                                 .addConverterFactory(NODE_SET_FACTORY)
-		                                                 .addConverterFactory(QUERY_FACTORY)
-		                                                 .build();
-
+			.client(httpClient)
+			.addConverterFactory(PRIMITIVE_FACTORY)
+			.addConverterFactory(ONTOLOGY_FACTORY)
+			.addConverterFactory(AXIOM_FACTORY)
+			.addConverterFactory(NODE_SET_FACTORY)
+			.addConverterFactory(QUERY_FACTORY)
+			.build();
 		return aRetrofit.create(PelletService.class);
 	}
 
