@@ -30,9 +30,7 @@ public class PelletReasonerFactory extends AbstractProtegeOWLReasonerInfo {
 	public PelletReasonerFactory() {
 	}
 
-	/**
-     * {@inheritDoc}
-     */
+	@Override
     public OWLReasonerFactory getReasonerFactory() {
 	    if (factory == null) {
 		    // enable/disable tracing based on the preference
@@ -61,9 +59,7 @@ public class PelletReasonerFactory extends AbstractProtegeOWLReasonerInfo {
 	    }
     }
 
-	/**
-     * {@inheritDoc}
-     */
+	@Override
     public BufferingMode getRecommendedBuffering() {
 
 	    PelletReasonerMode reasonerMode = prefs.getReasonerMode();

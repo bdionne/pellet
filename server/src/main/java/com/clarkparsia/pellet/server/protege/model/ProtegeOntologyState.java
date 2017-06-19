@@ -99,17 +99,17 @@ public class ProtegeOntologyState implements OntologyState {
 		this.projectId = projectId;
 		this.remoteOnt = client.openProject(projectId).serverDocument;
 
-		this.revision = readRevision(path);
+		this.revision = readRevision();
 		this.snapshotLoaded = revision.getRevisionNumber() > 0;
 		writeRevision();
 	}
 
-	private static File revisionFile(final Path path) throws IOException {
+	public File revisionFile() throws IOException {
 		return path.resolveSibling("HEAD").toFile();
 	}
 
-	private static DocumentRevision readRevision(final Path path) throws IOException {
-		final File aHeadFile = revisionFile(path);
+	private DocumentRevision readRevision() throws IOException {
+		final File aHeadFile = revisionFile();
 
 		if (aHeadFile.exists()) {
 			return DocumentRevision.create(Integer.parseInt(Files.toString(aHeadFile, Charsets.UTF_8)));
@@ -119,7 +119,7 @@ public class ProtegeOntologyState implements OntologyState {
 	}
 
 	private void writeRevision() throws IOException {
-		final File aHeadFile = revisionFile(path);
+		final File aHeadFile = revisionFile();
 		Files.write(String.valueOf(getVersion()), aHeadFile, Charsets.UTF_8);
 	}
 

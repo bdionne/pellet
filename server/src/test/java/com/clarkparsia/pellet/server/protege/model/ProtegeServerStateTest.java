@@ -1,13 +1,19 @@
 package com.clarkparsia.pellet.server.protege.model;
 
+import com.clarkparsia.pellet.server.ConfigurationReader;
 import com.clarkparsia.pellet.server.model.OntologyState;
 import com.clarkparsia.pellet.server.protege.ProtegeServerTest;
 import com.clarkparsia.pellet.server.protege.TestProtegeServerConfiguration;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
+import edu.stanford.protege.metaproject.ConfigurationManager;
+import edu.stanford.protege.metaproject.api.PlainPassword;
+import edu.stanford.protege.metaproject.api.PolicyFactory;
+import edu.stanford.protege.metaproject.api.UserId;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.protege.editor.owl.client.LocalHttpClient;
 import org.semanticweb.owlapi.model.IRI;
 
 import java.io.IOException;
@@ -32,10 +38,19 @@ public class ProtegeServerStateTest extends ProtegeServerTest {
 	@Before
 	public void before() throws Exception {
 		super.before();
-		mServerState = new ProtegeServerState(new TestProtegeServerConfiguration(Lists.<String>newArrayList()));
+		final TestProtegeServerConfiguration pelletConfig = new TestProtegeServerConfiguration(Lists.<String>newArrayList());
+		mServerState = new ProtegeServerState(pelletConfig);
 		assertTrue(mServerState.ontologies().isEmpty());
-		createOwl2Ontology(mServerState.managerClient);
-		createAgenciesOntology(mServerState.managerClient);
+
+		PolicyFactory f = ConfigurationManager.getFactory();
+		UserId managerId = f.getUserId("bob");
+		PlainPassword managerPassword = f.getPlainPassword("bob");
+		LocalHttpClient managerClient = new LocalHttpClient(managerId.get(),
+			managerPassword.getPassword(),
+			ConfigurationReader.of(pelletConfig).protegeSettings().host() + ":8081");
+
+		createOwl2Ontology(managerClient);
+		createAgenciesOntology(managerClient);
 		mServerState.close();
 		mServerState = new ProtegeServerState(new TestProtegeServerConfiguration(ONTOLOGIES));
 	}
@@ -90,7 +105,7 @@ public class ProtegeServerStateTest extends ProtegeServerTest {
 
 	private void assertOntologyFilesExist(ProtegeServerState state) throws IOException {
 		for (OntologyState aState : state.ontologies()) {
-			assertTrue(Files.exists(((ProtegeOntologyState) aState).path.resolveSibling("HEAD")));
+			assertTrue(((ProtegeOntologyState) aState).revisionFile().exists());
 			assertTrue(Files.exists(((ProtegeOntologyState) aState).path));
 		}
 	}

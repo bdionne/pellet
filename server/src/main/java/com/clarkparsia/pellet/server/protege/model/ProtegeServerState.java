@@ -9,15 +9,9 @@ import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
-import edu.stanford.protege.metaproject.ConfigurationManager;
-import edu.stanford.protege.metaproject.api.PlainPassword;
-import edu.stanford.protege.metaproject.api.PolicyFactory;
 import edu.stanford.protege.metaproject.api.ProjectId;
-import edu.stanford.protege.metaproject.api.UserId;
 import edu.stanford.protege.metaproject.impl.ProjectIdImpl;
 import org.protege.editor.owl.client.LocalHttpClient;
-import org.protege.editor.owl.client.api.exception.AuthorizationException;
-import org.protege.editor.owl.client.api.exception.ClientRequestException;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
@@ -44,7 +38,6 @@ public final class ProtegeServerState implements ServerState {
 	protected OWLOntologyManager manager;
 
 	private LocalHttpClient client;
-	LocalHttpClient managerClient;
 
 	/**
 	 * Lock to control reloads of the state
@@ -67,18 +60,6 @@ public final class ProtegeServerState implements ServerState {
 		this.manager = OWLManager.createOWLOntologyManager();
 		this.ontologies = Maps.newConcurrentMap();
 		this.client = ProtegeServiceUtils.connect(theConfigReader);
-
-		PolicyFactory f = ConfigurationManager.getFactory();
-		UserId managerId = f.getUserId("bob");
-		PlainPassword managerPassword = f.getPlainPassword("bob");
-		// TODO this hard coding is incorrect. Should be fixed.
-		try {
-			this.managerClient = new LocalHttpClient(managerId.get(), managerPassword.getPassword(), "http://localhost:8081");
-		} catch (AuthorizationException e) {
-			throw new RuntimeException(e);
-		} catch (ClientRequestException e) {
-			throw new RuntimeException(e);
-		}
 
 		Set<String> onts = theConfigReader.protegeSettings().ontologies();
 		for (String ont : onts) {
