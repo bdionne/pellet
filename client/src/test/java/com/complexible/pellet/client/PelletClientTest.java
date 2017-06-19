@@ -4,6 +4,8 @@ import com.clarkparsia.pellet.server.PelletServer;
 import com.clarkparsia.pellet.server.PelletServerModule;
 import com.clarkparsia.pellet.server.TestModule;
 import com.clarkparsia.pellet.server.protege.ProtegeServerTest;
+import com.clarkparsia.pellet.server.protege.TestUtilities;
+import com.google.common.base.Optional;
 import com.google.inject.Guice;
 import com.google.inject.util.Modules;
 import edu.stanford.protege.metaproject.ConfigurationManager;
@@ -23,7 +25,9 @@ import static com.clarkparsia.pellet.server.protege.TestUtilities.*;
  */
 public abstract class PelletClientTest extends ProtegeServerTest {
 	protected static PelletServer pelletServer;
-	protected PelletServiceProvider serviceProvider = new PelletServiceProvider(PelletService.DEFAULT_LOCAL_ENDPOINT, 0, 0, 0); // disable all timeouts for tests
+	protected PelletServiceProvider serviceProvider =
+		new PelletServiceProvider(PelletService.DEFAULT_LOCAL_ENDPOINT,
+			0, 0, 0, Optional.of(TestUtilities.PELLET_MANAGEMENT_PASSWORD));
 
 	protected LocalHttpClient mClient;
 	LocalHttpClient managerClient;
