@@ -34,8 +34,8 @@ public class ClientModule extends AbstractModule {
 		this.managementPassword = managementPassword;
 	}
 
-	public ClientModule(final String theEndpoint) {
-		this(theEndpoint, 3, 3, 3, Optional.<String>empty());
+	public ClientModule(final String theEndpoint, final Optional<String> managementPassword) {
+		this(theEndpoint, 3, 3, 3, managementPassword);
 	}
 
 	@Override
