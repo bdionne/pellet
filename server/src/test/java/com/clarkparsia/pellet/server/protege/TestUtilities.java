@@ -12,6 +12,7 @@ public class TestUtilities {
 	public static final String PROTEGE_PORT = "8080";
 	public static final String PROTEGE_USERNAME = "root";
 	public static final String PROTEGE_PASSWORD = "rootpwd";
+	public static final String PELLET_MANAGEMENT_PASSWORD = "managepass";
 
 //	public static final String PREFIX;
 //	static {
