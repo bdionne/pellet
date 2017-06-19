@@ -23,6 +23,7 @@ public class TestProtegeServerConfiguration implements Configuration {
 
 		mProperties.setProperty(Configuration.PELLET_HOME, ProtegeServerTest.TEST_HOME.toString());
 		mProperties.setProperty(Configuration.PELLET_HOST, "http://127.0.0.1");
+		mProperties.setProperty(Configuration.PELLET_MANAGEMENT_PASSWORD, TestUtilities.PELLET_MANAGEMENT_PASSWORD);
 	}
 
 	@Override

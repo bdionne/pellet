@@ -7,8 +7,6 @@ import java.util.Properties;
  */
 public interface Configuration {
 
-	String FILENAME = "server.properties";
-
 	String PROTEGE_HOST =       "protege.host";
 	String PROTEGE_PORT =       "protege.port";
 	String PROTEGE_USERNAME =   "protege.username";
@@ -19,6 +17,7 @@ public interface Configuration {
 	String PELLET_HOST =            "pellet.host";
 	String PELLET_PORT =            "pellet.port";
 	String PELLET_UPDATE_INTERVAL = "pellet.update.interval.sec";
+	String PELLET_MANAGEMENT_PASSWORD = "pellet.password";
 
 	Properties getSettings();
 }
