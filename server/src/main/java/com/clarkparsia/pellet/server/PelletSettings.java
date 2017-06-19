@@ -33,4 +33,12 @@ public class PelletSettings {
     public int updateIntervalInSeconds() {
         return ConfigurationReader.getPropertyAsInteger(settings, Configuration.PELLET_UPDATE_INTERVAL, UPDATE_INTERVAL_DEFAULT_IN_SECONDS);
     }
+
+	public String managementPassword() {
+		final String pass = ConfigurationReader.getProperty(settings, Configuration.PELLET_MANAGEMENT_PASSWORD, null);
+		if (pass == null) {
+			throw new RuntimeException("Unavilable management password");
+		}
+		return pass;
+	}
 }
