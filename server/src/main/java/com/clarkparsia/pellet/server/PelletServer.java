@@ -120,16 +120,13 @@ public final class PelletServer {
 		isRunning = true;
 		server.start();
 
-		startJobs(pelletSettings);
-	}
-
-	private void startJobs(PelletSettings aPelletSettings) {
-		final int updateIntervalSec = aPelletSettings.updateIntervalInSeconds();
+		final int updateIntervalSec = pelletSettings.updateIntervalInSeconds();
 
 		LOGGER.info("Starting Job Scheduler for Updates every "+ updateIntervalSec +" seconds");
 
 		jobScheduler = Executors.newScheduledThreadPool(1);
-		jobScheduler.scheduleAtFixedRate(new ServerStateUpdate(getState()), updateIntervalSec, updateIntervalSec, TimeUnit.SECONDS);
+		jobScheduler.scheduleAtFixedRate(new ServerStateUpdate(
+			getState()), updateIntervalSec, updateIntervalSec, TimeUnit.SECONDS);
 	}
 
 	public ServerState getState() {
