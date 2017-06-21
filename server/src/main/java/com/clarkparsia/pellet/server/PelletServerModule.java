@@ -12,6 +12,8 @@ import com.clarkparsia.pellet.server.handlers.ReasonerQueryHandler;
 import com.clarkparsia.pellet.server.handlers.ReasonerVersionHandler;
 import com.clarkparsia.pellet.server.handlers.RoutingHandler;
 import com.clarkparsia.pellet.server.model.ServerState;
+import com.clarkparsia.pellet.server.protege.model.ConfigurationOntologyProvider;
+import com.clarkparsia.pellet.server.protege.model.OntologyProvider;
 import com.clarkparsia.pellet.server.protege.model.ProtegeServerState;
 import com.google.inject.AbstractModule;
 import com.google.inject.Module;
@@ -51,6 +53,8 @@ public class PelletServerModule extends AbstractModule implements Module {
 		if (mSettings != null) {
 			binder().bind(Configuration.class).toInstance(mSettings);
 		}
+
 		binder().bind(ServerState.class).to(ProtegeServerState.class).in(Singleton.class);
+		binder().bind(OntologyProvider.class).to(ConfigurationOntologyProvider.class).in(Singleton.class);
 	}
 }
