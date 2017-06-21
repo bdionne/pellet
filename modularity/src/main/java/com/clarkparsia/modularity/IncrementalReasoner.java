@@ -1151,10 +1151,6 @@ public class IncrementalReasoner extends AbstractOWLListeningReasoner {
 	/**
 	 * {@inheritDoc}
 	 */
-	public void prepareReasoner() throws ReasonerInterruptedException, TimeOutException {
-		classify();
-	}
-
 	public Taxonomy<OWLClass> getTaxonomy() {
 		return taxonomy;
 	}

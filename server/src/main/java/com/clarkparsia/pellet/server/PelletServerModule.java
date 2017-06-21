@@ -12,7 +12,6 @@ import com.clarkparsia.pellet.server.handlers.ReasonerQueryHandler;
 import com.clarkparsia.pellet.server.handlers.ReasonerVersionHandler;
 import com.clarkparsia.pellet.server.handlers.RoutingHandler;
 import com.clarkparsia.pellet.server.model.ServerState;
-import com.clarkparsia.pellet.server.protege.model.ConfigurationOntologyProvider;
 import com.clarkparsia.pellet.server.protege.model.OntologyProvider;
 import com.clarkparsia.pellet.server.protege.model.ProtegeServerOntologyProvider;
 import com.clarkparsia.pellet.server.protege.model.ProtegeServerState;
