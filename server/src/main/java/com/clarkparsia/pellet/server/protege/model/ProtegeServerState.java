@@ -35,6 +35,7 @@ import java.util.logging.Logger;
 public final class ProtegeServerState implements ServerState {
 
 	private static final Logger LOGGER = Logger.getLogger(ProtegeServerState.class.getName());
+	private final OntologyProvider ontologyProvider;
 	protected OWLOntologyManager manager;
 
 	private LocalHttpClient client;
@@ -48,8 +49,9 @@ public final class ProtegeServerState implements ServerState {
 	private final Configuration config;
 
 	@Inject
-	public ProtegeServerState(final Configuration config) throws Exception {
+	public ProtegeServerState(final Configuration config, final OntologyProvider ontologyProvider) throws Exception {
 		this.config = config;
+		this.ontologyProvider = ontologyProvider;
 		start();
 	}
 
@@ -61,7 +63,7 @@ public final class ProtegeServerState implements ServerState {
 		this.ontologies = Maps.newConcurrentMap();
 		this.client = ProtegeServiceUtils.connect(theConfigReader);
 
-		Set<String> onts = theConfigReader.protegeSettings().ontologies();
+		Set<String> onts = this.ontologyProvider.classifiableProjects();
 		for (String ont : onts) {
 			try {
 				addOntology(ont);
