@@ -2,6 +2,7 @@ package pellet;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Optional;
 
 import com.clarkparsia.owlapi.explanation.PelletExplanation;
 import com.clarkparsia.pellet.server.Configuration;
@@ -77,20 +78,26 @@ public class PelletServer extends PelletCmdApp {
 			throw new PelletCmdException("A command (start or stop) is required");
 		}
 
+		Command command;
 		try {
-			Command command = Command.valueOf(commands[0].toUpperCase());
-
-			switch (command) {
-				case START: startServer(); break;
-				case STOP: stopServer(commands); break;
-				default: throw new IllegalArgumentException();
-			}
-		}
-		catch (IllegalArgumentException e) {
+			command = Command.valueOf(commands[0].toUpperCase());
+		} catch (IllegalArgumentException e) {
 			throw new PelletCmdException("Unrecognized command: " + commands[0]);
 		}
-		catch (Exception e) {
-			throw new PelletCmdException(e);
+
+		try {
+			switch (command) {
+				case START:
+					startServer();
+					break;
+				case STOP:
+					stopServer(commands);
+					break;
+				default:
+					throw new RuntimeException("Impossible command: " + command);
+			}
+		} catch (Exception e) {
+			throw new RuntimeException(e);
 		}
 	}
 
