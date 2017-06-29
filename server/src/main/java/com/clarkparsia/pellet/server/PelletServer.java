@@ -1,24 +1,10 @@
 package com.clarkparsia.pellet.server;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.Set;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.net.ssl.SSLContext;
-
-import com.google.common.base.Strings;
-import org.protege.editor.owl.server.security.SSLContextFactory;
-import org.protege.editor.owl.server.security.SSLContextInitializationException;
-
 import com.clarkparsia.pellet.server.exceptions.ServerException;
 import com.clarkparsia.pellet.server.handlers.RoutingHandler;
 import com.clarkparsia.pellet.server.jobs.ServerStateUpdate;
 import com.clarkparsia.pellet.server.model.ServerState;
+import com.google.common.base.Strings;
 import com.google.inject.Injector;
 import com.google.inject.Key;
 import io.undertow.Handlers;
@@ -29,6 +15,18 @@ import io.undertow.server.HttpServerExchange;
 import io.undertow.server.handlers.BlockingHandler;
 import io.undertow.server.handlers.ExceptionHandler;
 import io.undertow.server.handlers.GracefulShutdownHandler;
+import org.protege.editor.owl.server.security.SSLContextFactory;
+import org.protege.editor.owl.server.security.SSLContextInitializationException;
+
+import javax.net.ssl.SSLContext;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Set;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Pellet PelletServer implementation with Undertow.
@@ -74,54 +72,18 @@ public final class PelletServer {
 			router.add(spec.getMethod(), spec.getPath(), aHandler);
 		}
 
+		PelletSettings pelletSettings = ConfigurationReader.of(serverInjector.getInstance(Configuration.class)).pelletSettings();
+		String managementPassword = pelletSettings.managementPassword();
 		// add shutdown path
-		router.add("GET", "/admin/shutdown", new HttpHandler() {
-			@Override
-			public void handleRequest(final HttpServerExchange exchange) throws Exception {
-				aShutdownHandler.shutdown();
-				aShutdownHandler.addShutdownListener(new GracefulShutdownHandler.ShutdownListener() {
-					@Override
-					public void shutdown(final boolean isDown) {
-						if (isDown) {
-							stop();
-						}
-					}
-				});
-				exchange.endExchange();
-			}
-		});
-
+		router.add("GET", "/admin/shutdown",
+			new PelletAuthHandler(new ShutdownHandler(aShutdownHandler), managementPassword));
 		// add restart handler
-		router.add("GET", "/admin/restart", new HttpHandler() {
-			@Override
-			public void handleRequest(HttpServerExchange exchange) throws Exception {
-				aShutdownHandler.shutdown();
-				aShutdownHandler.addShutdownListener(new GracefulShutdownHandler.ShutdownListener() {
-					@Override
-					public void shutdown(final boolean isDown) {
-						if (isDown) {
-							stop();
-							try {
-								start();
-								getState().start();
-							} catch (ServerException e) {
-								throw new RuntimeException(e);
-							}
-						} else {
-							Logger.getLogger(PelletServer.class.getName()).warning("Failed to shutown when restarting");
-						}
-					}
-				});
-				exchange.endExchange();
-			}
-		});
+		router.add("GET", "/admin/restart",
+			new PelletAuthHandler(new RestartHandler(aShutdownHandler), managementPassword));
 
-		final PelletSettings aPelletSettings = ConfigurationReader.of(
-			serverInjector.getInstance(Configuration.class)).pelletSettings();
-		
 		URI hostUri;
 		try {
-			hostUri = new URI(aPelletSettings.host());
+			hostUri = new URI(pelletSettings.host());
 		} catch (URISyntaxException e) {
 			e.printStackTrace();
 			throw new ServerException(500, "Bad URL in host settings");
@@ -136,7 +98,7 @@ public final class PelletServer {
 			try {
 				ctx = new SSLContextFactory().createSslContext();
 				server = Undertow.builder()
-		                 .addHttpsListener(aPelletSettings.port(), hostUri.getHost(), ctx)
+		                 .addHttpsListener(pelletSettings.port(), hostUri.getHost(), ctx)
 		                 .setServerOption(UndertowOptions.ALWAYS_SET_DATE, true)
 		                 .setHandler(aShutdownHandler)
 		                 .build();
@@ -146,28 +108,25 @@ public final class PelletServer {
 			}
 		} else {
 			server = Undertow.builder()
-				.addHttpListener(aPelletSettings.port(), "localhost")
+				.addHttpListener(pelletSettings.port(), "localhost")
 	                 .setServerOption(UndertowOptions.ALWAYS_SET_DATE, true)
 	                 .setHandler(aShutdownHandler)
 	                 .build();
 		}
 		
-		System.out.println(String.format("Pellet Home: %s", aPelletSettings.home()));
-		System.out.println(String.format("Listening at: %s", aPelletSettings.endpoint()));
+		System.out.println(String.format("Pellet Home: %s", pelletSettings.home()));
+		System.out.println(String.format("Listening at: %s", pelletSettings.endpoint()));
 
 		isRunning = true;
 		server.start();
 
-		startJobs(aPelletSettings);
-	}
-
-	private void startJobs(PelletSettings aPelletSettings) {
-		final int updateIntervalSec = aPelletSettings.updateIntervalInSeconds();
+		final int updateIntervalSec = pelletSettings.updateIntervalInSeconds();
 
 		LOGGER.info("Starting Job Scheduler for Updates every "+ updateIntervalSec +" seconds");
 
 		jobScheduler = Executors.newScheduledThreadPool(1);
-		jobScheduler.scheduleAtFixedRate(new ServerStateUpdate(getState()), updateIntervalSec, updateIntervalSec, TimeUnit.SECONDS);
+		jobScheduler.scheduleAtFixedRate(new ServerStateUpdate(
+			getState()), updateIntervalSec, updateIntervalSec, TimeUnit.SECONDS);
 	}
 
 	public ServerState getState() {
@@ -194,5 +153,57 @@ public final class PelletServer {
 			server = null;
 			isRunning = false;
 		}
+	}
+
+	private class ShutdownHandler implements HttpHandler {
+		private final GracefulShutdownHandler aShutdownHandler;
+
+		public ShutdownHandler(GracefulShutdownHandler aShutdownHandler) {
+			this.aShutdownHandler = aShutdownHandler;
+		}
+
+		@Override
+        public void handleRequest(final HttpServerExchange exchange) throws Exception {
+            aShutdownHandler.shutdown();
+            aShutdownHandler.addShutdownListener(new GracefulShutdownHandler.ShutdownListener() {
+                @Override
+                public void shutdown(final boolean isDown) {
+                    if (isDown) {
+                        stop();
+                    }
+                }
+            });
+            exchange.endExchange();
+        }
+	}
+
+	private class RestartHandler implements HttpHandler {
+		private final GracefulShutdownHandler aShutdownHandler;
+
+		public RestartHandler(GracefulShutdownHandler aShutdownHandler) {
+			this.aShutdownHandler = aShutdownHandler;
+		}
+
+		@Override
+        public void handleRequest(HttpServerExchange exchange) throws Exception {
+            aShutdownHandler.shutdown();
+            aShutdownHandler.addShutdownListener(new GracefulShutdownHandler.ShutdownListener() {
+                @Override
+                public void shutdown(final boolean isDown) {
+                    if (isDown) {
+                        stop();
+                        try {
+                            start();
+                            getState().start();
+                        } catch (ServerException e) {
+                            throw new RuntimeException(e);
+                        }
+                    } else {
+                        Logger.getLogger(PelletServer.class.getName()).warning("Failed to shutown when restarting");
+                    }
+                }
+            });
+            exchange.endExchange();
+        }
 	}
 }

@@ -2,6 +2,7 @@ package pellet;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Optional;
 
 import com.clarkparsia.owlapi.explanation.PelletExplanation;
 import com.clarkparsia.pellet.server.Configuration;
@@ -108,15 +109,15 @@ public class PelletServer extends PelletCmdApp {
 
 	private void stopServer(final String[] args) throws IOException {
 		String endpoint;
+		PelletSettings settings = ConfigurationReader.of(getServerConfig()).pelletSettings();
 		if (args.length > 1) {
 			endpoint = args[1];
 		}
 		else {
-			PelletSettings settings = ConfigurationReader.of(getServerConfig()).pelletSettings();
 			endpoint = settings.endpoint();
 		}
 
-		Injector aInjector = Guice.createInjector(new ClientModule(endpoint));
+		Injector aInjector = Guice.createInjector(new ClientModule(endpoint, Optional.of(settings.managementPassword())));
 
 		Call<Void> shutdownCall = aInjector.getInstance(PelletService.class).shutdown();
 		ClientTools.executeCall(shutdownCall);
