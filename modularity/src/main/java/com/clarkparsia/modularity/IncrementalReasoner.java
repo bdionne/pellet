@@ -19,6 +19,8 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Random;
 import java.util.Set;
+import java.util.Map;
+import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
@@ -989,6 +991,25 @@ public class IncrementalReasoner extends AbstractOWLListeningReasoner {
 		}
 
 		return new OWLClassNodeSet( values );
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public Map<OWLClass, NodeSet<OWLClass>> getAllSuperClasses(boolean direct) {
+		classify();
+
+		Map<OWLClass, NodeSet<OWLClass>> results = new HashMap<>();
+
+		for (OWLClass ce : taxonomy.getClasses()) {
+			Set<Node<OWLClass>> values = new HashSet<Node<OWLClass>>();
+			for (Set<OWLClass> val : taxonomy.getSupers(ce, direct)) {
+				values.add(NodeFactory.getOWLClassNode(val));
+			}
+			results.put(ce, new OWLClassNodeSet(values));
+		}
+
+		return results;
 	}
 
 	/**

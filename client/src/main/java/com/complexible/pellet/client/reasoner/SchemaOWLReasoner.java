@@ -11,6 +11,7 @@ package com.complexible.pellet.client.reasoner;
 import java.util.AbstractList;
 import java.util.List;
 import java.util.Set;
+import java.util.Map;
 import java.util.logging.Logger;
 
 import com.clarkparsia.owlapiv3.BufferingOntologyChangeListener;
@@ -486,6 +487,14 @@ public class SchemaOWLReasoner implements OWLReasoner {
 		autoFlush();
 
 		return executeQuery(querySuper(direct), requireNamedObject(ce));
+	}
+
+	public Map<OWLClass, NodeSet<OWLClass>> getAllSuperClasses(boolean direct) {
+		autoFlush();
+
+		// TODO: make a remote call here
+		// return executeQuery(...);
+		return new java.util.HashMap<>();
 	}
 
 	/**

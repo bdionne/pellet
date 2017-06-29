@@ -5,6 +5,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashSet;
+import java.util.Map;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
@@ -751,6 +753,17 @@ public class PelletReasoner extends AbstractOWLListeningReasoner {
 		} catch( PelletRuntimeException e ) {
 			throw convert( e );
 		}
+	}
+
+	public Map<OWLClass, NodeSet<OWLClass>> getAllSuperClasses(boolean direct) {
+		refreshCheck();
+		Map<OWLClass, NodeSet<OWLClass>> results = new HashMap<>();
+
+		for( ATermAppl c : kb.getAllClasses() ) {
+			results.put( CLASS_MAPPER.map( c ), toClassNodeSet( kb.getSuperClasses( c , direct ) ) );
+		}
+
+		return results;
 	}
 
 	public NodeSet<OWLDataProperty> getSuperDataProperties(OWLDataProperty pe, boolean direct)
