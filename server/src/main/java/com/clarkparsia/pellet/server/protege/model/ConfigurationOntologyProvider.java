@@ -1,9 +1,9 @@
 package com.clarkparsia.pellet.server.protege.model;
 
-import com.clarkparsia.pellet.server.Configuration;
 import com.clarkparsia.pellet.server.ConfigurationReader;
 
 import javax.inject.Inject;
+import java.util.Properties;
 import java.util.Set;
 
 /**
@@ -11,10 +11,10 @@ import java.util.Set;
  */
 public class ConfigurationOntologyProvider implements OntologyProvider {
 
-	private final Configuration config;
+	private final Properties config;
 
 	@Inject
-	public ConfigurationOntologyProvider(final Configuration config) {
+	public ConfigurationOntologyProvider(final Properties config) {
 		this.config = config;
 	}
 

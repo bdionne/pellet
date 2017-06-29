@@ -2,9 +2,9 @@ package pellet;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Properties;
 
 import com.clarkparsia.owlapi.explanation.PelletExplanation;
-import com.clarkparsia.pellet.server.Configuration;
 import com.clarkparsia.pellet.server.ConfigurationReader;
 import com.clarkparsia.pellet.server.PelletServerModule;
 import com.clarkparsia.pellet.server.PelletSettings;
@@ -23,7 +23,7 @@ import static pellet.PelletCmdOptionArg.REQUIRED;
 public class PelletServer extends PelletCmdApp {
 	private enum Command { START, STOP }
 
-	private Configuration serverConfig;
+	private Properties serverConfig;
 
 	@Override
 	public String getAppCmd() {
@@ -101,7 +101,7 @@ public class PelletServer extends PelletCmdApp {
 	}
 
 	private void startServer() throws Exception {
-		Configuration aConfig = getServerConfig();
+		Properties aConfig = getServerConfig();
 		com.clarkparsia.pellet.server.PelletServer aPelletServer =
 			new com.clarkparsia.pellet.server.PelletServer(Guice.createInjector(new PelletServerModule(aConfig)));
 		aPelletServer.start();
@@ -125,13 +125,13 @@ public class PelletServer extends PelletCmdApp {
 		System.out.println("Pellet server is shutting down");
 	}
 
-	private Configuration getServerConfig() throws IOException {
+	private Properties getServerConfig() throws IOException {
 		if (serverConfig == null) {
 			String configFile = options.getOption("config").getValueAsString();
 			if( configFile == null ) {
 				configFile = "server.properties";
 			}
-			serverConfig = new ProtegeServerConfiguration(new File(configFile));
+			serverConfig = ProtegeServerConfiguration.protegeServerConfiguration(new File(configFile));
 		}
 
 		return serverConfig;

@@ -8,6 +8,7 @@ import com.google.inject.Module;
 import com.google.inject.Singleton;
 
 import java.util.List;
+import java.util.Properties;
 
 /**
  * @author Edgar Rodriguez-Diaz
@@ -21,7 +22,8 @@ public class TestModule extends AbstractModule implements Module {
 
 	@Override
 	protected void configure() {
-		binder().bind(Configuration.class).toInstance(new TestProtegeServerConfiguration(ontologies));
+		binder().bind(Properties.class).toInstance(
+			TestProtegeServerConfiguration.testProtegeServerConfiguration(ontologies));
 		binder().bind(OntologyProvider.class).to(ConfigurationOntologyProvider.class).in(Singleton.class);
 	}
 }

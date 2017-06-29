@@ -22,53 +22,31 @@ public class ConfigurationReaderTest {
 	private static final boolean STRICT_DEFAULT = false;
 	private static final int UPDATE_INTERVAL_DEFAULT_IN_SECONDS = 300;
 
-	enum MinimumConfiguration implements Configuration {
-		INSTANCE;
-
-		Properties minimumSettings;
-
-		MinimumConfiguration() {
-			minimumSettings = new Properties();
-
-			minimumSettings.setProperty(Configuration.PROTEGE_USERNAME, USERNAME);
-			minimumSettings.setProperty(Configuration.PROTEGE_PASSWORD, PASSWORD);
-		}
-
-		@Override
-		public Properties getSettings() {
-			return minimumSettings;
-		}
+	public static Properties minimumConfiguration() {
+		Properties p = new Properties();
+		p.setProperty(Configuration.PROTEGE_USERNAME, USERNAME);
+		p.setProperty(Configuration.PROTEGE_PASSWORD, PASSWORD);
+		return p;
 	}
 
-	enum AllSettingsConfiguration implements Configuration {
-		INSTANCE;
+	public static Properties allSettingsConfiguration() {
+			Properties p = new Properties();
+			p.setProperty(Configuration.PROTEGE_HOST, "http://test-protege.com");
+			p.setProperty(Configuration.PROTEGE_PORT, "5000");
+			p.setProperty(Configuration.PROTEGE_USERNAME, "admin");
+			p.setProperty(Configuration.PROTEGE_PASSWORD, "secret");
+			p.setProperty(Configuration.PROTEGE_ONTOLOGIES, "owl2.history, owl3.history, agencies.history");
 
-		private final Properties mProperties;
-
-		AllSettingsConfiguration() {
-			mProperties = new Properties();
-			mProperties.setProperty(Configuration.PROTEGE_HOST, "http://test-protege.com");
-			mProperties.setProperty(Configuration.PROTEGE_PORT, "5000");
-			mProperties.setProperty(Configuration.PROTEGE_USERNAME, "admin");
-			mProperties.setProperty(Configuration.PROTEGE_PASSWORD, "secret");
-			mProperties.setProperty(Configuration.PROTEGE_ONTOLOGIES, "owl2.history, owl3.history, agencies.history");
-
-			mProperties.setProperty(Configuration.PELLET_HOME, "home");
-			mProperties.setProperty(Configuration.PELLET_HOST, "test-pellet.com");
-			mProperties.setProperty(Configuration.PELLET_PORT, "9090");
-			mProperties.setProperty(Configuration.PELLET_UPDATE_INTERVAL, "30");
-
-		}
-
-		@Override
-		public Properties getSettings() {
-			return mProperties;
-		}
+			p.setProperty(Configuration.PELLET_HOME, "home");
+			p.setProperty(Configuration.PELLET_HOST, "test-pellet.com");
+			p.setProperty(Configuration.PELLET_PORT, "9090");
+			p.setProperty(Configuration.PELLET_UPDATE_INTERVAL, "30");
+			return p;
 	}
 
 	@Test
 	public void shouldGetDefaults() {
-		final ConfigurationReader configReader = ConfigurationReader.of(MinimumConfiguration.INSTANCE);
+		final ConfigurationReader configReader = ConfigurationReader.of(minimumConfiguration());
 
 		assertEquals(HOST_DEFAULT, configReader.protegeSettings().host());
 		assertEquals(PORT_DEFAULT, configReader.protegeSettings().port());
@@ -84,7 +62,7 @@ public class ConfigurationReaderTest {
 
 	@Test
 	public void shouldGetAllConfigs() {
-		final ConfigurationReader configReader = ConfigurationReader.of(AllSettingsConfiguration.INSTANCE);
+		final ConfigurationReader configReader = ConfigurationReader.of(allSettingsConfiguration());
 
 		assertEquals("http://test-protege.com", configReader.protegeSettings().host());
 		assertEquals(5000, configReader.protegeSettings().port());
