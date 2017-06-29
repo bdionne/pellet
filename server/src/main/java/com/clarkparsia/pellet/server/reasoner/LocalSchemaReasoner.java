@@ -50,10 +50,6 @@ public class LocalSchemaReasoner implements SchemaReasoner {
 	private final PelletExplanation explanation;
 	private final ReadWriteLock lock = new ReentrantReadWriteLock();
 
-	public LocalSchemaReasoner(final PelletReasoner pellet) {
-		this(pellet, pellet);
-	}
-
 	public LocalSchemaReasoner(final IncrementalReasoner incremental) {
 		this(incremental, incremental.getReasoner());
 	}

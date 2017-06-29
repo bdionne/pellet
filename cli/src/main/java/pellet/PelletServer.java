@@ -2,7 +2,6 @@ package pellet;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Optional;
 
 import com.clarkparsia.owlapi.explanation.PelletExplanation;
 import com.clarkparsia.pellet.server.Configuration;
@@ -13,6 +12,7 @@ import com.clarkparsia.pellet.server.protege.ProtegeServerConfiguration;
 import com.complexible.pellet.client.ClientModule;
 import com.complexible.pellet.client.ClientTools;
 import com.complexible.pellet.client.PelletService;
+import com.google.common.base.Optional;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import retrofit2.Call;

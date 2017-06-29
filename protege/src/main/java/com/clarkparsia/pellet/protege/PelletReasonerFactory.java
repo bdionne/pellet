@@ -5,12 +5,12 @@ import com.clarkparsia.pellet.service.reasoner.SchemaReasonerFactory;
 import com.complexible.pellet.client.ClientModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+import com.google.common.base.Optional;
 import org.mindswap.pellet.PelletOptions;
 import org.protege.editor.owl.model.inference.AbstractProtegeOWLReasonerInfo;
 import org.semanticweb.owlapi.reasoner.BufferingMode;
 import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
 
-import java.util.Optional;
 
 /**
  * 
@@ -52,7 +52,8 @@ public class PelletReasonerFactory extends AbstractProtegeOWLReasonerInfo {
 			    final String serverURL = PelletReasonerPreferences.getInstance().getServerURL();
 
 			    // TODO: read timeout from preferences too and pass to ClientModule, 3 min by default
-			    final Injector aInjector = Guice.createInjector(new ClientModule(serverURL, Optional.<String>empty()));
+          final Injector aInjector = Guice.createInjector(new ClientModule(serverURL, Optional.<String>absent()));
+
 
 			    
 			    return new RemotePelletReasonerFactory(aInjector.getInstance(SchemaReasonerFactory.class), getOWLModelManager());

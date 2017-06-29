@@ -1,11 +1,18 @@
 package com.clarkparsia.pellet.server.protege.model;
 
+import com.clarkparsia.pellet.server.Configuration;
 import com.clarkparsia.pellet.server.ConfigurationReader;
+import com.clarkparsia.pellet.server.PelletServerModule;
+import com.clarkparsia.pellet.server.TestModule;
 import com.clarkparsia.pellet.server.model.OntologyState;
+import com.clarkparsia.pellet.server.model.ServerState;
 import com.clarkparsia.pellet.server.protege.ProtegeServerTest;
 import com.clarkparsia.pellet.server.protege.TestProtegeServerConfiguration;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+import com.google.inject.util.Modules;
 import edu.stanford.protege.metaproject.ConfigurationManager;
 import edu.stanford.protege.metaproject.api.PlainPassword;
 import edu.stanford.protege.metaproject.api.PolicyFactory;
@@ -38,13 +45,17 @@ public class ProtegeServerStateTest extends ProtegeServerTest {
 	@Before
 	public void before() throws Exception {
 		super.before();
-		final TestProtegeServerConfiguration pelletConfig = new TestProtegeServerConfiguration(Lists.<String>newArrayList());
-		mServerState = new ProtegeServerState(pelletConfig);
+
+		Injector injector = Guice.createInjector(Modules.override(new PelletServerModule())
+			.with(new TestModule(Lists.<String>newArrayList())));
+
+		mServerState = (ProtegeServerState) injector.getInstance(ServerState.class);
 		assertTrue(mServerState.ontologies().isEmpty());
 
 		PolicyFactory f = ConfigurationManager.getFactory();
 		UserId managerId = f.getUserId("bob");
 		PlainPassword managerPassword = f.getPlainPassword("bob");
+		Configuration pelletConfig = injector.getInstance(Configuration.class);
 		LocalHttpClient managerClient = new LocalHttpClient(managerId.get(),
 			managerPassword.getPassword(),
 			ConfigurationReader.of(pelletConfig).protegeSettings().host() + ":8081");
@@ -52,7 +63,10 @@ public class ProtegeServerStateTest extends ProtegeServerTest {
 		createOwl2Ontology(managerClient);
 		createAgenciesOntology(managerClient);
 		mServerState.close();
-		mServerState = new ProtegeServerState(new TestProtegeServerConfiguration(ONTOLOGIES));
+
+		injector = Guice.createInjector(Modules.override(new PelletServerModule())
+			.with(new TestModule(ONTOLOGIES)));
+		mServerState = (ProtegeServerState) injector.getInstance(ServerState.class);
 	}
 
 	@After

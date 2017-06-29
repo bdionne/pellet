@@ -6,10 +6,12 @@ import com.complexible.pellet.client.reasoner.RemoteSchemaReasoner;
 import com.google.inject.AbstractModule;
 import com.google.inject.Singleton;
 import com.google.inject.TypeLiteral;
+import com.google.common.base.Optional;
+
 import com.google.inject.assistedinject.FactoryModuleBuilder;
 import com.google.inject.name.Names;
 
-import java.util.Optional;
+
 
 /**
  * @author Edgar Rodriguez-Diaz

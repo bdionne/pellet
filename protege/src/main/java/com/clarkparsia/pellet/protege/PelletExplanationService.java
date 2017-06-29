@@ -38,6 +38,7 @@ import java.util.List;
  *
  * @author Evren Sirin
  */
+@SuppressWarnings("unused") // used in osgi
 public class PelletExplanationService extends ExplanationService {
 
 	@Override
@@ -185,26 +186,32 @@ public class PelletExplanationService extends ExplanationService {
 			return Collections.emptyList();
 		}
 
+		@Override
 		protected OWLObjectEditor<OWLAxiom> getObjectEditor() {
 			return null;
 		}
 
+		@Override
 		protected OWLAxiom createAxiom(OWLAxiom editedObject) {
 			return null;
 		}
 
+		@Override
 		public List<? extends OWLObject> getManipulatableObjects() {
 			return Arrays.asList(new OWLAxiom[] { this.getAxiom() });
 		}
 
+		@Override
 		public boolean isEditable() {
 			return false;
 		}
 
+		@Override
 		public boolean isDeleteable() {
 			return false;
 		}
 
+		@Override
 		public boolean isInferred() {
 			return false;
 		}
