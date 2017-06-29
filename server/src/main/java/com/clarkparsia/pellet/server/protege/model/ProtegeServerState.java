@@ -1,6 +1,5 @@
 package com.clarkparsia.pellet.server.protege.model;
 
-import com.clarkparsia.pellet.server.Configuration;
 import com.clarkparsia.pellet.server.ConfigurationReader;
 import com.clarkparsia.pellet.server.model.OntologyState;
 import com.clarkparsia.pellet.server.model.ServerState;
@@ -22,6 +21,7 @@ import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
@@ -46,10 +46,10 @@ public final class ProtegeServerState implements ServerState {
 	private ReentrantLock updateLock;
 	private Map<IRI, OntologyState> ontologies;
 	private Path home;
-	private final Configuration config;
+	private final Properties config;
 
 	@Inject
-	public ProtegeServerState(final Configuration config, final OntologyProvider ontologyProvider) throws Exception {
+	public ProtegeServerState(final Properties config, final OntologyProvider ontologyProvider) throws Exception {
 		this.config = config;
 		this.ontologyProvider = ontologyProvider;
 		start();

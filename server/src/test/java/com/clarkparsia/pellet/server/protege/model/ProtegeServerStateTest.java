@@ -1,13 +1,11 @@
 package com.clarkparsia.pellet.server.protege.model;
 
-import com.clarkparsia.pellet.server.Configuration;
 import com.clarkparsia.pellet.server.ConfigurationReader;
 import com.clarkparsia.pellet.server.PelletServerModule;
 import com.clarkparsia.pellet.server.TestModule;
 import com.clarkparsia.pellet.server.model.OntologyState;
 import com.clarkparsia.pellet.server.model.ServerState;
 import com.clarkparsia.pellet.server.protege.ProtegeServerTest;
-import com.clarkparsia.pellet.server.protege.TestProtegeServerConfiguration;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.inject.Guice;
@@ -27,6 +25,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 import static org.junit.Assert.*;
 
@@ -55,7 +54,7 @@ public class ProtegeServerStateTest extends ProtegeServerTest {
 		PolicyFactory f = ConfigurationManager.getFactory();
 		UserId managerId = f.getUserId("bob");
 		PlainPassword managerPassword = f.getPlainPassword("bob");
-		Configuration pelletConfig = injector.getInstance(Configuration.class);
+		Properties pelletConfig = injector.getInstance(Properties.class);
 		LocalHttpClient managerClient = new LocalHttpClient(managerId.get(),
 			managerPassword.getPassword(),
 			ConfigurationReader.of(pelletConfig).protegeSettings().host() + ":8081");

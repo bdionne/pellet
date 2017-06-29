@@ -9,25 +9,19 @@ import com.google.common.base.Joiner;
 /**
  * @author Edgar Rodriguez-Diaz
  */
-public class TestProtegeServerConfiguration implements Configuration {
+public class TestProtegeServerConfiguration {
 
-	private final Properties mProperties;
+	public static Properties testProtegeServerConfiguration(List<String> ontologies) {
+		Properties p = new Properties();
+		p.setProperty(Configuration.PROTEGE_HOST, TestUtilities.PROTEGE_HOST);
+		p.setProperty(Configuration.PROTEGE_PORT, TestUtilities.PROTEGE_PORT);
+		p.setProperty(Configuration.PROTEGE_USERNAME, TestUtilities.PROTEGE_USERNAME);
+		p.setProperty(Configuration.PROTEGE_PASSWORD, TestUtilities.PROTEGE_PASSWORD);
+		p.setProperty(Configuration.PROTEGE_ONTOLOGIES, Joiner.on(",").join(ontologies));
 
-	public TestProtegeServerConfiguration(List<String> ontologies) {
-		mProperties = new Properties();
-		mProperties.setProperty(Configuration.PROTEGE_HOST, TestUtilities.PROTEGE_HOST);
-		mProperties.setProperty(Configuration.PROTEGE_PORT, TestUtilities.PROTEGE_PORT);
-		mProperties.setProperty(Configuration.PROTEGE_USERNAME, TestUtilities.PROTEGE_USERNAME);
-		mProperties.setProperty(Configuration.PROTEGE_PASSWORD, TestUtilities.PROTEGE_PASSWORD);
-		mProperties.setProperty(Configuration.PROTEGE_ONTOLOGIES, Joiner.on(",").join(ontologies));
-
-		mProperties.setProperty(Configuration.PELLET_HOME, ProtegeServerTest.TEST_HOME.toString());
-		mProperties.setProperty(Configuration.PELLET_HOST, "http://127.0.0.1");
-		mProperties.setProperty(Configuration.PELLET_MANAGEMENT_PASSWORD, TestUtilities.PELLET_MANAGEMENT_PASSWORD);
-	}
-
-	@Override
-	public Properties getSettings() {
-		return mProperties;
+		p.setProperty(Configuration.PELLET_HOME, ProtegeServerTest.TEST_HOME.toString());
+		p.setProperty(Configuration.PELLET_HOST, "http://127.0.0.1");
+		p.setProperty(Configuration.PELLET_MANAGEMENT_PASSWORD, TestUtilities.PELLET_MANAGEMENT_PASSWORD);
+		return p;
 	}
 }

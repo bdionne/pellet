@@ -10,9 +10,9 @@ public final class ConfigurationReader {
 	private final ProtegeSettings protegeSettings;
 	private final PelletSettings pelletSettings;
 
-	private ConfigurationReader(final Configuration theConfig) {
-		protegeSettings = new ProtegeSettings(theConfig.getSettings());
-		pelletSettings = new PelletSettings(theConfig.getSettings());
+	private ConfigurationReader(final Properties theConfig) {
+		protegeSettings = new ProtegeSettings(theConfig);
+		pelletSettings = new PelletSettings(theConfig);
 	}
 
 	public ProtegeSettings protegeSettings() {
@@ -23,7 +23,7 @@ public final class ConfigurationReader {
 		return pelletSettings;
 	}
 
-	public static ConfigurationReader of(final Configuration theConfig) {
+	public static ConfigurationReader of(final Properties theConfig) {
 		return new ConfigurationReader(theConfig);
 	}
 

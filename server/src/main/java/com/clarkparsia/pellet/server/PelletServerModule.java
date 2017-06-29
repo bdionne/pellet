@@ -1,5 +1,6 @@
 package com.clarkparsia.pellet.server;
 
+import java.util.Properties;
 import java.util.Set;
 
 import com.clarkparsia.pellet.server.handlers.OntologyAddHandler;
@@ -26,7 +27,7 @@ import com.google.inject.multibindings.Multibinder;
  */
 public class PelletServerModule extends AbstractModule implements Module {
 
-	private final Configuration mSettings;
+	private final Properties mSettings;
 
 	public static TypeLiteral<Set<RoutingHandler>> HANDLERS = new TypeLiteral<Set<RoutingHandler>>() {};
 
@@ -34,7 +35,7 @@ public class PelletServerModule extends AbstractModule implements Module {
 		mSettings = null;
 	}
 
-	public PelletServerModule(final Configuration theSettings) {
+	public PelletServerModule(final Properties theSettings) {
 		mSettings = theSettings;
 	}
 
@@ -51,7 +52,7 @@ public class PelletServerModule extends AbstractModule implements Module {
 		pathsBinder.addBinding().to(OntologyRemoveHandler.class);
 
 		if (mSettings != null) {
-			binder().bind(Configuration.class).toInstance(mSettings);
+			binder().bind(Properties.class).toInstance(mSettings);
 		}
 
 		binder().bind(ServerState.class).to(ProtegeServerState.class).in(Singleton.class);

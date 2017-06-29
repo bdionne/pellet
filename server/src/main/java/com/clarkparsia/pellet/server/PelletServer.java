@@ -21,6 +21,7 @@ import org.protege.editor.owl.server.security.SSLContextInitializationException;
 import javax.net.ssl.SSLContext;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -72,7 +73,8 @@ public final class PelletServer {
 			router.add(spec.getMethod(), spec.getPath(), aHandler);
 		}
 
-		PelletSettings pelletSettings = ConfigurationReader.of(serverInjector.getInstance(Configuration.class)).pelletSettings();
+		final Properties propreties = serverInjector.getInstance(Properties.class);
+		PelletSettings pelletSettings = ConfigurationReader.of(propreties).pelletSettings();
 		String managementPassword = pelletSettings.managementPassword();
 		// add shutdown path
 		router.add("GET", "/admin/shutdown",

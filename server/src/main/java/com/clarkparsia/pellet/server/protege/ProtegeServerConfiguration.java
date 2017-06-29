@@ -1,5 +1,7 @@
 package com.clarkparsia.pellet.server.protege;
 
+import com.google.common.base.Throwables;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -8,33 +10,24 @@ import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.clarkparsia.pellet.server.Configuration;
-import com.google.common.base.Throwables;
-
 /**
  * Protege server configuration reader.
  *
  * @author Edgar Rodriguez-Diaz
  */
-public class ProtegeServerConfiguration implements Configuration {
+public class ProtegeServerConfiguration {
 
 	private static final Logger LOGGER = Logger.getLogger(ProtegeServerConfiguration.class.getName());
 
-	final Properties mProps;
-
-	public ProtegeServerConfiguration(final File thePathToConfig) throws IOException {
-		mProps = new Properties();
+	public static Properties protegeServerConfiguration(final File thePathToConfig) throws IOException {
+		Properties mProps = new Properties();
 		try {
 			mProps.load(new FileInputStream(thePathToConfig));
+			return mProps;
 		}
 		catch (FileNotFoundException fnfe) {
 			LOGGER.log(Level.SEVERE, "Configuration file for the Protege Server Settings was not found", fnfe);
-			Throwables.propagate(fnfe);
+			throw fnfe;
 		}
-	}
-
-	@Override
-	public Properties getSettings() {
-		return mProps;
 	}
 }
