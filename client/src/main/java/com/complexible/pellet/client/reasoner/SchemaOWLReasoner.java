@@ -11,7 +11,6 @@ package com.complexible.pellet.client.reasoner;
 import java.util.AbstractList;
 import java.util.List;
 import java.util.Set;
-import java.util.Map;
 import java.util.logging.Logger;
 
 import com.clarkparsia.owlapiv3.BufferingOntologyChangeListener;
@@ -41,6 +40,7 @@ import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyChange;
 import org.semanticweb.owlapi.model.OWLOntologyChangeListener;
 import org.semanticweb.owlapi.model.OWLOntologyID;
+import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
 import org.semanticweb.owlapi.model.RemoveAxiom;
 import org.semanticweb.owlapi.reasoner.AxiomNotInProfileException;
 import org.semanticweb.owlapi.reasoner.BufferingMode;
@@ -489,12 +489,12 @@ public class SchemaOWLReasoner implements OWLReasoner {
 		return executeQuery(querySuper(direct), requireNamedObject(ce));
 	}
 
-	public Map<OWLClass, NodeSet<OWLClass>> getAllSuperClasses(boolean direct) {
+	public Set<OWLSubClassOfAxiom> getAllInferredSuperClasses(boolean direct) {
 		autoFlush();
 
 		// TODO: make a remote call here
 		// return executeQuery(...);
-		return new java.util.HashMap<>();
+		return new java.util.HashSet<>();
 	}
 
 	/**

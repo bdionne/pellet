@@ -5,8 +5,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashSet;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
@@ -14,39 +12,13 @@ import java.util.logging.Logger;
 
 import aterm.ATermAppl;
 import com.clarkparsia.owlapiv3.AbstractOWLListeningReasoner;
+import com.google.common.collect.*;
 import org.mindswap.pellet.KnowledgeBase;
 import org.mindswap.pellet.exceptions.InternalReasonerException;
 import org.mindswap.pellet.exceptions.PelletRuntimeException;
 import org.mindswap.pellet.utils.ATermUtils;
 import org.mindswap.pellet.utils.VersionInfo;
-import org.semanticweb.owlapi.model.AddAxiom;
-import org.semanticweb.owlapi.model.AddImport;
-import org.semanticweb.owlapi.model.AddOntologyAnnotation;
-import org.semanticweb.owlapi.model.AxiomType;
-import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLAnnotationProperty;
-import org.semanticweb.owlapi.model.OWLAxiom;
-import org.semanticweb.owlapi.model.OWLClass;
-import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.model.OWLDataFactory;
-import org.semanticweb.owlapi.model.OWLDataProperty;
-import org.semanticweb.owlapi.model.OWLDataPropertyExpression;
-import org.semanticweb.owlapi.model.OWLDatatype;
-import org.semanticweb.owlapi.model.OWLEntity;
-import org.semanticweb.owlapi.model.OWLException;
-import org.semanticweb.owlapi.model.OWLLiteral;
-import org.semanticweb.owlapi.model.OWLNamedIndividual;
-import org.semanticweb.owlapi.model.OWLObject;
-import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
-import org.semanticweb.owlapi.model.OWLOntology;
-import org.semanticweb.owlapi.model.OWLOntologyChange;
-import org.semanticweb.owlapi.model.OWLOntologyChangeVisitor;
-import org.semanticweb.owlapi.model.OWLOntologyManager;
-import org.semanticweb.owlapi.model.OWLRuntimeException;
-import org.semanticweb.owlapi.model.RemoveAxiom;
-import org.semanticweb.owlapi.model.RemoveImport;
-import org.semanticweb.owlapi.model.RemoveOntologyAnnotation;
-import org.semanticweb.owlapi.model.SetOntologyID;
+import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.reasoner.AxiomNotInProfileException;
 import org.semanticweb.owlapi.reasoner.BufferingMode;
 import org.semanticweb.owlapi.reasoner.ClassExpressionNotInProfileException;
@@ -60,6 +32,7 @@ import org.semanticweb.owlapi.reasoner.Node;
 import org.semanticweb.owlapi.reasoner.NodeSet;
 import org.semanticweb.owlapi.reasoner.ReasonerInterruptedException;
 import org.semanticweb.owlapi.reasoner.ReasonerProgressMonitor;
+import org.semanticweb.owlapi.reasoner.SupFindVisitor;
 import org.semanticweb.owlapi.reasoner.TimeOutException;
 import org.semanticweb.owlapi.reasoner.UnsupportedEntailmentTypeException;
 import org.semanticweb.owlapi.reasoner.impl.NodeFactory;
@@ -68,6 +41,7 @@ import org.semanticweb.owlapi.reasoner.impl.OWLDataPropertyNodeSet;
 import org.semanticweb.owlapi.reasoner.impl.OWLNamedIndividualNodeSet;
 import org.semanticweb.owlapi.reasoner.impl.OWLObjectPropertyNodeSet;
 import org.semanticweb.owlapi.util.Version;
+
 
 public class PelletReasoner extends AbstractOWLListeningReasoner {
 	public static final Logger log = Logger.getLogger( PelletReasoner.class.getName() );
@@ -755,15 +729,28 @@ public class PelletReasoner extends AbstractOWLListeningReasoner {
 		}
 	}
 
-	public Map<OWLClass, NodeSet<OWLClass>> getAllSuperClasses(boolean direct) {
+	public Set<OWLSubClassOfAxiom> getAllInferredSuperClasses(boolean direct) {
 		refreshCheck();
-		Map<OWLClass, NodeSet<OWLClass>> results = new HashMap<>();
+		Set<OWLSubClassOfAxiom> result = new HashSet<>();
 
 		for( ATermAppl c : kb.getAllClasses() ) {
-			results.put( CLASS_MAPPER.map( c ), toClassNodeSet( kb.getSuperClasses( c , direct ) ) );
-		}
+			OWLClass entity = CLASS_MAPPER.map( c );
+			if( !isSatisfiable( entity ) ) {
+				result.add( factory.getOWLSubClassOfAxiom( entity, factory.getOWLNothing() ) );
+				continue;
+			}
+			SupFindVisitor sfv = new SupFindVisitor( entity, getRootOntology() );
+			entity.accept( sfv );
 
-		return results;
+			Set<OWLClass> superClasses = getSuperClasses( entity, direct ).getFlattened();
+
+			Set<OWLClass> difference = Sets.difference( superClasses, sfv.sups );
+
+			for( OWLClass sup : difference ) {
+				result.add( factory.getOWLSubClassOfAxiom( entity, sup ) );
+			}
+		}
+		return result;
 	}
 
 	public NodeSet<OWLDataProperty> getSuperDataProperties(OWLDataProperty pe, boolean direct)

@@ -19,8 +19,6 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Random;
 import java.util.Set;
-import java.util.Map;
-import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
@@ -37,6 +35,7 @@ import com.clarkparsia.pellet.owlapiv3.PelletReasoner;
 import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
+import com.google.common.collect.Sets;
 import org.mindswap.pellet.exceptions.PelletRuntimeException;
 import org.mindswap.pellet.taxonomy.Taxonomy;
 import org.mindswap.pellet.taxonomy.TaxonomyNode;
@@ -51,25 +50,7 @@ import org.mindswap.pellet.utils.SetUtils;
 import org.mindswap.pellet.utils.TaxonomyUtils;
 import org.mindswap.pellet.utils.Timer;
 import org.mindswap.pellet.utils.Timers;
-import org.semanticweb.owlapi.model.AddAxiom;
-import org.semanticweb.owlapi.model.AxiomType;
-import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLAxiom;
-import org.semanticweb.owlapi.model.OWLClass;
-import org.semanticweb.owlapi.model.OWLClassExpression;
-import org.semanticweb.owlapi.model.OWLDataFactory;
-import org.semanticweb.owlapi.model.OWLDataProperty;
-import org.semanticweb.owlapi.model.OWLDataPropertyExpression;
-import org.semanticweb.owlapi.model.OWLEntity;
-import org.semanticweb.owlapi.model.OWLException;
-import org.semanticweb.owlapi.model.OWLLiteral;
-import org.semanticweb.owlapi.model.OWLNamedIndividual;
-import org.semanticweb.owlapi.model.OWLObjectPropertyExpression;
-import org.semanticweb.owlapi.model.OWLOntology;
-import org.semanticweb.owlapi.model.OWLOntologyChange;
-import org.semanticweb.owlapi.model.OWLOntologyCreationException;
-import org.semanticweb.owlapi.model.OWLOntologyManager;
-import org.semanticweb.owlapi.model.RemoveAxiom;
+import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.reasoner.AxiomNotInProfileException;
 import org.semanticweb.owlapi.reasoner.BufferingMode;
 import org.semanticweb.owlapi.reasoner.ClassExpressionNotInProfileException;
@@ -83,6 +64,7 @@ import org.semanticweb.owlapi.reasoner.Node;
 import org.semanticweb.owlapi.reasoner.NodeSet;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.semanticweb.owlapi.reasoner.ReasonerInterruptedException;
+import org.semanticweb.owlapi.reasoner.SupFindVisitor;
 import org.semanticweb.owlapi.reasoner.TimeOutException;
 import org.semanticweb.owlapi.reasoner.UnsupportedEntailmentTypeException;
 import org.semanticweb.owlapi.reasoner.impl.NodeFactory;
@@ -996,20 +978,29 @@ public class IncrementalReasoner extends AbstractOWLListeningReasoner {
 	/**
 	 * {@inheritDoc}
 	 */
-	public Map<OWLClass, NodeSet<OWLClass>> getAllSuperClasses(boolean direct) {
+	public Set<OWLSubClassOfAxiom> getAllInferredSuperClasses(boolean direct) {
 		classify();
 
-		Map<OWLClass, NodeSet<OWLClass>> results = new HashMap<>();
+		final OWLDataFactory factory = getManager().getOWLDataFactory();
+		Set<OWLSubClassOfAxiom> result = new HashSet<>();
 
-		for (OWLClass ce : taxonomy.getClasses()) {
-			Set<Node<OWLClass>> values = new HashSet<Node<OWLClass>>();
-			for (Set<OWLClass> val : taxonomy.getSupers(ce, direct)) {
-				values.add(NodeFactory.getOWLClassNode(val));
+		for (OWLClass entity : taxonomy.getClasses()) {
+			if( !isSatisfiable( entity ) ) {
+				result.add( factory.getOWLSubClassOfAxiom( entity, factory.getOWLNothing() ) );
+				continue;
 			}
-			results.put(ce, new OWLClassNodeSet(values));
-		}
+			SupFindVisitor sfv = new SupFindVisitor( entity, getRootOntology() );
+			entity.accept( sfv );
 
-		return results;
+			Set<OWLClass> superClasses = getSuperClasses( entity, direct ).getFlattened();
+
+			Set<OWLClass> difference = Sets.difference( superClasses, sfv.sups );
+
+			for( OWLClass sup : difference ) {
+				result.add( factory.getOWLSubClassOfAxiom( entity, sup ) );
+			}
+		}
+		return result;
 	}
 
 	/**
