@@ -1,7 +1,7 @@
 package com.clarkparsia.pellet.server.protege.model;
 
-import com.clarkparsia.pellet.server.ConfigurationReader;
 import com.clarkparsia.pellet.server.PelletServerModule;
+import com.clarkparsia.pellet.server.ProtegeSettings;
 import com.clarkparsia.pellet.server.TestModule;
 import com.clarkparsia.pellet.server.model.OntologyState;
 import com.clarkparsia.pellet.server.model.ServerState;
@@ -25,9 +25,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Edgar Rodriguez-Diaz
@@ -54,10 +55,10 @@ public class ProtegeServerStateTest extends ProtegeServerTest {
 		PolicyFactory f = ConfigurationManager.getFactory();
 		UserId managerId = f.getUserId("bob");
 		PlainPassword managerPassword = f.getPlainPassword("bob");
-		Properties pelletConfig = injector.getInstance(Properties.class);
+		ProtegeSettings protegeSettings = injector.getInstance(ProtegeSettings.class);
 		LocalHttpClient managerClient = new LocalHttpClient(managerId.get(),
 			managerPassword.getPassword(),
-			ConfigurationReader.of(pelletConfig).protegeSettings().host() + ":8081");
+			protegeSettings.host() + ":8081");
 
 		createOwl2Ontology(managerClient);
 		createAgenciesOntology(managerClient);

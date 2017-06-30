@@ -1,6 +1,5 @@
 package com.clarkparsia.pellet.server.protege;
 
-import com.clarkparsia.pellet.server.ConfigurationReader;
 import com.clarkparsia.pellet.server.ProtegeSettings;
 import com.google.common.base.Strings;
 import com.google.common.base.Throwables;
@@ -15,8 +14,7 @@ public final class ProtegeServiceUtils {
 		throw new IllegalStateException("Can't be instantiated!");
 	}
 
-	public static LocalHttpClient connect(final ConfigurationReader config) {
-		final ProtegeSettings protege = config.protegeSettings();
+	public static LocalHttpClient connect(final ProtegeSettings protege) {
 		final String aHost = protege.host();
 
 		if (Strings.isNullOrEmpty(aHost) || "local".equals(aHost)) {

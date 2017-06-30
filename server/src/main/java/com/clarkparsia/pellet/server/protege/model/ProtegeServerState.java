@@ -1,6 +1,7 @@
 package com.clarkparsia.pellet.server.protege.model;
 
-import com.clarkparsia.pellet.server.ConfigurationReader;
+import com.clarkparsia.pellet.server.PelletSettings;
+import com.clarkparsia.pellet.server.ProtegeSettings;
 import com.clarkparsia.pellet.server.model.OntologyState;
 import com.clarkparsia.pellet.server.model.ServerState;
 import com.clarkparsia.pellet.server.protege.ProtegeServiceUtils;
@@ -21,7 +22,6 @@ import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
@@ -36,6 +36,7 @@ public final class ProtegeServerState implements ServerState {
 
 	private static final Logger LOGGER = Logger.getLogger(ProtegeServerState.class.getName());
 	private final OntologyProvider ontologyProvider;
+	private final ProtegeSettings protegeSettings;
 	protected OWLOntologyManager manager;
 
 	private LocalHttpClient client;
@@ -46,22 +47,24 @@ public final class ProtegeServerState implements ServerState {
 	private ReentrantLock updateLock;
 	private Map<IRI, OntologyState> ontologies;
 	private Path home;
-	private final Properties config;
+	private final PelletSettings pelletSettings;
 
 	@Inject
-	public ProtegeServerState(final Properties config, final OntologyProvider ontologyProvider) throws Exception {
-		this.config = config;
+	public ProtegeServerState(final PelletSettings pelletSettings,
+														final ProtegeSettings protegeSettings,
+														final OntologyProvider ontologyProvider) throws Exception {
+		this.pelletSettings = pelletSettings;
+		this.protegeSettings = protegeSettings;
 		this.ontologyProvider = ontologyProvider;
 		start();
 	}
 
 	public void start() {
-		ConfigurationReader theConfigReader = ConfigurationReader.of(config);
 		this.updateLock = new ReentrantLock();
-		this.home = Paths.get(theConfigReader.pelletSettings().home());
+		this.home = Paths.get(pelletSettings.home());
 		this.manager = OWLManager.createOWLOntologyManager();
 		this.ontologies = Maps.newConcurrentMap();
-		this.client = ProtegeServiceUtils.connect(theConfigReader);
+		this.client = ProtegeServiceUtils.connect(protegeSettings);
 
 		Set<String> onts = this.ontologyProvider.classifiableProjects();
 		for (String ont : onts) {
