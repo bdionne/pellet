@@ -1,6 +1,5 @@
 package com.clarkparsia.pellet.server.protege;
 
-import com.clarkparsia.pellet.server.ConfigurationReader;
 import com.clarkparsia.pellet.server.ProtegeSettings;
 import com.google.common.base.Strings;
 import com.google.common.base.Throwables;
