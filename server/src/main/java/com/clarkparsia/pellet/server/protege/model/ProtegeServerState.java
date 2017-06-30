@@ -56,7 +56,7 @@ public final class ProtegeServerState implements ServerState {
 	}
 
 	public void start() {
-		ConfigurationReader theConfigReader = ConfigurationReader.of(config);
+		ConfigurationReader theConfigReader = new ConfigurationReader(config);
 		this.updateLock = new ReentrantLock();
 		this.home = Paths.get(theConfigReader.pelletSettings().home());
 		this.manager = OWLManager.createOWLOntologyManager();

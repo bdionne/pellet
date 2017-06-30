@@ -109,7 +109,7 @@ public class PelletServer extends PelletCmdApp {
 
 	private void stopServer(final String[] args) throws IOException {
 		String endpoint;
-		PelletSettings settings = ConfigurationReader.of(getServerConfig()).pelletSettings();
+		PelletSettings settings = new ConfigurationReader(getServerConfig()).pelletSettings();
 		if (args.length > 1) {
 			endpoint = args[1];
 		}

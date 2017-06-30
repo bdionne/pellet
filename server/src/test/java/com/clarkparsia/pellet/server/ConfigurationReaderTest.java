@@ -2,7 +2,6 @@ package com.clarkparsia.pellet.server;
 
 import java.util.Properties;
 
-import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -46,7 +45,7 @@ public class ConfigurationReaderTest {
 
 	@Test
 	public void shouldGetDefaults() {
-		final ConfigurationReader configReader = ConfigurationReader.of(minimumConfiguration());
+		final ConfigurationReader configReader = new ConfigurationReader(minimumConfiguration());
 
 		assertEquals(HOST_DEFAULT, configReader.protegeSettings().host());
 		assertEquals(PORT_DEFAULT, configReader.protegeSettings().port());
@@ -62,7 +61,7 @@ public class ConfigurationReaderTest {
 
 	@Test
 	public void shouldGetAllConfigs() {
-		final ConfigurationReader configReader = ConfigurationReader.of(allSettingsConfiguration());
+		final ConfigurationReader configReader = new ConfigurationReader(allSettingsConfiguration());
 
 		assertEquals("http://test-protege.com", configReader.protegeSettings().host());
 		assertEquals(5000, configReader.protegeSettings().port());

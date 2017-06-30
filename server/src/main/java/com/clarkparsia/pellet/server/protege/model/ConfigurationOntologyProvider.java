@@ -20,6 +20,6 @@ public class ConfigurationOntologyProvider implements OntologyProvider {
 
 	@Override
 	public Set<String> classifiableProjects() {
-		return ConfigurationReader.of(config).protegeSettings().ontologies();
+		return new ConfigurationReader(config).protegeSettings().ontologies();
 	}
 }

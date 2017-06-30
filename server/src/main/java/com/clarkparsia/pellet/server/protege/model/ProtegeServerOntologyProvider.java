@@ -19,7 +19,7 @@ public class ProtegeServerOntologyProvider implements OntologyProvider {
 
 	@Inject
 	public ProtegeServerOntologyProvider(Properties config) {
-		ConfigurationReader theConfigReader = ConfigurationReader.of(config);
+		ConfigurationReader theConfigReader = new ConfigurationReader(config);
 		this.client = ProtegeServiceUtils.connect(theConfigReader);
 	}
 

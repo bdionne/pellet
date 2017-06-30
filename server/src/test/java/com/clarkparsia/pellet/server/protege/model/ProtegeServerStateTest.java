@@ -57,7 +57,7 @@ public class ProtegeServerStateTest extends ProtegeServerTest {
 		Properties pelletConfig = injector.getInstance(Properties.class);
 		LocalHttpClient managerClient = new LocalHttpClient(managerId.get(),
 			managerPassword.getPassword(),
-			ConfigurationReader.of(pelletConfig).protegeSettings().host() + ":8081");
+			new ConfigurationReader(pelletConfig).protegeSettings().host() + ":8081");
 
 		createOwl2Ontology(managerClient);
 		createAgenciesOntology(managerClient);
