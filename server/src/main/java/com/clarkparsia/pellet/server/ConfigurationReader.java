@@ -7,22 +7,6 @@ import java.util.Properties;
  */
 public final class ConfigurationReader {
 
-	private final ProtegeSettings protegeSettings;
-	private final PelletSettings pelletSettings;
-
-	public ConfigurationReader(final Properties theConfig) {
-		protegeSettings = new ProtegeSettings(theConfig);
-		pelletSettings = new PelletSettings(theConfig);
-	}
-
-	public ProtegeSettings protegeSettings() {
-		return protegeSettings;
-	}
-
-	public PelletSettings pelletSettings() {
-		return pelletSettings;
-	}
-
 	public static String getProperty(Properties properties, String key, String defaultValue) {
 		String val = properties.getProperty(key, defaultValue);
 		if (val == null) {

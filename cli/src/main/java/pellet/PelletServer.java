@@ -1,11 +1,6 @@
 package pellet;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Properties;
-
 import com.clarkparsia.owlapi.explanation.PelletExplanation;
-import com.clarkparsia.pellet.server.ConfigurationReader;
 import com.clarkparsia.pellet.server.PelletServerModule;
 import com.clarkparsia.pellet.server.PelletSettings;
 import com.clarkparsia.pellet.server.protege.ProtegeServerConfiguration;
@@ -16,6 +11,10 @@ import com.google.common.base.Optional;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import retrofit2.Call;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.Properties;
 
 import static pellet.PelletCmdOptionArg.NONE;
 import static pellet.PelletCmdOptionArg.REQUIRED;
@@ -109,15 +108,15 @@ public class PelletServer extends PelletCmdApp {
 
 	private void stopServer(final String[] args) throws IOException {
 		String endpoint;
-		PelletSettings settings = new ConfigurationReader(getServerConfig()).pelletSettings();
+		PelletSettings pelletSettings = new PelletSettings(getServerConfig());
 		if (args.length > 1) {
 			endpoint = args[1];
 		}
 		else {
-			endpoint = settings.endpoint();
+			endpoint = pelletSettings.endpoint();
 		}
 
-		Injector aInjector = Guice.createInjector(new ClientModule(endpoint, Optional.of(settings.managementPassword())));
+		Injector aInjector = Guice.createInjector(new ClientModule(endpoint, Optional.of(pelletSettings.managementPassword())));
 
 		Call<Void> shutdownCall = aInjector.getInstance(PelletService.class).shutdown();
 		ClientTools.executeCall(shutdownCall);

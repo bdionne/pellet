@@ -1,5 +1,6 @@
 package com.clarkparsia.pellet.server;
 
+import javax.inject.Inject;
 import java.util.Properties;
 
 /**
@@ -10,7 +11,8 @@ public class PelletSettings {
 
     private static final int UPDATE_INTERVAL_DEFAULT_IN_SECONDS = 300;
 
-    PelletSettings(final Properties theSettings) {
+    @Inject
+    public PelletSettings(final Properties theSettings) {
         settings = theSettings;
     }
 

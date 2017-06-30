@@ -3,6 +3,7 @@ package com.clarkparsia.pellet.server;
 import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableSet;
 
+import javax.inject.Inject;
 import java.util.Properties;
 import java.util.Set;
 
@@ -16,7 +17,8 @@ public class ProtegeSettings {
 
     private Properties settings;
 
-    ProtegeSettings(final Properties theSettings) {
+    @Inject
+    public ProtegeSettings(final Properties theSettings) {
         settings = theSettings;
     }
 

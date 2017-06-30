@@ -1,9 +1,8 @@
 package com.clarkparsia.pellet.server.protege.model;
 
-import com.clarkparsia.pellet.server.ConfigurationReader;
+import com.clarkparsia.pellet.server.ProtegeSettings;
 
 import javax.inject.Inject;
-import java.util.Properties;
 import java.util.Set;
 
 /**
@@ -11,15 +10,15 @@ import java.util.Set;
  */
 public class ConfigurationOntologyProvider implements OntologyProvider {
 
-	private final Properties config;
+	private final ProtegeSettings protegeSettings;
 
 	@Inject
-	public ConfigurationOntologyProvider(final Properties config) {
-		this.config = config;
+	public ConfigurationOntologyProvider(final ProtegeSettings protegeSettings) {
+		this.protegeSettings = protegeSettings;
 	}
 
 	@Override
 	public Set<String> classifiableProjects() {
-		return new ConfigurationReader(config).protegeSettings().ontologies();
+		return this.protegeSettings.ontologies();
 	}
 }

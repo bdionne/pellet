@@ -15,8 +15,7 @@ public final class ProtegeServiceUtils {
 		throw new IllegalStateException("Can't be instantiated!");
 	}
 
-	public static LocalHttpClient connect(final ConfigurationReader config) {
-		final ProtegeSettings protege = config.protegeSettings();
+	public static LocalHttpClient connect(final ProtegeSettings protege) {
 		final String aHost = protege.host();
 
 		if (Strings.isNullOrEmpty(aHost) || "local".equals(aHost)) {

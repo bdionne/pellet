@@ -1,12 +1,11 @@
 package com.clarkparsia.pellet.server;
 
-import java.util.Properties;
-
 import org.junit.Test;
+
+import java.util.Properties;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 /**
  * @author Edgar Rodriguez-Diaz
@@ -18,7 +17,6 @@ public class ConfigurationReaderTest {
 	private static final String PASSWORD = "password";
 	private static final int PORT_DEFAULT = 5100;
 	private static final String HOST_DEFAULT = "localhost";
-	private static final boolean STRICT_DEFAULT = false;
 	private static final int UPDATE_INTERVAL_DEFAULT_IN_SECONDS = 300;
 
 	public static Properties minimumConfiguration() {
@@ -45,36 +43,40 @@ public class ConfigurationReaderTest {
 
 	@Test
 	public void shouldGetDefaults() {
-		final ConfigurationReader configReader = new ConfigurationReader(minimumConfiguration());
+		final Properties settings = minimumConfiguration();
+		ProtegeSettings protegeSettings = new ProtegeSettings(settings);
+		PelletSettings pelletSettings = new PelletSettings(settings);
 
-		assertEquals(HOST_DEFAULT, configReader.protegeSettings().host());
-		assertEquals(PORT_DEFAULT, configReader.protegeSettings().port());
-		assertEquals(USERNAME, configReader.protegeSettings().username());
-		assertEquals(PASSWORD, configReader.protegeSettings().password());
+		assertEquals(HOST_DEFAULT, protegeSettings.host());
+		assertEquals(PORT_DEFAULT, protegeSettings.port());
+		assertEquals(USERNAME, protegeSettings.username());
+		assertEquals(PASSWORD, protegeSettings.password());
 
-		assertEquals(0, configReader.protegeSettings().ontologies().size());
+		assertEquals(0, protegeSettings.ontologies().size());
 
-		assertEquals(PelletServer.DEFAULT_HOST, configReader.pelletSettings().host());
-		assertEquals(PelletServer.DEFAULT_PORT, configReader.pelletSettings().port());
-		assertEquals(UPDATE_INTERVAL_DEFAULT_IN_SECONDS, configReader.pelletSettings().updateIntervalInSeconds());
+		assertEquals(PelletServer.DEFAULT_HOST, pelletSettings.host());
+		assertEquals(PelletServer.DEFAULT_PORT, pelletSettings.port());
+		assertEquals(UPDATE_INTERVAL_DEFAULT_IN_SECONDS, pelletSettings.updateIntervalInSeconds());
 	}
 
 	@Test
 	public void shouldGetAllConfigs() {
-		final ConfigurationReader configReader = new ConfigurationReader(allSettingsConfiguration());
+		final Properties settings = allSettingsConfiguration();
+		ProtegeSettings protegeSettings = new ProtegeSettings(settings);
+		PelletSettings pelletSettings = new PelletSettings(settings);
 
-		assertEquals("http://test-protege.com", configReader.protegeSettings().host());
-		assertEquals(5000, configReader.protegeSettings().port());
-		assertEquals("admin", configReader.protegeSettings().username());
-		assertEquals("secret", configReader.protegeSettings().password());
+		assertEquals("http://test-protege.com", protegeSettings.host());
+		assertEquals(5000, protegeSettings.port());
+		assertEquals("admin", protegeSettings.username());
+		assertEquals("secret", protegeSettings.password());
 
-		assertEquals(3, configReader.protegeSettings().ontologies().size());
-		assertFalse(configReader.protegeSettings().ontologies().contains("invalid.txt"));
+		assertEquals(3, protegeSettings.ontologies().size());
+		assertFalse(protegeSettings.ontologies().contains("invalid.txt"));
 
-		assertEquals("home", configReader.pelletSettings().home());
-		assertEquals("test-pellet.com", configReader.pelletSettings().host());
-		assertEquals(9090, configReader.pelletSettings().port());
-		assertEquals(30, configReader.pelletSettings().updateIntervalInSeconds());
+		assertEquals("home", pelletSettings.home());
+		assertEquals("test-pellet.com", pelletSettings.host());
+		assertEquals(9090, pelletSettings.port());
+		assertEquals(30, pelletSettings.updateIntervalInSeconds());
 	}
 
 }
