@@ -1,7 +1,11 @@
 package com.clarkparsia.pellet.service.messages;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.Set;
@@ -22,6 +26,7 @@ import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLLogicalEntity;
 import org.semanticweb.owlapi.model.OWLObject;
+import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
 import org.semanticweb.owlapi.reasoner.Node;
 import org.semanticweb.owlapi.reasoner.NodeSet;
 
@@ -35,7 +40,7 @@ public class JsonMessage {
 	private static JsonFactory FACTORY = new JsonFactory();
 
 	private enum Field {
-		QUERY, ENTITY, NODE, IRI, TYPE;
+		QUERY, ENTITY, NODE, IRI, TYPE, SUB_CLASS, BIN_DATA;
 
 		@Override
 		public String toString() {
@@ -55,6 +60,28 @@ public class JsonMessage {
 		g.writeFieldName(Field.ENTITY.toString());
 		writeEntity(g, query.getEntity());
 		g.writeEndObject();
+	}
+
+	public static void writeSubclassSet(final Set<OWLSubClassOfAxiom> subclasses, final OutputStream out) throws IOException {
+		JsonGenerator g = FACTORY.createGenerator(out, JsonEncoding.UTF8);
+
+		g.writeStartObject();
+		g.writeArrayFieldStart(Field.SUB_CLASS.toString());
+
+		for (OWLSubClassOfAxiom sub : subclasses) {
+			g.writeStartObject();
+
+			ByteArrayOutputStream os = new ByteArrayOutputStream();
+			ObjectOutputStream oos = new ObjectOutputStream(os);
+			oos.writeObject(sub);
+			g.writeBinaryField(Field.BIN_DATA.toString(), os.toByteArray());
+
+			g.writeEndObject();
+		}
+		g.writeEndArray();
+		g.writeEndObject();
+
+		g.close();
 	}
 
 	public static void writeNodeSet(final NodeSet<? extends OWLObject> nodeSet, final OutputStream out) throws IOException {
@@ -211,5 +238,33 @@ public class JsonMessage {
 		}
 
 		throw new IllegalArgumentException("Invalid entity type: " + entityType);
+	}
+
+	public static Set<OWLSubClassOfAxiom> readSubclassSet(final InputStream in) throws IOException {
+		final JsonParser jp = FACTORY.createParser(in);
+		assertNextToken(JsonToken.START_OBJECT, jp);
+		assertNextToken(JsonToken.FIELD_NAME, jp);
+
+		assertRead(jp.getCurrentName(), Field.SUB_CLASS.toString());
+		assertNextToken(JsonToken.START_ARRAY, jp);
+
+		Set<OWLSubClassOfAxiom> result = Sets.newHashSet();
+		while (jp.nextToken() == JsonToken.START_OBJECT) {
+			assertNextToken(JsonToken.FIELD_NAME, jp);
+			assertNextToken(JsonToken.VALUE_STRING, jp);
+			ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(jp.getBinaryValue()));
+
+			try {
+				OWLSubClassOfAxiom sub = (OWLSubClassOfAxiom) ois.readObject();
+				result.add(sub);
+			} catch (ClassNotFoundException e) {
+				throw new IOException(e);
+			}
+			assertNextToken(JsonToken.END_OBJECT, jp);
+		}
+		assertCurrentToken(JsonToken.END_ARRAY, jp);
+		assertNextToken(JsonToken.END_OBJECT, jp);
+
+		return result;
 	}
 }

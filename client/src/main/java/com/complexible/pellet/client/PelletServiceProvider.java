@@ -76,6 +76,7 @@ public class PelletServiceProvider implements Provider<PelletService> {
 			.addConverterFactory(AXIOM_FACTORY)
 			.addConverterFactory(NODE_SET_FACTORY)
 			.addConverterFactory(QUERY_FACTORY)
+			.addConverterFactory(SUB_CLASS_OF_AXIOM_FACTORY)
 			.build();
 		return aRetrofit.create(PelletService.class);
 	}
@@ -156,6 +157,11 @@ public class PelletServiceProvider implements Provider<PelletService> {
 			return Short.valueOf(body.string());
 		}
 	};
+
+	private static final Converter<ResponseBody, InferredAxiomsResponse> SUB_CLASS_OF_AXIOM_CONVERTER =
+			(Converter<ResponseBody, InferredAxiomsResponse>) body ->
+					new InferredAxiomsResponse(JsonMessage.readSubclassSet(body.byteStream()));
+
 
 	private static final Converter.Factory ONTOLOGY_FACTORY = new Converter.Factory() {
 		public Converter<OWLOntology, RequestBody> requestBodyConverter(Type type, Annotation[] annotations, Retrofit retrofit) {
@@ -245,4 +251,14 @@ public class PelletServiceProvider implements Provider<PelletService> {
 		}
 	};
 
+	private static final Converter.Factory SUB_CLASS_OF_AXIOM_FACTORY = new Converter.Factory() {
+		public Converter<InferredAxiomsResponse, RequestBody> requestBodyConverter(Type type, Annotation[] annotations, Retrofit retrofit) {
+			return null;
+		}
+
+		@Override
+		public Converter<ResponseBody, InferredAxiomsResponse> responseBodyConverter(final Type type, final Annotation[] annotations, final Retrofit retrofit) {
+			return type.equals(InferredAxiomsResponse.class) ? SUB_CLASS_OF_AXIOM_CONVERTER : null;
+		}
+	};
 }

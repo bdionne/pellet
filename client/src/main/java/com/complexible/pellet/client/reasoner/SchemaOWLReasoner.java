@@ -492,9 +492,7 @@ public class SchemaOWLReasoner implements OWLReasoner {
 	public Set<OWLSubClassOfAxiom> getAllInferredSuperClasses(boolean direct) {
 		autoFlush();
 
-		// TODO: make a remote call here
-		// return executeQuery(...);
-		return new java.util.HashSet<>();
+		return client.getInferredAxioms();
 	}
 
 	/**

@@ -31,6 +31,11 @@ public interface PelletService {
 	@GET("/admin/restart")
 	Call<Void> restart();
 
+	@GET("/reasoner/{ontology}/inferred_axioms")
+	Call<InferredAxiomsResponse> inferredAxioms(
+			@Path("ontology") IRI theOntology,
+			@Query("client") UUID theClientID);
+
 	@POST("/reasoner/{ontology}/query")
 	Call<NodeSet> query(@Path("ontology") IRI theOntology,
 	                    @Query("client") UUID theClientID,

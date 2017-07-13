@@ -24,6 +24,7 @@ import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLLiteral;
 import org.semanticweb.owlapi.model.OWLObject;
 import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
 import org.semanticweb.owlapi.reasoner.NodeSet;
 import retrofit2.Call;
 
@@ -152,5 +153,10 @@ public class RemoteSchemaReasoner implements SchemaReasoner {
 	@Override
 	public void close() throws Exception {
 		cache.invalidateAll();
+	}
+
+	@Override
+	public Set<OWLSubClassOfAxiom> getInferredAxioms() {
+		return ClientTools.executeCall(mService.inferredAxioms(mOntologyIri, mClientID)).data;
 	}
 }

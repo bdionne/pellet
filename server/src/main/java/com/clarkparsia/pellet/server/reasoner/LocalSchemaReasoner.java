@@ -30,6 +30,7 @@ import org.semanticweb.owlapi.model.OWLDataProperty;
 import org.semanticweb.owlapi.model.OWLLogicalEntity;
 import org.semanticweb.owlapi.model.OWLObject;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
+import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
 import org.semanticweb.owlapi.reasoner.InferenceType;
 import org.semanticweb.owlapi.reasoner.NodeSet;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
@@ -128,6 +129,11 @@ public class LocalSchemaReasoner implements SchemaReasoner {
 	public void close() throws Exception {
 		explanation.dispose();
 		reasoner.dispose();
+	}
+
+	@Override
+	public Set<OWLSubClassOfAxiom> getInferredAxioms() {
+		return reasoner.getAllInferredSuperClasses(true);
 	}
 
 	private interface EntityQueryEvaluator {
