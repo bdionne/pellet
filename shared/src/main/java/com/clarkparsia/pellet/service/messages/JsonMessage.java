@@ -240,7 +240,7 @@ public class JsonMessage {
 		throw new IllegalArgumentException("Invalid entity type: " + entityType);
 	}
 
-	public static Set<OWLSubClassOfAxiom> readSubclassSet(final InputStream in) throws IOException {
+	public static Set<OWLSubClassOfAxiom> readSubclassSet(String in) throws IOException {
 		final JsonParser jp = FACTORY.createParser(in);
 		assertNextToken(JsonToken.START_OBJECT, jp);
 		assertNextToken(JsonToken.FIELD_NAME, jp);
