@@ -160,7 +160,7 @@ public class PelletServiceProvider implements Provider<PelletService> {
 
 	private static final Converter<ResponseBody, InferredAxiomsResponse> SUB_CLASS_OF_AXIOM_CONVERTER =
 			(Converter<ResponseBody, InferredAxiomsResponse>) body ->
-					new InferredAxiomsResponse(JsonMessage.readSubclassSet(body.byteStream()));
+					new InferredAxiomsResponse(JsonMessage.readSubclassSet(body.string()));
 
 
 	private static final Converter.Factory ONTOLOGY_FACTORY = new Converter.Factory() {
