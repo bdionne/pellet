@@ -30,7 +30,7 @@ public class ReasonerUpdateHandler extends AbstractRoutingHandler {
 		final IRI ontology = getOntology(theExchange);
 		final UUID clientId = getClientID(theExchange);
 
-		final SchemaReasoner aReasoner = getReasoner(ontology, clientId);
+		final SchemaReasoner aReasoner = getClientState(ontology, clientId).getReasoner();
 
 		final Set<OWLAxiom> axioms = readAxioms(theExchange.getInputStream());
 

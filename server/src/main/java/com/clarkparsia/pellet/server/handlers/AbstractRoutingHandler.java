@@ -6,7 +6,6 @@ import com.clarkparsia.pellet.server.exceptions.ServerException;
 import com.clarkparsia.pellet.server.model.ClientState;
 import com.clarkparsia.pellet.server.model.OntologyState;
 import com.clarkparsia.pellet.server.model.ServerState;
-import com.clarkparsia.pellet.service.reasoner.SchemaReasoner;
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import io.undertow.server.HttpServerExchange;
@@ -65,10 +64,6 @@ public abstract class AbstractRoutingHandler implements RoutingHandler {
 		return serverState;
 	}
 
-	protected SchemaReasoner getReasoner(final IRI theOntology, final UUID theClientId) throws ServerException {
-		return getClientState(theOntology, theClientId).getReasoner();
-	}
-
 	protected ClientState getClientState(final IRI theOntology, final UUID theClientId) throws ServerException {
 		Optional<OntologyState> aOntoState = getServerState().getOntology(theOntology);
 		if (!aOntoState.isPresent()) {
@@ -78,7 +73,7 @@ public abstract class AbstractRoutingHandler implements RoutingHandler {
 		return aOntoState.get().getClient(theClientId);
 	}
 
-	protected IRI getOntology(final HttpServerExchange theExchange) throws ServerException {
+	protected static IRI getOntology(final HttpServerExchange theExchange) throws ServerException {
 		try {
 			return IRI.create(URLDecoder.decode(theExchange.getAttachment(PathTemplateMatch.ATTACHMENT_KEY)
 					.getParameters().get("ontology"), StandardCharsets.UTF_8.name()));
@@ -88,7 +83,7 @@ public abstract class AbstractRoutingHandler implements RoutingHandler {
 		}
 	}
 
-	protected UUID getClientID(final HttpServerExchange theExchange) throws ServerException {
+	protected static UUID getClientID(final HttpServerExchange theExchange) throws ServerException {
 		try {
 			return UUID.fromString(getQueryParameter(theExchange, "client"));
 		}
@@ -97,8 +92,8 @@ public abstract class AbstractRoutingHandler implements RoutingHandler {
 		}
 	}
 
-	protected String getQueryParameter(final HttpServerExchange theExchange,
-	                                   final String paramName) throws ServerException {
+	protected static String getQueryParameter(final HttpServerExchange theExchange,
+																						final String paramName) throws ServerException {
 		final Map<String, Deque<String>> queryParams = theExchange.getQueryParameters();
 
 		if (!queryParams.containsKey(paramName) || queryParams.get(paramName).isEmpty()) {

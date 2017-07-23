@@ -47,7 +47,7 @@ public class ReasonerExplainHandler extends AbstractRoutingHandler {
 
 		OWLAxiom inference = readAxiom(theExchange.getInputStream());
 
-		final SchemaReasoner aReasoner = getReasoner(ontology, clientId);
+		final SchemaReasoner aReasoner = getClientState(ontology, clientId).getReasoner();
 		final Set<Set<OWLAxiom>> explanations = aReasoner.explain(inference, limit);
 
 		if (LOGGER.isLoggable(Level.INFO)) {

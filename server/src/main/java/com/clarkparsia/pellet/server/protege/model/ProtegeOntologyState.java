@@ -12,7 +12,6 @@ import com.clarkparsia.modularity.IncrementalReasoner;
 import com.clarkparsia.modularity.IncrementalReasonerConfiguration;
 import com.clarkparsia.pellet.server.model.ClientState;
 import com.clarkparsia.pellet.server.model.OntologyState;
-import com.clarkparsia.pellet.server.model.impl.ClientStateImpl;
 import com.google.common.base.Charsets;
 import com.google.common.cache.*;
 import com.google.common.io.Files;
@@ -243,7 +242,7 @@ public class ProtegeOntologyState implements OntologyState {
 	private synchronized ClientState newClientState(final UUID user) {
 		int version = getVersion();
 		LOGGER.info("Creating new client for " + user + " with revision " + version);
-		return new ClientStateImpl(reasoner, version);
+		return new ClientState(reasoner, version);
 	}
 
 	public int hashCode() {

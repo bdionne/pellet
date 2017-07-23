@@ -29,7 +29,7 @@ public class ReasonerQueryHandler extends AbstractRoutingHandler {
 		final IRI ontology = getOntology(theExchange);
 		final UUID clientId = getClientID(theExchange);
 		final SchemaQuery query = JsonMessage.readQuery(theExchange.getInputStream());
-		final SchemaReasoner aReasoner = getReasoner(ontology, clientId);
+		final SchemaReasoner aReasoner = getClientState(ontology, clientId).getReasoner();
 		final NodeSet<? extends OWLObject> result = aReasoner.query(query);
 
 		JsonMessage.writeNodeSet(result, theExchange.getOutputStream());

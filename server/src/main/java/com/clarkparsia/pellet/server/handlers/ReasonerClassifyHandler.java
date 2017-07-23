@@ -27,7 +27,7 @@ public class ReasonerClassifyHandler extends AbstractRoutingHandler {
 		final UUID clientId = getClientID(theExchange);
 
 		// Get local client reasoner's version
-		getReasoner(ontology, clientId).classify();
+		getClientState(ontology, clientId).getReasoner().classify();
 
 		theExchange.setStatusCode(StatusCodes.OK);
 		theExchange.endExchange();
