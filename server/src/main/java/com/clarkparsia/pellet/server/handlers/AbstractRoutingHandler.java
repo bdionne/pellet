@@ -8,13 +8,16 @@ import com.clarkparsia.pellet.server.model.OntologyState;
 import com.clarkparsia.pellet.server.model.ServerState;
 import com.clarkparsia.pellet.service.reasoner.SchemaReasoner;
 import com.google.common.base.Optional;
-import com.google.common.base.Predicate;
 import com.google.common.base.Strings;
-import com.google.common.collect.Iterables;
 import io.undertow.server.HttpServerExchange;
-import io.undertow.util.*;
+import io.undertow.util.PathTemplateMatch;
+import io.undertow.util.StatusCodes;
 import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.semanticweb.owlapi.model.*;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLAxiom;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyCreationException;
+import org.semanticweb.owlapi.model.OWLOntologyManager;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -67,23 +70,18 @@ public abstract class AbstractRoutingHandler implements RoutingHandler {
 	}
 
 	protected ClientState getClientState(final IRI theOntology, final UUID theClientId) throws ServerException {
-		return getOntologyState(theOntology).getClient(theClientId);
-	}
-
-	protected OntologyState getOntologyState(final IRI theOntology) throws ServerException {
 		Optional<OntologyState> aOntoState = getServerState().getOntology(theOntology);
 		if (!aOntoState.isPresent()) {
 			throw new ServerException(StatusCodes.NOT_FOUND, "Ontology not found: " + theOntology);
 		}
 
-		return aOntoState.get();
+		return aOntoState.get().getClient(theClientId);
 	}
 
 	protected IRI getOntology(final HttpServerExchange theExchange) throws ServerException {
 		try {
 			return IRI.create(URLDecoder.decode(theExchange.getAttachment(PathTemplateMatch.ATTACHMENT_KEY)
-			                                               .getParameters().get("ontology"),
-			                                    StandardCharsets.UTF_8.name()));
+					.getParameters().get("ontology"), StandardCharsets.UTF_8.name()));
 		}
 		catch (Exception theE) {
 			throw new ServerException(StatusCodes.BAD_REQUEST, "Error parsing Ontology IRI", theE);
@@ -104,13 +102,11 @@ public abstract class AbstractRoutingHandler implements RoutingHandler {
 		final Map<String, Deque<String>> queryParams = theExchange.getQueryParameters();
 
 		if (!queryParams.containsKey(paramName) || queryParams.get(paramName).isEmpty()) {
-			ServerException result;
 			throw new ServerException(StatusCodes.BAD_REQUEST, "Missing required parameter: "+ paramName);
 		}
 
 		final String paramVal = queryParams.get(paramName).getFirst();
 		if (Strings.isNullOrEmpty(paramVal)) {
-			ServerException result;
 			throw new ServerException(StatusCodes.BAD_REQUEST, "Missing required parameter: " + paramName);
 		}
 
@@ -143,19 +139,5 @@ public abstract class AbstractRoutingHandler implements RoutingHandler {
 				OWL.manager.removeOntology(ontology);
 			}
 		}
-	}
-
-	protected OWLAxiom readAxiom(final InputStream theInStream) throws ServerException {
-		Set<OWLAxiom> axioms = readAxioms(theInStream);
-		Iterables.removeIf(axioms, new Predicate<OWLAxiom>() {
-			@Override
-			public boolean apply(final OWLAxiom axiom) {
-				return !axiom.isLogicalAxiom();
-			}
-		});
-		if (axioms.size() != 1) {
-			throw new ServerException(422, "Input should contain a single logical axiom");
-		}
-		return axioms.iterator().next();
 	}
 }

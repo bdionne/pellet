@@ -1,5 +1,6 @@
 package com.clarkparsia.pellet.server.handlers;
 
+import java.io.InputStream;
 import java.io.StringWriter;
 import java.util.Set;
 import java.util.UUID;
@@ -10,7 +11,9 @@ import com.clarkparsia.owlapi.explanation.io.manchester.ManchesterSyntaxExplanat
 import com.clarkparsia.pellet.server.exceptions.ServerException;
 import com.clarkparsia.pellet.server.model.ServerState;
 import com.clarkparsia.pellet.service.reasoner.SchemaReasoner;
+import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
 import com.google.inject.Inject;
 import io.undertow.server.HttpServerExchange;
@@ -81,5 +84,19 @@ public class ReasonerExplainHandler extends AbstractRoutingHandler {
 		catch (Exception e) {
 			throw new ServerException(StatusCodes.BAD_REQUEST, "Query 'limit' parameter is not valid, it must be an Integer.");
 		}
+	}
+
+	private OWLAxiom readAxiom(final InputStream theInStream) throws ServerException {
+		Set<OWLAxiom> axioms = readAxioms(theInStream);
+		Iterables.removeIf(axioms, new Predicate<OWLAxiom>() {
+			@Override
+			public boolean apply(final OWLAxiom axiom) {
+				return !axiom.isLogicalAxiom();
+			}
+		});
+		if (axioms.size() != 1) {
+			throw new ServerException(422, "Input should contain a single logical axiom");
+		}
+		return axioms.iterator().next();
 	}
 }

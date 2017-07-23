@@ -46,7 +46,6 @@ public final class ProtegeServerState implements ServerState {
 	 */
 	private ReentrantLock updateLock;
 	private Map<IRI, OntologyState> ontologies;
-	private Path home;
 	private final PelletSettings pelletSettings;
 
 	@Inject
@@ -61,7 +60,6 @@ public final class ProtegeServerState implements ServerState {
 
 	public void start() {
 		this.updateLock = new ReentrantLock();
-		this.home = Paths.get(pelletSettings.home());
 		this.manager = OWLManager.createOWLOntologyManager();
 		this.ontologies = Maps.newConcurrentMap();
 		this.client = ProtegeServiceUtils.connect(protegeSettings);
@@ -117,7 +115,8 @@ public final class ProtegeServerState implements ServerState {
 
 		try {
 			ProjectId projectID = new ProjectIdImpl(ontologyPath);
-			result = new ProtegeOntologyState(client, projectID, home.resolve(projectID.get()).resolve("reasoner_state.bin"));
+			result = new ProtegeOntologyState(client, projectID,
+				Paths.get(pelletSettings.home()).resolve(projectID.get()).resolve("reasoner_state.bin"));
 			LOGGER.info("Loaded revision " + result.getVersion());
 			result.update();
 		}
