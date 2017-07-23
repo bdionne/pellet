@@ -3,7 +3,7 @@ package com.clarkparsia.pellet.server.protege.model;
 import com.clarkparsia.pellet.server.PelletServerModule;
 import com.clarkparsia.pellet.server.ProtegeSettings;
 import com.clarkparsia.pellet.server.TestModule;
-import com.clarkparsia.pellet.server.model.OntologyState;
+import com.clarkparsia.pellet.server.model.ProtegeOntologyState;
 import com.clarkparsia.pellet.server.model.ServerState;
 import com.clarkparsia.pellet.server.protege.ProtegeServerTest;
 import com.google.common.base.Optional;
@@ -79,7 +79,7 @@ public class ProtegeServerStateTest extends ProtegeServerTest {
 		assertEquals(ontologies.size(), mServerState.ontologies().size());
 		for (String ontology : ontologies) {
 			IRI ontologyIRI = IRI.create(ontology);
-			Optional<OntologyState> state = mServerState.getOntology(ontologyIRI);
+			Optional<ProtegeOntologyState> state = mServerState.getOntology(ontologyIRI);
 			assertTrue(state.isPresent());
 			assertEquals(ontologyIRI, state.get().getIRI());
 		}
@@ -118,7 +118,7 @@ public class ProtegeServerStateTest extends ProtegeServerTest {
 	}
 
 	private void assertOntologyFilesExist(ProtegeServerState state) throws IOException {
-		for (OntologyState aState : state.ontologies()) {
+		for (ProtegeOntologyState aState : state.ontologies()) {
 			assertTrue(((ProtegeOntologyState) aState).revisionFile().exists());
 			assertTrue(Files.exists(((ProtegeOntologyState) aState).path));
 		}

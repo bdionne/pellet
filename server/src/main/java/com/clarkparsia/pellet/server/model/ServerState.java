@@ -8,14 +8,11 @@
 
 package com.clarkparsia.pellet.server.model;
 
-import java.util.Collection;
-import java.util.Set;
-
 import com.google.common.base.Optional;
-import com.google.common.collect.ImmutableCollection;
-import com.google.common.collect.ImmutableSet;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
+
+import java.util.Collection;
 
 /**
  * @author Evren Sirin
@@ -24,16 +21,16 @@ public interface ServerState extends AutoCloseable {
 	/**
 	 * Return the stste associated with the given IRI.
 	 */
-	Optional<OntologyState> getOntology(IRI ontology);
+	Optional<ProtegeOntologyState> getOntology(IRI ontology);
 
 	boolean removeOntology(IRI ontology);
 
-	OntologyState addOntology(String ontologyPath) throws OWLOntologyCreationException;
+	ProtegeOntologyState addOntology(String ontologyPath) throws OWLOntologyCreationException;
 
 	/**
 	 * Returns all the ontologies managed by this server.
 	 */
-	Collection<OntologyState> ontologies();
+	Collection<ProtegeOntologyState> ontologies();
 
 	/**
 	 * Update all ontology states. This function will iterate over all the {@link #ontologies() ontologies} and {@link OntologyState#update() update} each one.

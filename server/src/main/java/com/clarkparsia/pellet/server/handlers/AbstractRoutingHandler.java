@@ -1,13 +1,13 @@
 package com.clarkparsia.pellet.server.handlers;
 
+import com.clarkparsia.pellet.server.model.ProtegeOntologyState;
 import com.clarkparsia.owlapiv3.OWL;
 import com.clarkparsia.pellet.server.PelletServer;
 import com.clarkparsia.pellet.server.exceptions.ServerException;
 import com.clarkparsia.pellet.server.model.ClientState;
-import com.clarkparsia.pellet.server.model.OntologyState;
 import com.clarkparsia.pellet.server.model.ServerState;
-import com.google.common.base.Optional;
 import com.google.common.base.Strings;
+import com.google.common.base.Optional;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.PathTemplateMatch;
 import io.undertow.util.StatusCodes;
@@ -65,7 +65,7 @@ public abstract class AbstractRoutingHandler implements RoutingHandler {
 	}
 
 	protected ClientState getClientState(final IRI theOntology, final UUID theClientId) throws ServerException {
-		Optional<OntologyState> aOntoState = getServerState().getOntology(theOntology);
+		Optional<ProtegeOntologyState> aOntoState = getServerState().getOntology(theOntology);
 		if (!aOntoState.isPresent()) {
 			throw new ServerException(StatusCodes.NOT_FOUND, "Ontology not found: " + theOntology);
 		}
