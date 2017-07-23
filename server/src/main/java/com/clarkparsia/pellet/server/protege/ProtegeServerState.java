@@ -1,14 +1,10 @@
-package com.clarkparsia.pellet.server.protege.model;
+package com.clarkparsia.pellet.server.protege;
 
 import com.clarkparsia.pellet.server.PelletSettings;
 import com.clarkparsia.pellet.server.ProtegeSettings;
-import com.clarkparsia.pellet.server.model.OntologyState;
-import com.clarkparsia.pellet.server.model.ServerState;
-import com.clarkparsia.pellet.server.protege.ProtegeServiceUtils;
 import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
-import com.google.inject.Singleton;
 import edu.stanford.protege.metaproject.api.ProjectId;
 import edu.stanford.protege.metaproject.impl.ProjectIdImpl;
 import org.protege.editor.owl.client.LocalHttpClient;
@@ -17,7 +13,6 @@ import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Collections;
@@ -31,8 +26,7 @@ import java.util.logging.Logger;
 /**
  * @author Edgar Rodriguez-Diaz
  */
-@Singleton
-public final class ProtegeServerState implements ServerState {
+public final class ProtegeServerState {
 
 	private static final Logger LOGGER = Logger.getLogger(ProtegeServerState.class.getName());
 	private final OntologyProvider ontologyProvider;
@@ -45,8 +39,7 @@ public final class ProtegeServerState implements ServerState {
 	 * Lock to control reloads of the state
 	 */
 	private ReentrantLock updateLock;
-	private Map<IRI, OntologyState> ontologies;
-	private Path home;
+	private Map<IRI, ProtegeOntologyState> ontologies;
 	private final PelletSettings pelletSettings;
 
 	@Inject
@@ -61,7 +54,6 @@ public final class ProtegeServerState implements ServerState {
 
 	public void start() {
 		this.updateLock = new ReentrantLock();
-		this.home = Paths.get(pelletSettings.home());
 		this.manager = OWLManager.createOWLOntologyManager();
 		this.ontologies = Maps.newConcurrentMap();
 		this.client = ProtegeServiceUtils.connect(protegeSettings);
@@ -76,12 +68,11 @@ public final class ProtegeServerState implements ServerState {
 		}
 	}
 
-	@Override
 	public boolean update() {
 		try {
 			if (updateLock.tryLock(1, TimeUnit.SECONDS)) {
 				boolean updated = false;
-				for (OntologyState ontState : ontologies()) {
+				for (ProtegeOntologyState ontState : ontologies()) {
 					updated |= ontState.update();
 				}
 				return updated;
@@ -105,19 +96,18 @@ public final class ProtegeServerState implements ServerState {
 		return false;
 	}
 
-	@Override
-	public Optional<OntologyState> getOntology(IRI ontology) {
+	public Optional<ProtegeOntologyState> getOntology(IRI ontology) {
 		return Optional.fromNullable(ontologies.get(ontology));
 	}
 
-	@Override
-	public OntologyState addOntology(final String ontologyPath) throws OWLOntologyCreationException {
+	public ProtegeOntologyState addOntology(final String ontologyPath) throws OWLOntologyCreationException {
 		ProtegeOntologyState result;
 		LOGGER.info("Loading ontology " + ontologyPath);
 
 		try {
 			ProjectId projectID = new ProjectIdImpl(ontologyPath);
-			result = new ProtegeOntologyState(client, projectID, home.resolve(projectID.get()).resolve("reasoner_state.bin"));
+			result = new ProtegeOntologyState(client, projectID,
+				Paths.get(pelletSettings.home()).resolve(projectID.get()).resolve("reasoner_state.bin"));
 			LOGGER.info("Loaded revision " + result.getVersion());
 			result.update();
 		}
@@ -132,9 +122,8 @@ public final class ProtegeServerState implements ServerState {
 		return result;
 	}
 
-	@Override
 	public boolean removeOntology(final IRI ontology) {
-		OntologyState state = ontologies.remove(ontology);
+		ProtegeOntologyState state = ontologies.remove(ontology);
 		boolean removed = (state != null);
 		if (removed) {
 			state.close();
@@ -142,21 +131,18 @@ public final class ProtegeServerState implements ServerState {
 		return removed;
 	}
 
-	@Override
-	public Collection<OntologyState> ontologies() {
+	public Collection<ProtegeOntologyState> ontologies() {
 		return Collections.unmodifiableCollection(ontologies.values());
 	}
 
-	@Override
 	public void save() {
-		for (OntologyState aOntoState : ontologies()) {
+		for (ProtegeOntologyState aOntoState : ontologies()) {
 			aOntoState.save();
 		}
 	}
 
-	@Override
 	public void close() throws Exception {
-		for (OntologyState ontology : ontologies()) {
+		for (ProtegeOntologyState ontology : ontologies()) {
 			ontology.close();
 		}
 	}

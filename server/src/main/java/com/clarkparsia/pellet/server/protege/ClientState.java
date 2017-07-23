@@ -6,10 +6,9 @@
 // proprietary exceptions.
 // Questions, comments, or requests for clarification: licensing@clarkparsia.com
 
-package com.clarkparsia.pellet.server.model.impl;
+package com.clarkparsia.pellet.server.protege;
 
 import com.clarkparsia.modularity.IncrementalReasoner;
-import com.clarkparsia.pellet.server.model.ClientState;
 import com.clarkparsia.pellet.server.reasoner.LocalSchemaReasoner;
 import com.clarkparsia.pellet.service.reasoner.SchemaReasoner;
 import com.google.common.base.Throwables;
@@ -19,25 +18,22 @@ import org.semanticweb.owlapi.model.OWLOntologyManager;
 /**
  * @author Evren Sirin
  */
-public class ClientStateImpl implements ClientState {
-
+public class ClientState implements AutoCloseable {
 	private final SchemaReasoner reasoner;
 	private final OWLOntology ontology;
 	private final int version;
 
-	public ClientStateImpl(final IncrementalReasoner reasoner, final int version) {
+	public ClientState(final IncrementalReasoner reasoner, final int version) {
 		// create the reasoner with a copy of the incremental reasoner so it won't be affected if the original reasoner is updated
 		this.reasoner = new LocalSchemaReasoner(reasoner.copy());
 		this.ontology = reasoner.getRootOntology();
 		this.version = version;
 	}
 
-	@Override
 	public SchemaReasoner getReasoner() {
 		return reasoner;
 	}
 
-	@Override
 	public int version() {
 		return version;
 	}
@@ -51,8 +47,7 @@ public class ClientStateImpl implements ClientState {
 			if (manager != null) {
 				manager.removeOntology(ontology);
 			}
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			Throwables.propagate(e);
 		}
 	}

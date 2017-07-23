@@ -2,7 +2,7 @@ package com.clarkparsia.pellet.server.handlers;
 
 import java.util.UUID;
 
-import com.clarkparsia.pellet.server.model.ServerState;
+import com.clarkparsia.pellet.server.protege.ProtegeServerState;
 import com.google.common.net.MediaType;
 import com.google.inject.Inject;
 import io.undertow.server.HttpServerExchange;
@@ -16,7 +16,7 @@ import org.semanticweb.owlapi.model.IRI;
 public class ReasonerVersionHandler extends AbstractRoutingHandler {
 
 	@Inject
-	public ReasonerVersionHandler(final ServerState theServerState) {
+	public ReasonerVersionHandler(final ProtegeServerState theServerState) {
 		super("GET", "{ontology}/version", theServerState);
 	}
 

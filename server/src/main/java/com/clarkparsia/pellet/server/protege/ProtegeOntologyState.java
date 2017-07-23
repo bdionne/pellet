@@ -6,13 +6,10 @@
 // proprietary exceptions.
 // Questions, comments, or requests for clarification: licensing@clarkparsia.com
 
-package com.clarkparsia.pellet.server.protege.model;
+package com.clarkparsia.pellet.server.protege;
 
 import com.clarkparsia.modularity.IncrementalReasoner;
 import com.clarkparsia.modularity.IncrementalReasonerConfiguration;
-import com.clarkparsia.pellet.server.model.ClientState;
-import com.clarkparsia.pellet.server.model.OntologyState;
-import com.clarkparsia.pellet.server.model.impl.ClientStateImpl;
 import com.google.common.base.Charsets;
 import com.google.common.cache.*;
 import com.google.common.io.Files;
@@ -45,7 +42,7 @@ import java.util.logging.Logger;
 /**
  * @author Evren Sirin
  */
-public class ProtegeOntologyState implements OntologyState {
+public class ProtegeOntologyState implements AutoCloseable {
 	public static final Logger LOGGER = Logger.getLogger(ProtegeOntologyState.class.getName());
 
 	private final LocalHttpClient client;
@@ -123,11 +120,10 @@ public class ProtegeOntologyState implements OntologyState {
 		Files.write(String.valueOf(getVersion()), aHeadFile, Charsets.UTF_8);
 	}
 
-	protected int getVersion() {
+	public int getVersion() {
 		return revision.getRevisionNumber();
 	}
 
-	@Override
 	public ClientState getClient(UUID clientID) {
 		try {
 			return clients.get(clientID);
@@ -137,12 +133,10 @@ public class ProtegeOntologyState implements OntologyState {
 		}
 	}
 
-	@Override
 	public IRI getIRI() {
 		return ontology.getOntologyID().getOntologyIRI().orNull();
 	}
 
-	@Override
 	public boolean update() {
 		boolean updated;
 		try {
@@ -185,7 +179,6 @@ public class ProtegeOntologyState implements OntologyState {
 		return updated;
 	}
 
-	@Override
 	public void save() {
 		try {
 			if (path != null) {
@@ -243,7 +236,7 @@ public class ProtegeOntologyState implements OntologyState {
 	private synchronized ClientState newClientState(final UUID user) {
 		int version = getVersion();
 		LOGGER.info("Creating new client for " + user + " with revision " + version);
-		return new ClientStateImpl(reasoner, version);
+		return new ClientState(reasoner, version);
 	}
 
 	public int hashCode() {
@@ -255,11 +248,11 @@ public class ProtegeOntologyState implements OntologyState {
 		if (this == theOther) {
 			return true;
 		}
-		if (!(theOther instanceof OntologyState)) {
+		if (!(theOther instanceof ProtegeOntologyState)) {
 			return false;
 		}
 
-		OntologyState otherOntoState = (OntologyState) theOther;
+		ProtegeOntologyState otherOntoState = (ProtegeOntologyState) theOther;
 
 		// Just considering for now the ontology IRI to determine equality given
 		// that there shouldn't more than one state per ontology.

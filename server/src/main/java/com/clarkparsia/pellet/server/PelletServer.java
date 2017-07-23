@@ -3,7 +3,7 @@ package com.clarkparsia.pellet.server;
 import com.clarkparsia.pellet.server.exceptions.ServerException;
 import com.clarkparsia.pellet.server.handlers.RoutingHandler;
 import com.clarkparsia.pellet.server.jobs.ServerStateUpdate;
-import com.clarkparsia.pellet.server.model.ServerState;
+import com.clarkparsia.pellet.server.protege.ProtegeServerState;
 import com.google.common.base.Strings;
 import com.google.inject.Injector;
 import com.google.inject.Key;
@@ -131,8 +131,8 @@ public final class PelletServer {
 			getState()), updateIntervalSec, updateIntervalSec, TimeUnit.SECONDS);
 	}
 
-	public ServerState getState() {
-		return serverInjector.getInstance(ServerState.class);
+	public ProtegeServerState getState() {
+		return serverInjector.getInstance(ProtegeServerState.class);
 	}
 
 	public void stop() {

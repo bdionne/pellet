@@ -1,8 +1,8 @@
 package com.clarkparsia.pellet.server;
 
 import com.clarkparsia.pellet.server.protege.TestProtegeServerConfiguration;
-import com.clarkparsia.pellet.server.protege.model.ConfigurationOntologyProvider;
-import com.clarkparsia.pellet.server.protege.model.OntologyProvider;
+import com.clarkparsia.pellet.server.protege.ConfigurationOntologyProvider;
+import com.clarkparsia.pellet.server.protege.OntologyProvider;
 import com.google.inject.AbstractModule;
 import com.google.inject.Module;
 import com.google.inject.Singleton;

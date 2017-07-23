@@ -1,6 +1,6 @@
 package com.clarkparsia.pellet.server.handlers;
 
-import com.clarkparsia.pellet.server.model.ServerState;
+import com.clarkparsia.pellet.server.protege.ProtegeServerState;
 import com.google.inject.Inject;
 
 /**
@@ -8,7 +8,7 @@ import com.google.inject.Inject;
  */
 public class ReasonerDeleteHandler extends ReasonerUpdateHandler {
 	@Inject
-	public ReasonerDeleteHandler(final ServerState theServerState) {
+	public ReasonerDeleteHandler(final ProtegeServerState theServerState) {
 		super(theServerState, false);
 	}
 }

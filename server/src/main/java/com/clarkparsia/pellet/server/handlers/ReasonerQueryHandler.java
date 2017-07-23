@@ -2,7 +2,7 @@ package com.clarkparsia.pellet.server.handlers;
 
 import java.util.UUID;
 
-import com.clarkparsia.pellet.server.model.ServerState;
+import com.clarkparsia.pellet.server.protege.ProtegeServerState;
 import com.clarkparsia.pellet.service.messages.JsonMessage;
 import com.clarkparsia.pellet.service.reasoner.SchemaQuery;
 import com.clarkparsia.pellet.service.reasoner.SchemaReasoner;
@@ -20,7 +20,7 @@ import org.semanticweb.owlapi.reasoner.NodeSet;
  */
 public class ReasonerQueryHandler extends AbstractRoutingHandler {
 	@Inject
-	public ReasonerQueryHandler(final ServerState theServerState) {
+	public ReasonerQueryHandler(final ProtegeServerState theServerState) {
 		super("POST", "{ontology}/query", theServerState);
 	}
 
@@ -29,7 +29,7 @@ public class ReasonerQueryHandler extends AbstractRoutingHandler {
 		final IRI ontology = getOntology(theExchange);
 		final UUID clientId = getClientID(theExchange);
 		final SchemaQuery query = JsonMessage.readQuery(theExchange.getInputStream());
-		final SchemaReasoner aReasoner = getReasoner(ontology, clientId);
+		final SchemaReasoner aReasoner = getClientState(ontology, clientId).getReasoner();
 		final NodeSet<? extends OWLObject> result = aReasoner.query(query);
 
 		JsonMessage.writeNodeSet(result, theExchange.getOutputStream());
