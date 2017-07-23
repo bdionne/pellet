@@ -1,6 +1,6 @@
 package com.clarkparsia.pellet.server.handlers;
 
-import com.clarkparsia.pellet.server.model.ServerState;
+import com.clarkparsia.pellet.server.protege.ProtegeServerState;
 import com.google.inject.Inject;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.StatusCodes;
@@ -12,7 +12,7 @@ import org.semanticweb.owlapi.model.IRI;
 public class OntologyRemoveHandler extends AbstractRoutingHandler {
 
 	@Inject
-	public OntologyRemoveHandler(final ServerState theServerState) {
+	public OntologyRemoveHandler(final ProtegeServerState theServerState) {
 		super("DELETE", "{ontology}", theServerState);
 	}
 

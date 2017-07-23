@@ -6,7 +6,7 @@
 // proprietary exceptions.
 // Questions, comments, or requests for clarification: licensing@clarkparsia.com
 
-package com.clarkparsia.pellet.server.model;
+package com.clarkparsia.pellet.server.protege;
 
 import com.clarkparsia.modularity.IncrementalReasoner;
 import com.clarkparsia.modularity.IncrementalReasonerConfiguration;

@@ -3,8 +3,8 @@ package com.clarkparsia.pellet.server.protege.model;
 import com.clarkparsia.pellet.server.PelletServerModule;
 import com.clarkparsia.pellet.server.ProtegeSettings;
 import com.clarkparsia.pellet.server.TestModule;
-import com.clarkparsia.pellet.server.model.ProtegeOntologyState;
-import com.clarkparsia.pellet.server.model.ServerState;
+import com.clarkparsia.pellet.server.protege.ProtegeOntologyState;
+import com.clarkparsia.pellet.server.protege.ProtegeServerState;
 import com.clarkparsia.pellet.server.protege.ProtegeServerTest;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
@@ -49,7 +49,7 @@ public class ProtegeServerStateTest extends ProtegeServerTest {
 		Injector injector = Guice.createInjector(Modules.override(new PelletServerModule())
 			.with(new TestModule(Lists.<String>newArrayList())));
 
-		mServerState = (ProtegeServerState) injector.getInstance(ServerState.class);
+		mServerState = (ProtegeServerState) injector.getInstance(ProtegeServerState.class);
 		assertTrue(mServerState.ontologies().isEmpty());
 
 		PolicyFactory f = ConfigurationManager.getFactory();
@@ -66,7 +66,7 @@ public class ProtegeServerStateTest extends ProtegeServerTest {
 
 		injector = Guice.createInjector(Modules.override(new PelletServerModule())
 			.with(new TestModule(ONTOLOGIES)));
-		mServerState = (ProtegeServerState) injector.getInstance(ServerState.class);
+		mServerState = (ProtegeServerState) injector.getInstance(ProtegeServerState.class);
 	}
 
 	@After

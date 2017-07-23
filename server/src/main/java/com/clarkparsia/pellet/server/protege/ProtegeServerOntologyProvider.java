@@ -1,7 +1,6 @@
-package com.clarkparsia.pellet.server.protege.model;
+package com.clarkparsia.pellet.server.protege;
 
 import com.clarkparsia.pellet.server.ProtegeSettings;
-import com.clarkparsia.pellet.server.protege.ProtegeServiceUtils;
 import edu.stanford.protege.metaproject.api.Project;
 import org.protege.editor.owl.client.api.Client;
 

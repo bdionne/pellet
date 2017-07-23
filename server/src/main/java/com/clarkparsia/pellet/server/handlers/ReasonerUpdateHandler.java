@@ -4,7 +4,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Logger;
 
-import com.clarkparsia.pellet.server.model.ServerState;
+import com.clarkparsia.pellet.server.protege.ProtegeServerState;
 import com.clarkparsia.pellet.service.reasoner.SchemaReasoner;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.StatusCodes;
@@ -18,7 +18,7 @@ public class ReasonerUpdateHandler extends AbstractRoutingHandler {
 	private static final Logger LOGGER = Logger.getLogger(ReasonerUpdateHandler.class.getName());
 	private final boolean insert;
 
-	public ReasonerUpdateHandler(final ServerState theServerState,
+	public ReasonerUpdateHandler(final ProtegeServerState theServerState,
 	                             final boolean insert) {
 		super("POST", "{ontology}/" + (insert ? "insert" : "delete"), theServerState);
 

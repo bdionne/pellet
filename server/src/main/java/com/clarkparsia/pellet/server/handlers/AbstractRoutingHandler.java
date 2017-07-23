@@ -1,11 +1,11 @@
 package com.clarkparsia.pellet.server.handlers;
 
-import com.clarkparsia.pellet.server.model.ProtegeOntologyState;
+import com.clarkparsia.pellet.server.protege.ProtegeOntologyState;
 import com.clarkparsia.owlapiv3.OWL;
 import com.clarkparsia.pellet.server.PelletServer;
 import com.clarkparsia.pellet.server.exceptions.ServerException;
-import com.clarkparsia.pellet.server.model.ClientState;
-import com.clarkparsia.pellet.server.model.ServerState;
+import com.clarkparsia.pellet.server.protege.ClientState;
+import com.clarkparsia.pellet.server.protege.ProtegeServerState;
 import com.google.common.base.Strings;
 import com.google.common.base.Optional;
 import io.undertow.server.HttpServerExchange;
@@ -37,13 +37,13 @@ public abstract class AbstractRoutingHandler implements RoutingHandler {
 
 	private final String mPath;
 	private final String mMethod;
-	private final ServerState serverState;
+	private final ProtegeServerState serverState;
 
 	protected final OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
 
 	public AbstractRoutingHandler(final String theMethod,
 	                              final String thePath,
-	                              final ServerState theServerState) {
+	                              final ProtegeServerState theServerState) {
 		serverState = theServerState;
 		mMethod = theMethod;
 		mPath = REASONER_PATH + "/" + thePath;
@@ -60,7 +60,7 @@ public abstract class AbstractRoutingHandler implements RoutingHandler {
 	}
 
 
-	protected ServerState getServerState() {
+	protected ProtegeServerState getServerState() {
 		return serverState;
 	}
 

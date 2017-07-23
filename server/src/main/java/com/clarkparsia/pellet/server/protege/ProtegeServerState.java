@@ -1,14 +1,10 @@
-package com.clarkparsia.pellet.server.protege.model;
+package com.clarkparsia.pellet.server.protege;
 
 import com.clarkparsia.pellet.server.PelletSettings;
 import com.clarkparsia.pellet.server.ProtegeSettings;
-import com.clarkparsia.pellet.server.model.ProtegeOntologyState;
-import com.clarkparsia.pellet.server.model.ServerState;
-import com.clarkparsia.pellet.server.protege.ProtegeServiceUtils;
 import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
-import com.google.inject.Singleton;
 import edu.stanford.protege.metaproject.api.ProjectId;
 import edu.stanford.protege.metaproject.impl.ProjectIdImpl;
 import org.protege.editor.owl.client.LocalHttpClient;
@@ -30,8 +26,7 @@ import java.util.logging.Logger;
 /**
  * @author Edgar Rodriguez-Diaz
  */
-@Singleton
-public final class ProtegeServerState implements ServerState {
+public final class ProtegeServerState {
 
 	private static final Logger LOGGER = Logger.getLogger(ProtegeServerState.class.getName());
 	private final OntologyProvider ontologyProvider;
@@ -73,7 +68,6 @@ public final class ProtegeServerState implements ServerState {
 		}
 	}
 
-	@Override
 	public boolean update() {
 		try {
 			if (updateLock.tryLock(1, TimeUnit.SECONDS)) {
@@ -102,12 +96,10 @@ public final class ProtegeServerState implements ServerState {
 		return false;
 	}
 
-	@Override
 	public Optional<ProtegeOntologyState> getOntology(IRI ontology) {
 		return Optional.fromNullable(ontologies.get(ontology));
 	}
 
-	@Override
 	public ProtegeOntologyState addOntology(final String ontologyPath) throws OWLOntologyCreationException {
 		ProtegeOntologyState result;
 		LOGGER.info("Loading ontology " + ontologyPath);
@@ -130,7 +122,6 @@ public final class ProtegeServerState implements ServerState {
 		return result;
 	}
 
-	@Override
 	public boolean removeOntology(final IRI ontology) {
 		ProtegeOntologyState state = ontologies.remove(ontology);
 		boolean removed = (state != null);
@@ -140,19 +131,16 @@ public final class ProtegeServerState implements ServerState {
 		return removed;
 	}
 
-	@Override
 	public Collection<ProtegeOntologyState> ontologies() {
 		return Collections.unmodifiableCollection(ontologies.values());
 	}
 
-	@Override
 	public void save() {
 		for (ProtegeOntologyState aOntoState : ontologies()) {
 			aOntoState.save();
 		}
 	}
 
-	@Override
 	public void close() throws Exception {
 		for (ProtegeOntologyState ontology : ontologies()) {
 			ontology.close();

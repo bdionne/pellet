@@ -2,7 +2,7 @@ package com.clarkparsia.pellet.server.handlers;
 
 import java.util.UUID;
 
-import com.clarkparsia.pellet.server.model.ServerState;
+import com.clarkparsia.pellet.server.protege.ProtegeServerState;
 import com.google.inject.Inject;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.StatusCodes;
@@ -14,7 +14,7 @@ import org.semanticweb.owlapi.model.IRI;
 public class ReasonerClassifyHandler extends AbstractRoutingHandler {
 
 	@Inject
-	public ReasonerClassifyHandler(final ServerState theServerState) {
+	public ReasonerClassifyHandler(final ProtegeServerState theServerState) {
 		super("GET", "{ontology}/classify", theServerState);
 	}
 

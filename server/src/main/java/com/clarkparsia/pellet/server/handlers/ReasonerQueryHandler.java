@@ -2,7 +2,7 @@ package com.clarkparsia.pellet.server.handlers;
 
 import java.util.UUID;
 
-import com.clarkparsia.pellet.server.model.ServerState;
+import com.clarkparsia.pellet.server.protege.ProtegeServerState;
 import com.clarkparsia.pellet.service.messages.JsonMessage;
 import com.clarkparsia.pellet.service.reasoner.SchemaQuery;
 import com.clarkparsia.pellet.service.reasoner.SchemaReasoner;
@@ -20,7 +20,7 @@ import org.semanticweb.owlapi.reasoner.NodeSet;
  */
 public class ReasonerQueryHandler extends AbstractRoutingHandler {
 	@Inject
-	public ReasonerQueryHandler(final ServerState theServerState) {
+	public ReasonerQueryHandler(final ProtegeServerState theServerState) {
 		super("POST", "{ontology}/query", theServerState);
 	}
 

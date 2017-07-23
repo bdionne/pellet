@@ -2,7 +2,7 @@ package com.clarkparsia.pellet.server.jobs;
 
 import java.util.logging.Logger;
 
-import com.clarkparsia.pellet.server.model.ServerState;
+import com.clarkparsia.pellet.server.protege.ProtegeServerState;
 
 /**
  * Job definition for reloading Server State.
@@ -12,9 +12,9 @@ import com.clarkparsia.pellet.server.model.ServerState;
 public final class ServerStateUpdate implements Runnable {
 	private static final Logger LOGGER = Logger.getLogger(ServerStateUpdate.class.getName());
 
-	private final ServerState serverState;
+	private final ProtegeServerState serverState;
 
-	public ServerStateUpdate(final ServerState theServerState) {
+	public ServerStateUpdate(final ProtegeServerState theServerState) {
 		serverState = theServerState;
 	}
 

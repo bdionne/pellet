@@ -9,7 +9,7 @@ import java.util.logging.Logger;
 
 import com.clarkparsia.owlapi.explanation.io.manchester.ManchesterSyntaxExplanationRenderer;
 import com.clarkparsia.pellet.server.exceptions.ServerException;
-import com.clarkparsia.pellet.server.model.ServerState;
+import com.clarkparsia.pellet.server.protege.ProtegeServerState;
 import com.clarkparsia.pellet.service.reasoner.SchemaReasoner;
 import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableSet;
@@ -34,7 +34,7 @@ public class ReasonerExplainHandler extends AbstractRoutingHandler {
 	private static final Logger LOGGER = Logger.getLogger(ReasonerExplainHandler.class.getName());
 
 	@Inject
-	public ReasonerExplainHandler(final ServerState theServerState) {
+	public ReasonerExplainHandler(final ProtegeServerState theServerState) {
 		super("POST", "{ontology}/explain", theServerState);
 	}
 
