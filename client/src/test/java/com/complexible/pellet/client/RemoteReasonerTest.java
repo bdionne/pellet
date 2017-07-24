@@ -35,8 +35,8 @@ import org.semanticweb.owlapi.reasoner.impl.OWLClassNode;
 import static com.clarkparsia.owlapiv3.OWL.Class;
 import static com.clarkparsia.owlapiv3.OWL.DataProperty;
 import static com.clarkparsia.owlapiv3.OWL.ObjectProperty;
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Evren Sirin
