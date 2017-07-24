@@ -36,9 +36,9 @@ public class RemotePelletReasonerFactory implements OWLReasonerFactory {
 	private final OWLModelManager modelManager;
 	private ClientSession connectionManager;
 
-	public RemotePelletReasonerFactory(final SchemaReasonerFactory theFactory, final OWLModelManager theModelManager) {
-		factory = theFactory;
-		modelManager = theModelManager;
+	public RemotePelletReasonerFactory(final SchemaReasonerFactory factory, final OWLModelManager modelManager) {
+		this.factory = factory;
+		this.modelManager = modelManager;
 	}
 
 	@Override
@@ -59,7 +59,6 @@ public class RemotePelletReasonerFactory implements OWLReasonerFactory {
 			if (vont != null) {
 				try {
 					// FIXME also compare the vont version with the remote version
-					Client client = connectionManager.getActiveClient();
 					List<OWLOntologyChange> uncommitted = ClientUtils.getUncommittedChanges(modelManager.getHistoryManager(), ontology, vont.getChangeHistory());
 					LOGGER.info("There are " + uncommitted.size() + " uncommitted change(s)");
 					if (!uncommitted.isEmpty()) {
@@ -89,7 +88,7 @@ public class RemotePelletReasonerFactory implements OWLReasonerFactory {
 	}
 
 	@Override
-	public OWLReasoner createNonBufferingReasoner(final OWLOntology ontology,  final OWLReasonerConfiguration theOWLReasonerConfiguration) {
+	public OWLReasoner createNonBufferingReasoner(final OWLOntology ontology,  final OWLReasonerConfiguration owlReasonerConfiguration) {
 		return createNonBufferingReasoner(ontology);
 	}
 

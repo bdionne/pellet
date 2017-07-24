@@ -3,7 +3,6 @@ package com.complexible.pellet.client;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.Set;
-import java.util.UUID;
 
 import com.clarkparsia.owlapi.explanation.GlassBoxExplanation;
 import com.clarkparsia.owlapiv3.ImmutableNodeSet;
@@ -13,7 +12,6 @@ import com.clarkparsia.pellet.service.reasoner.SchemaReasoner;
 import com.clarkparsia.pellet.service.reasoner.SchemaReasonerFactory;
 import com.complexible.pellet.client.reasoner.RemoteSchemaReasoner;
 import com.complexible.pellet.client.reasoner.SchemaOWLReasoner;
-import com.complexible.pellet.client.reasoner.SchemaOWLReasonerFactory;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import org.junit.Before;
@@ -28,6 +26,7 @@ import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
+import org.semanticweb.owlapi.reasoner.BufferingMode;
 import org.semanticweb.owlapi.reasoner.Node;
 import org.semanticweb.owlapi.reasoner.NodeSet;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
@@ -56,8 +55,6 @@ public class RemoteReasonerTest extends PelletClientTest {
 	protected static final OWLObjectProperty r = ObjectProperty(NS + "r");
 	protected static final OWLObjectProperty s = ObjectProperty(NS + "s");
 	protected static final OWLDataProperty dp = DataProperty(NS + "dp");
-	protected static final OWLDataProperty dq = DataProperty(NS + "dq");
-	protected static final OWLDataProperty dr = DataProperty(NS + "dr");
 
 	protected static final Set<OWLAxiom> AXIOMS = ImmutableSet.<OWLAxiom>of(
 			OWL.subClassOf(B, A), OWL.subClassOf(C, B), OWL.equivalentClasses(D, C),
@@ -95,7 +92,7 @@ public class RemoteReasonerTest extends PelletClientTest {
 
 		startPelletServer(Lists.newArrayList("test"));
 
-		reasoner = new SchemaOWLReasonerFactory(FACTORY).createReasoner(ont);
+		reasoner = new SchemaOWLReasoner(ont, FACTORY, BufferingMode.NON_BUFFERING);
 	}
 
 	@Test
@@ -135,7 +132,7 @@ public class RemoteReasonerTest extends PelletClientTest {
 	@Test
 	public void multipleClients() throws Exception {
 		OWLOntology ont = createOntology();
-		OWLReasoner reasoner2 = new SchemaOWLReasonerFactory(FACTORY).createReasoner(ont);
+		OWLReasoner reasoner2 = new SchemaOWLReasoner(ont, FACTORY, BufferingMode.BUFFERING);
 
 		assertEquals(nodeSetOf(nodeOf(D, C)), reasoner.getSubClasses(B, true));
 		assertEquals(nodeSetOf(nodeOf(D, C)), reasoner2.getSubClasses(B, true));
