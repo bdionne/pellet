@@ -133,7 +133,7 @@ public class LocalSchemaReasoner implements SchemaReasoner {
 
 	@Override
 	public Set<OWLSubClassOfAxiom> getInferredAxioms() {
-		return reasoner.getAllInferredSuperClasses(true);
+		return reasoner.getAllInferredSuperClasses();
 	}
 
 	private interface EntityQueryEvaluator {

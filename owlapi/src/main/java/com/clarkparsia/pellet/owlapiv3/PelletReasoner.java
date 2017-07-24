@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import aterm.ATermAppl;
 import com.clarkparsia.owlapiv3.AbstractOWLListeningReasoner;
@@ -40,6 +41,7 @@ import org.semanticweb.owlapi.reasoner.impl.OWLClassNodeSet;
 import org.semanticweb.owlapi.reasoner.impl.OWLDataPropertyNodeSet;
 import org.semanticweb.owlapi.reasoner.impl.OWLNamedIndividualNodeSet;
 import org.semanticweb.owlapi.reasoner.impl.OWLObjectPropertyNodeSet;
+import org.semanticweb.owlapi.reasoner.impl.OWLReasonerBase;
 import org.semanticweb.owlapi.util.Version;
 
 
@@ -729,28 +731,12 @@ public class PelletReasoner extends AbstractOWLListeningReasoner {
 		}
 	}
 
-	public Set<OWLSubClassOfAxiom> getAllInferredSuperClasses(boolean direct) {
+	public Set<OWLSubClassOfAxiom> getAllInferredSuperClasses() {
 		refreshCheck();
-		Set<OWLSubClassOfAxiom> result = new HashSet<>();
 
-		for( ATermAppl c : kb.getAllClasses() ) {
-			OWLClass entity = CLASS_MAPPER.map( c );
-			if( !isSatisfiable( entity ) ) {
-				result.add( factory.getOWLSubClassOfAxiom( entity, factory.getOWLNothing() ) );
-				continue;
-			}
-			SupFindVisitor sfv = new SupFindVisitor( entity, getRootOntology() );
-			entity.accept( sfv );
+		Set<OWLClass> allClasses = kb.getAllClasses().stream().map( CLASS_MAPPER::map ).collect( Collectors.toSet() );
 
-			Set<OWLClass> superClasses = getSuperClasses( entity, direct ).getFlattened();
-
-			Set<OWLClass> difference = Sets.difference( superClasses, sfv.sups );
-
-			for( OWLClass sup : difference ) {
-				result.add( factory.getOWLSubClassOfAxiom( entity, sup ) );
-			}
-		}
-		return result;
+		return getInferredClasses( factory, allClasses );
 	}
 
 	public NodeSet<OWLDataProperty> getSuperDataProperties(OWLDataProperty pe, boolean direct)

@@ -72,6 +72,7 @@ import org.semanticweb.owlapi.reasoner.impl.OWLClassNode;
 import org.semanticweb.owlapi.reasoner.impl.OWLClassNodeSet;
 import org.semanticweb.owlapi.reasoner.impl.OWLNamedIndividualNode;
 import org.semanticweb.owlapi.reasoner.impl.OWLNamedIndividualNodeSet;
+import org.semanticweb.owlapi.reasoner.impl.OWLReasonerBase;
 import org.semanticweb.owlapi.util.Version;
 
 
@@ -978,29 +979,12 @@ public class IncrementalReasoner extends AbstractOWLListeningReasoner {
 	/**
 	 * {@inheritDoc}
 	 */
-	public Set<OWLSubClassOfAxiom> getAllInferredSuperClasses(boolean direct) {
+	public Set<OWLSubClassOfAxiom> getAllInferredSuperClasses() {
 		classify();
 
 		final OWLDataFactory factory = getManager().getOWLDataFactory();
-		Set<OWLSubClassOfAxiom> result = new HashSet<>();
 
-		for (OWLClass entity : taxonomy.getClasses()) {
-			if( !isSatisfiable( entity ) ) {
-				result.add( factory.getOWLSubClassOfAxiom( entity, factory.getOWLNothing() ) );
-				continue;
-			}
-			SupFindVisitor sfv = new SupFindVisitor( entity, getRootOntology() );
-			entity.accept( sfv );
-
-			Set<OWLClass> superClasses = getSuperClasses( entity, direct ).getFlattened();
-
-			Set<OWLClass> difference = Sets.difference( superClasses, sfv.sups );
-
-			for( OWLClass sup : difference ) {
-				result.add( factory.getOWLSubClassOfAxiom( entity, sup ) );
-			}
-		}
-		return result;
+		return getInferredClasses(factory, taxonomy.getClasses());
 	}
 
 	/**
