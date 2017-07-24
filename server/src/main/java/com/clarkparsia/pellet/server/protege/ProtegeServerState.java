@@ -9,7 +9,6 @@ import edu.stanford.protege.metaproject.api.ProjectId;
 import edu.stanford.protege.metaproject.impl.ProjectIdImpl;
 import org.protege.editor.owl.client.LocalHttpClient;
 import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 
@@ -39,7 +38,7 @@ public final class ProtegeServerState {
 	 * Lock to control reloads of the state
 	 */
 	private ReentrantLock updateLock;
-	private Map<IRI, ProtegeOntologyState> ontologies;
+	private Map<ProjectId, ProtegeOntologyState> ontologies;
 	private final PelletSettings pelletSettings;
 
 	@Inject
@@ -96,34 +95,36 @@ public final class ProtegeServerState {
 		return false;
 	}
 
-	public Optional<ProtegeOntologyState> getOntology(IRI ontology) {
-		return Optional.fromNullable(ontologies.get(ontology));
+	public Optional<ProtegeOntologyState> getOntology(ProjectId projectId) {
+		return Optional.fromNullable(ontologies.get(projectId));
 	}
 
 	public ProtegeOntologyState addOntology(final String ontologyPath) throws OWLOntologyCreationException {
 		ProtegeOntologyState result;
 		LOGGER.info("Loading ontology " + ontologyPath);
 
+		ProjectId projectId;
 		try {
-			ProjectId projectID = new ProjectIdImpl(ontologyPath);
-			result = new ProtegeOntologyState(client, projectID,
-				Paths.get(pelletSettings.home()).resolve(projectID.get()).resolve("reasoner_state.bin"));
+			projectId = new ProjectIdImpl(ontologyPath);
+			result = new ProtegeOntologyState(client, projectId,
+				Paths.get(pelletSettings.home()).resolve(projectId.get()).resolve("reasoner_state.bin"));
 			LOGGER.info("Loaded revision " + result.getVersion());
 			result.update();
-		}
-		catch (Exception e) {
+		} catch (Exception e) {
 			System.out.println(e.getMessage());
 			throw new OWLOntologyCreationException("Could not load ontology from Protege server: " + ontologyPath, e);
 		}
+		// TODO this check isn't necesasry anymore, but stays to preserve old behavior
+		// when the key was the IRI
 		if (result.getIRI() == null) {
 			throw new RuntimeException("Failed to get IRI for " + ontologyPath);
 		}
-		ontologies.put(result.getIRI(), result);
+		ontologies.put(projectId, result);
 		return result;
 	}
 
-	public boolean removeOntology(final IRI ontology) {
-		ProtegeOntologyState state = ontologies.remove(ontology);
+	public boolean removeProject(final ProjectId projectId) {
+		ProtegeOntologyState state = ontologies.remove(projectId);
 		boolean removed = (state != null);
 		if (removed) {
 			state.close();

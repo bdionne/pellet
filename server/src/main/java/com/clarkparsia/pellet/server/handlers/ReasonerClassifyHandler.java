@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import com.clarkparsia.pellet.server.protege.ProtegeServerState;
 import com.google.inject.Inject;
+import edu.stanford.protege.metaproject.api.ProjectId;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.StatusCodes;
 import org.semanticweb.owlapi.model.IRI;
@@ -23,11 +24,11 @@ public class ReasonerClassifyHandler extends AbstractRoutingHandler {
 	 */
 	@Override
 	public void handleRequest(final HttpServerExchange theExchange) throws Exception {
-		final IRI ontology = getOntology(theExchange);
+		final ProjectId projectId = getProjectId(theExchange);
 		final UUID clientId = getClientID(theExchange);
 
 		// Get local client reasoner's version
-		getClientState(ontology, clientId).getReasoner().classify();
+		getClientState(projectId, clientId).getReasoner().classify();
 
 		theExchange.setStatusCode(StatusCodes.OK);
 		theExchange.endExchange();

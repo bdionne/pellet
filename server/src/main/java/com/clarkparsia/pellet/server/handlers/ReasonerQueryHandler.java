@@ -1,16 +1,18 @@
 package com.clarkparsia.pellet.server.handlers;
 
-import java.util.UUID;
-
 import com.clarkparsia.pellet.server.protege.ProtegeServerState;
-import com.clarkparsia.pellet.service.messages.JsonMessage;
 import com.clarkparsia.pellet.service.reasoner.SchemaQuery;
 import com.clarkparsia.pellet.service.reasoner.SchemaReasoner;
 import com.google.inject.Inject;
+import edu.stanford.protege.metaproject.api.ProjectId;
 import io.undertow.server.HttpServerExchange;
-import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLObject;
 import org.semanticweb.owlapi.reasoner.NodeSet;
+
+import java.util.UUID;
+
+import static com.clarkparsia.pellet.service.messages.JsonMessage.readQuery;
+import static com.clarkparsia.pellet.service.messages.JsonMessage.writeNodeSet;
 
 /**
  * Specification for {@link SchemaReasoner#query(SchemaQuery)} functionality within
@@ -26,13 +28,13 @@ public class ReasonerQueryHandler extends AbstractRoutingHandler {
 
 	@Override
 	public void handleRequest(final HttpServerExchange theExchange) throws Exception {
-		final IRI ontology = getOntology(theExchange);
+		final ProjectId projectId = getProjectId(theExchange);
 		final UUID clientId = getClientID(theExchange);
-		final SchemaQuery query = JsonMessage.readQuery(theExchange.getInputStream());
-		final SchemaReasoner aReasoner = getClientState(ontology, clientId).getReasoner();
+		final SchemaQuery query = readQuery(theExchange.getInputStream());
+		final SchemaReasoner aReasoner = getClientState(projectId, clientId).getReasoner();
 		final NodeSet<? extends OWLObject> result = aReasoner.query(query);
 
-		JsonMessage.writeNodeSet(result, theExchange.getOutputStream());
+		writeNodeSet(result, theExchange.getOutputStream());
 
 		theExchange.endExchange();
 	}

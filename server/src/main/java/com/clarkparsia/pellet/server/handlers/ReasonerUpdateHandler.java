@@ -1,15 +1,16 @@
 package com.clarkparsia.pellet.server.handlers;
 
+import com.clarkparsia.pellet.server.protege.ProtegeServerState;
+import com.clarkparsia.pellet.service.reasoner.SchemaReasoner;
+import edu.stanford.protege.metaproject.api.ProjectId;
+import io.undertow.server.HttpServerExchange;
+import org.semanticweb.owlapi.model.OWLAxiom;
+
 import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Logger;
 
-import com.clarkparsia.pellet.server.protege.ProtegeServerState;
-import com.clarkparsia.pellet.service.reasoner.SchemaReasoner;
-import io.undertow.server.HttpServerExchange;
-import io.undertow.util.StatusCodes;
-import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLAxiom;
+import static io.undertow.util.StatusCodes.OK;
 
 /**
  * @author Evren Sirin
@@ -27,10 +28,10 @@ public class ReasonerUpdateHandler extends AbstractRoutingHandler {
 
 	@Override
 	public void handleRequest(final HttpServerExchange theExchange) throws Exception {
-		final IRI ontology = getOntology(theExchange);
+		final ProjectId projectId = getProjectId(theExchange);
 		final UUID clientId = getClientID(theExchange);
 
-		final SchemaReasoner aReasoner = getClientState(ontology, clientId).getReasoner();
+		final SchemaReasoner aReasoner = getClientState(projectId, clientId).getReasoner();
 
 		final Set<OWLAxiom> axioms = readAxioms(theExchange.getInputStream());
 
@@ -38,14 +39,13 @@ public class ReasonerUpdateHandler extends AbstractRoutingHandler {
 
 		if (insert) {
 			aReasoner.insert(axioms);
-		}
-		else {
+		} else {
 			aReasoner.delete(axioms);
 		}
 
 		LOGGER.info("Updating client " + clientId + " Success!");
 
-		theExchange.setStatusCode(StatusCodes.OK);
+		theExchange.setStatusCode(OK);
 		theExchange.endExchange();
 	}
 }

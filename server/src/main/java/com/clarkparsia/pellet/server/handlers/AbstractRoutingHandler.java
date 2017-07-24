@@ -1,18 +1,19 @@
 package com.clarkparsia.pellet.server.handlers;
 
-import com.clarkparsia.pellet.server.protege.ProtegeOntologyState;
 import com.clarkparsia.owlapiv3.OWL;
 import com.clarkparsia.pellet.server.PelletServer;
 import com.clarkparsia.pellet.server.exceptions.ServerException;
 import com.clarkparsia.pellet.server.protege.ClientState;
+import com.clarkparsia.pellet.server.protege.ProtegeOntologyState;
 import com.clarkparsia.pellet.server.protege.ProtegeServerState;
-import com.google.common.base.Strings;
 import com.google.common.base.Optional;
+import com.google.common.base.Strings;
+import edu.stanford.protege.metaproject.api.ProjectId;
+import edu.stanford.protege.metaproject.impl.ProjectIdImpl;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.PathTemplateMatch;
 import io.undertow.util.StatusCodes;
 import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
@@ -20,8 +21,6 @@ import org.semanticweb.owlapi.model.OWLOntologyManager;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
 import java.util.Deque;
 import java.util.Map;
 import java.util.Set;
@@ -64,22 +63,22 @@ public abstract class AbstractRoutingHandler implements RoutingHandler {
 		return serverState;
 	}
 
-	protected ClientState getClientState(final IRI theOntology, final UUID theClientId) throws ServerException {
-		Optional<ProtegeOntologyState> aOntoState = getServerState().getOntology(theOntology);
+	protected ClientState getClientState(ProjectId projectId, final UUID theClientId) throws ServerException {
+		Optional<ProtegeOntologyState> aOntoState = getServerState().getOntology(projectId);
 		if (!aOntoState.isPresent()) {
-			throw new ServerException(StatusCodes.NOT_FOUND, "Ontology not found: " + theOntology);
+			throw new ServerException(StatusCodes.NOT_FOUND, "Project not found: " + projectId);
 		}
 
 		return aOntoState.get().getClient(theClientId);
 	}
 
-	protected static IRI getOntology(final HttpServerExchange theExchange) throws ServerException {
+	protected static ProjectId getProjectId(final HttpServerExchange theExchange) throws ServerException {
 		try {
-			return IRI.create(URLDecoder.decode(theExchange.getAttachment(PathTemplateMatch.ATTACHMENT_KEY)
-					.getParameters().get("ontology"), StandardCharsets.UTF_8.name()));
+			return new ProjectIdImpl(theExchange.getAttachment(PathTemplateMatch.ATTACHMENT_KEY)
+				.getParameters().get("projectId"));
 		}
-		catch (Exception theE) {
-			throw new ServerException(StatusCodes.BAD_REQUEST, "Error parsing Ontology IRI", theE);
+		catch (Exception e) {
+			throw new ServerException(StatusCodes.BAD_REQUEST, "Error parsing Ontology IRI", e);
 		}
 	}
 
