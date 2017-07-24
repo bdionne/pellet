@@ -33,6 +33,7 @@ import retrofit2.Retrofit;
  */
 public class PelletServiceProvider implements Provider<PelletService> {
 
+	public static final String PROJECT_ID_HEADER = "X-projectId";
 	private final String endpoint;
 
 	private final long connTimeoutMin;
@@ -41,18 +42,21 @@ public class PelletServiceProvider implements Provider<PelletService> {
 
 	private final long writeTimeoutMin;
 	private final Optional<String> mangementPassword;
+	private final Provider<String> projectIdProvider;
 
 	@Inject
 	public PelletServiceProvider(@Named("endpoint") final String endpoint,
 															 @Named("conn_timeout") final long connTimeout,
 															 @Named("read_timeout") final long readTimeout,
 															 @Named("write_timeout") final long writeTimeout,
-															 @Named("management_password") final Optional<String> managementPassword) {
+															 @Named("management_password") final Optional<String> managementPassword,
+															 @Named("project_id_provider") final Provider<String> projectIdProvider) {
 		this.endpoint = Strings.isNullOrEmpty(endpoint) ? PelletService.DEFAULT_LOCAL_ENDPOINT : endpoint;
 		this.connTimeoutMin = connTimeout;
 		this.readTimeoutMin = readTimeout;
 		this.writeTimeoutMin = writeTimeout;
 		this.mangementPassword = managementPassword;
+		this.projectIdProvider = projectIdProvider;
 	}
 
 	@Override
@@ -65,6 +69,14 @@ public class PelletServiceProvider implements Provider<PelletService> {
 		if (this.mangementPassword.isPresent()) {
 			httpClientBuilder.interceptors().add(new PelletAuthClient.AuthBasicInterceptor(mangementPassword.get()));
 		}
+
+		httpClientBuilder.interceptors().add(new Interceptor() {
+			@Override
+			public Response intercept(Chain chain) throws IOException {
+				final Request request = chain.request().newBuilder().addHeader(PROJECT_ID_HEADER, projectIdProvider.get()).build();
+				return chain.proceed(request);
+			}
+		});
 
 		final OkHttpClient httpClient = httpClientBuilder.build();
 

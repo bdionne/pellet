@@ -46,7 +46,7 @@ public class PelletReasonerFactory extends AbstractProtegeOWLReasonerInfo {
 			case REMOTE: {
 				final String serverURL = PelletReasonerPreferences.getInstance().getServerURL();
 				// TODO: read timeout from preferences too and pass to ClientModule, 3 min by default
-				final Injector aInjector = Guice.createInjector(new ClientModule(serverURL, Optional.<String>absent()));
+				final Injector aInjector = Guice.createInjector(new ClientModule(serverURL, Optional.<String>absent(), null));
 				factory = new RemotePelletReasonerFactory(aInjector.getInstance(SchemaReasonerFactory.class), getOWLModelManager());
 				break;
 			}

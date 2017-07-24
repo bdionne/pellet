@@ -7,6 +7,7 @@ import com.clarkparsia.pellet.server.protege.ProtegeServerTest;
 import com.clarkparsia.pellet.server.protege.TestUtilities;
 import com.google.common.base.Optional;
 import com.google.inject.Guice;
+import com.google.inject.Provider;
 import com.google.inject.util.Modules;
 import edu.stanford.protege.metaproject.ConfigurationManager;
 import edu.stanford.protege.metaproject.api.PlainPassword;
@@ -27,7 +28,13 @@ public abstract class PelletClientTest extends ProtegeServerTest {
 	protected static PelletServer pelletServer;
 	protected PelletServiceProvider serviceProvider =
 		new PelletServiceProvider(PelletService.DEFAULT_LOCAL_ENDPOINT,
-			0, 0, 0, Optional.of(TestUtilities.PELLET_MANAGEMENT_PASSWORD));
+			0, 0, 0, Optional.of(TestUtilities.PELLET_MANAGEMENT_PASSWORD),
+			new Provider<String>() {
+				@Override
+				public String get() {
+					return "dummyProjectId";
+				}
+			});
 
 	protected LocalHttpClient client;
 	LocalHttpClient managerClient;
