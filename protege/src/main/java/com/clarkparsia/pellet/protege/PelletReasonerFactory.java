@@ -6,10 +6,17 @@ import com.complexible.pellet.client.ClientModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.common.base.Optional;
+import com.google.inject.Provider;
 import org.mindswap.pellet.PelletOptions;
+import org.protege.editor.core.ProtegeManager;
+import org.protege.editor.core.editorkit.EditorKit;
+import org.protege.editor.owl.OWLEditorKit;
+import org.protege.editor.owl.client.ClientSession;
 import org.protege.editor.owl.model.inference.AbstractProtegeOWLReasonerInfo;
 import org.semanticweb.owlapi.reasoner.BufferingMode;
 import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
+
+import java.util.List;
 
 
 /**
@@ -45,8 +52,19 @@ public class PelletReasonerFactory extends AbstractProtegeOWLReasonerInfo {
 				break;
 			case REMOTE: {
 				final String serverURL = PelletReasonerPreferences.getInstance().getServerURL();
-				// TODO: read timeout from preferences too and pass to ClientModule, 3 min by default
-				final Injector aInjector = Guice.createInjector(new ClientModule(serverURL, Optional.<String>absent(), null));
+				final Injector aInjector = Guice.createInjector(new ClientModule(serverURL, Optional.<String>absent(),
+					new Provider<String>() {
+						@Override
+						public String get() {
+							final List<EditorKit> editorKits = ProtegeManager.getInstance().getEditorKitManager().getEditorKits();
+							if (editorKits.size() > 0) {
+								// cast is safe b/c there's only one implementaiton of EditorKit
+								return ClientSession.getInstance((OWLEditorKit) editorKits.get(0)).getActiveProject().get();
+							} else {
+								throw new RuntimeException("Project id not available becasuse there are no editor kits");
+							}
+						}
+					}));
 				factory = new RemotePelletReasonerFactory(aInjector.getInstance(SchemaReasonerFactory.class), getOWLModelManager());
 				break;
 			}
