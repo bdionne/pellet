@@ -68,7 +68,7 @@ public class RemoteReasonerTest extends PelletClientTest {
 	private SchemaReasonerFactory FACTORY = new SchemaReasonerFactory() {
 		@Override
 		public SchemaReasoner create(final OWLOntology ontology) {
-			return new RemoteSchemaReasoner(serviceProvider.get(), UUID.randomUUID(), ontology);
+			return new RemoteSchemaReasoner(serviceProvider.get(), ontology);
 		}
 	};
 
