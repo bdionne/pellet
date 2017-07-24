@@ -22,57 +22,54 @@ public class PelletReasonerFactory extends AbstractProtegeOWLReasonerInfo {
 		// roles in cardinality restrictions)
 		// false = pellet will throw an exception if non DL axioms are included
 		PelletOptions.IGNORE_UNSUPPORTED_AXIOMS = false;
-
 		PelletOptions.SILENT_UNDEFINED_ENTITY_HANDLING = true;
 	}
 
 	private final PelletReasonerPreferences prefs = PelletReasonerPreferences.getInstance();
 	private OWLReasonerFactory factory = null;
 
-	public PelletReasonerFactory() {
+	@Override
+	public OWLReasonerFactory getReasonerFactory() {
+		if (factory != null) {
+			return factory;
+		}
+		// enable/disable tracing based on the preference
+		PelletOptions.USE_TRACING = prefs.getExplanationCount() != 0;
+		PelletReasonerMode reasonerMode = prefs.getReasonerMode();
+		switch (reasonerMode) {
+			case REGULAR:
+				factory = com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory.getInstance();
+				break;
+			case INCREMENTAL:
+				factory = IncremantalReasonerFactory.getInstance();
+				break;
+			case REMOTE: {
+				final String serverURL = PelletReasonerPreferences.getInstance().getServerURL();
+				// TODO: read timeout from preferences too and pass to ClientModule, 3 min by default
+				final Injector aInjector = Guice.createInjector(new ClientModule(serverURL, Optional.<String>absent()));
+				factory = new RemotePelletReasonerFactory(aInjector.getInstance(SchemaReasonerFactory.class), getOWLModelManager());
+				break;
+			}
+			default: {
+				throw new UnsupportedOperationException("Unrecognized reasoner type: " + reasonerMode);
+			}
+		}
+		return factory;
 	}
 
 	@Override
-    public OWLReasonerFactory getReasonerFactory() {
-	    if (factory == null) {
-		    // enable/disable tracing based on the preference
-		    PelletOptions.USE_TRACING = (prefs.getExplanationCount() != 0);
-		    factory = createReasonerFactory();
-	    }
-
-	    return factory;
-    }
-
-	private OWLReasonerFactory createReasonerFactory() {
+	public BufferingMode getRecommendedBuffering() {
 		PelletReasonerMode reasonerMode = prefs.getReasonerMode();
-	    switch (reasonerMode) {
-		    case REGULAR: return com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory.getInstance();
-		    case INCREMENTAL: return IncremantalReasonerFactory.getInstance();
-		    case REMOTE: {
-			    final String serverURL = PelletReasonerPreferences.getInstance().getServerURL();
-
-			    // TODO: read timeout from preferences too and pass to ClientModule, 3 min by default
-          final Injector aInjector = Guice.createInjector(new ClientModule(serverURL, Optional.<String>absent()));
-
-
-			    
-			    return new RemotePelletReasonerFactory(aInjector.getInstance(SchemaReasonerFactory.class), getOWLModelManager());
-		    }
-		    default: throw new UnsupportedOperationException("Unrecognized reasoner type: " + reasonerMode);
-	    }
-    }
-
-	@Override
-    public BufferingMode getRecommendedBuffering() {
-
-	    PelletReasonerMode reasonerMode = prefs.getReasonerMode();
-	    switch (reasonerMode) {
-		    case REGULAR:
-		    case INCREMENTAL: return BufferingMode.NON_BUFFERING;
-		    case REMOTE: return BufferingMode.BUFFERING;
-		    default: throw new UnsupportedOperationException("Unrecognized reasoner type: " + reasonerMode);
-	    }
-    }
+		switch (reasonerMode) {
+			case REGULAR:
+			case INCREMENTAL:
+				return BufferingMode.NON_BUFFERING;
+			case REMOTE:
+				return BufferingMode.BUFFERING;
+			default:
+				throw new UnsupportedOperationException("Unrecognized reasoner type: " + reasonerMode);
+		}
+	}
 
 	public void preferencesUpdated() {
 		factory = null;
