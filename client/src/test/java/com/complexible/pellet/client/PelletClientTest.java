@@ -29,14 +29,14 @@ public abstract class PelletClientTest extends ProtegeServerTest {
 		new PelletServiceProvider(PelletService.DEFAULT_LOCAL_ENDPOINT,
 			0, 0, 0, Optional.of(TestUtilities.PELLET_MANAGEMENT_PASSWORD));
 
-	protected LocalHttpClient mClient;
+	protected LocalHttpClient client;
 	LocalHttpClient managerClient;
 
 	@Before
 	public void before() throws Exception {
 		super.before();
 
-		mClient = new LocalHttpClient(PROTEGE_USERNAME, PROTEGE_PASSWORD, PROTEGE_HOST + ":" + PROTEGE_PORT);
+		client = new LocalHttpClient(PROTEGE_USERNAME, PROTEGE_PASSWORD, PROTEGE_HOST + ":" + PROTEGE_PORT);
 		PolicyFactory f = ConfigurationManager.getFactory();
 		UserId managerId = f.getUserId("bob");
 		PlainPassword managerPassword = f.getPlainPassword("bob");

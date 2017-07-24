@@ -33,35 +33,34 @@ import retrofit2.Retrofit;
  */
 public class PelletServiceProvider implements Provider<PelletService> {
 
-	private final String mEndpoint;
+	private final String endpoint;
 
-	private final long mConnTimeoutMin;
+	private final long connTimeoutMin;
 
-	private final long mReadTimeoutMin;
+	private final long readTimeoutMin;
 
-	private final long mWriteTimeoutMin;
+	private final long writeTimeoutMin;
 	private final Optional<String> mangementPassword;
 
 	@Inject
-	public PelletServiceProvider(@Named("endpoint") final String theEndpoint,
-															 @Named("conn_timeout") final long theConnTimeout,
-															 @Named("read_timeout") final long theReadTimeout,
-															 @Named("write_timeout") final long theWriteTimeout,
+	public PelletServiceProvider(@Named("endpoint") final String endpoint,
+															 @Named("conn_timeout") final long connTimeout,
+															 @Named("read_timeout") final long readTimeout,
+															 @Named("write_timeout") final long writeTimeout,
 															 @Named("management_password") final Optional<String> managementPassword) {
-		mEndpoint = !Strings.isNullOrEmpty(theEndpoint) ? theEndpoint
-		                                                : PelletService.DEFAULT_LOCAL_ENDPOINT;
-		mConnTimeoutMin = theConnTimeout;
-		mReadTimeoutMin = theReadTimeout;
-		mWriteTimeoutMin = theWriteTimeout;
+		this.endpoint = Strings.isNullOrEmpty(endpoint) ? PelletService.DEFAULT_LOCAL_ENDPOINT : endpoint;
+		this.connTimeoutMin = connTimeout;
+		this.readTimeoutMin = readTimeout;
+		this.writeTimeoutMin = writeTimeout;
 		this.mangementPassword = managementPassword;
 	}
 
 	@Override
 	public PelletService get() {
 		final OkHttpClient.Builder httpClientBuilder = new OkHttpClient.Builder()
-			.connectTimeout(mConnTimeoutMin, TimeUnit.MINUTES)
-			.readTimeout(mReadTimeoutMin, TimeUnit.MINUTES)
-			.writeTimeout(mWriteTimeoutMin, TimeUnit.MINUTES);
+			.connectTimeout(connTimeoutMin, TimeUnit.MINUTES)
+			.readTimeout(readTimeoutMin, TimeUnit.MINUTES)
+			.writeTimeout(writeTimeoutMin, TimeUnit.MINUTES);
 
 		if (this.mangementPassword.isPresent()) {
 			httpClientBuilder.interceptors().add(new PelletAuthClient.AuthBasicInterceptor(mangementPassword.get()));
@@ -69,7 +68,7 @@ public class PelletServiceProvider implements Provider<PelletService> {
 
 		final OkHttpClient httpClient = httpClientBuilder.build();
 
-		final Retrofit aRetrofit = new Retrofit.Builder().baseUrl(mEndpoint)
+		final Retrofit aRetrofit = new Retrofit.Builder().baseUrl(endpoint)
 			.client(httpClient)
 			.addConverterFactory(PRIMITIVE_FACTORY)
 			.addConverterFactory(ONTOLOGY_FACTORY)

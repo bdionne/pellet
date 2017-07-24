@@ -35,12 +35,10 @@ import retrofit2.Call;
  */
 public class RemoteSchemaReasoner implements SchemaReasoner {
 
-	final PelletService mService;
-	final IRI mOntologyIri;
+	final PelletService pelletService;
+	final IRI ontologyIri;
 
 	private static final UUID CLIENT_ID = UUID.randomUUID();
-
-	private final UUID mClientID;
 
 	private LoadingCache<SchemaQuery, NodeSet<?>> cache = CacheBuilder.newBuilder()
 		                   .maximumSize(1024)
@@ -52,21 +50,12 @@ public class RemoteSchemaReasoner implements SchemaReasoner {
 		                   });
 
 
+	@SuppressWarnings("unused")
 	@Inject
-	public RemoteSchemaReasoner(final PelletService thePelletService,
-	                            @Assisted final OWLOntology theOntology) {
-		this(thePelletService, CLIENT_ID, theOntology);
-	}
-
-	public RemoteSchemaReasoner(final PelletService thePelletService,
-	                            final UUID theClientID,
-	                            final OWLOntology theOntology) {
-		mService = thePelletService;
-		mClientID = theClientID;
-
-		mOntologyIri = theOntology.getOntologyID()
-		                          .getOntologyIRI()
-		                          .get();
+	public RemoteSchemaReasoner(final PelletService pelletService,
+	                            @Assisted final OWLOntology ontology) {
+		this.pelletService = pelletService;
+		this.ontologyIri = ontology.getOntologyID().getOntologyIRI().get();
 	}
 
 	@Override
@@ -81,17 +70,14 @@ public class RemoteSchemaReasoner implements SchemaReasoner {
 	}
 
 	private <T extends OWLObject> NodeSet<T> executeRemoteQuery(final SchemaQuery query) {
-		Call<NodeSet> queryCall = mService.query(mOntologyIri, mClientID, query);
+		Call<NodeSet> queryCall = pelletService.query(ontologyIri, CLIENT_ID, query);
 		return ClientTools.executeCall(queryCall);
 	}
 
 	@Override
 	public Set<Set<OWLAxiom>> explain(final OWLAxiom inference, final int limit) {
 		try {
-			Call<OWLOntology> explainCall = mService.explain(mOntologyIri,
-			                                                  mClientID,
-			                                                  limit,
-			                                                  inference);
+			Call<OWLOntology> explainCall = pelletService.explain(ontologyIri, CLIENT_ID, limit, inference);
 			final OWLOntology ont = ClientTools.executeCall(explainCall);
 
 			final OWLAnnotationProperty label = ont.getOWLOntologyManager().getOWLDataFactory().getRDFSLabel();
@@ -118,7 +104,7 @@ public class RemoteSchemaReasoner implements SchemaReasoner {
 	@Override
 	public void classify() {
 		try {
-			ClientTools.executeCall(mService.classify(mOntologyIri, mClientID));
+			ClientTools.executeCall(pelletService.classify(ontologyIri, CLIENT_ID));
 		}
 		catch (Exception e) {
 			Throwables.propagate(e);
@@ -129,8 +115,7 @@ public class RemoteSchemaReasoner implements SchemaReasoner {
 	public void insert(Set<OWLAxiom> additions) {
 		try {
 			cache.invalidateAll();
-
-			ClientTools.executeCall(mService.insert(mOntologyIri, mClientID, OWL.Ontology(additions)));
+			ClientTools.executeCall(pelletService.insert(ontologyIri, CLIENT_ID, OWL.Ontology(additions)));
 		}
 		catch (Exception e) {
 			Throwables.propagate(e);
@@ -141,8 +126,7 @@ public class RemoteSchemaReasoner implements SchemaReasoner {
 	public void delete(Set<OWLAxiom> removals) {
 		try {
 			cache.invalidateAll();
-
-			ClientTools.executeCall(mService.delete(mOntologyIri, mClientID, OWL.Ontology(removals)));
+			ClientTools.executeCall(pelletService.delete(ontologyIri, CLIENT_ID, OWL.Ontology(removals)));
 		}
 		catch (Exception e) {
 			Throwables.propagate(e);

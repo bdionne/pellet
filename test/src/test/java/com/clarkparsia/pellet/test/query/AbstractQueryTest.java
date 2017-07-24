@@ -6,8 +6,8 @@
 
 package com.clarkparsia.pellet.test.query;
 
-import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -15,8 +15,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import junit.framework.Assert;
 
+import org.junit.Assert;
 import org.mindswap.pellet.test.AbstractKBTests;
 import org.mindswap.pellet.utils.ATermUtils;
 

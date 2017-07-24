@@ -61,9 +61,9 @@ public class PelletServiceTest extends PelletClientTest {
 		assertEquals(0, aVersion);
 
 		OWLOntology ont = OWL.manager.createOntology(agencyOntId);
-		Commit commit = ClientUtils.createCommit(mClient, "comment", Arrays.<OWLOntologyChange>asList(new AddAxiom(ont, OWL.subClassOf(OWL.Nothing, OWL.Thing))));
+		Commit commit = ClientUtils.createCommit(client, "comment", Arrays.<OWLOntologyChange>asList(new AddAxiom(ont, OWL.subClassOf(OWL.Nothing, OWL.Thing))));
 		CommitBundle commitBundle = new CommitBundleImpl(DocumentRevision.START_REVISION, commit);
-		mClient.commit(ConfigurationManager.getFactory().getProjectId(AGENCIES_ONT), commitBundle);
+		client.commit(ConfigurationManager.getFactory().getProjectId(AGENCIES_ONT), commitBundle);
 
 		pelletServer.getState().update();
 
