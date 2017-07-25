@@ -162,7 +162,7 @@ public class JsonMessage {
 		return new SchemaQuery(queryType, entity);
 	}
 
-	public static <T extends OWLObject> NodeSet<T> readNodeSet(final InputStream in) throws IOException {
+	public static <T extends OWLObject> NodeSet<T> readNodeSet(final String in) throws IOException {
 		final JsonParser jp = FACTORY.createParser(in);
 		assertNextToken(JsonToken.START_OBJECT, jp);
 		assertNextToken(JsonToken.FIELD_NAME, jp);

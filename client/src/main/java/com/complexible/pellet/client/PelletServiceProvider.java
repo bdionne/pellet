@@ -228,7 +228,7 @@ public class PelletServiceProvider implements Provider<PelletService> {
 
 	private static final Converter<ResponseBody, NodeSet> NODE_SET_CONVERTER = new Converter<ResponseBody, NodeSet>() {
 		public NodeSet convert(ResponseBody body) throws IOException {
-			return JsonMessage.readNodeSet(body.byteStream());
+			return JsonMessage.readNodeSet(body.string());
 		}
 	};
 
