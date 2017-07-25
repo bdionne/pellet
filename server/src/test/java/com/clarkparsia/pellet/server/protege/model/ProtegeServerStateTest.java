@@ -23,7 +23,6 @@ import org.semanticweb.owlapi.model.IRI;
 
 import java.io.IOException;
 import java.nio.file.Files;
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -35,11 +34,10 @@ import static org.junit.Assert.assertTrue;
  */
 public class ProtegeServerStateTest extends ProtegeServerTest {
 
-	public static final ArrayList<String> ONTOLOGIES = Lists.<String>newArrayList(OWL2_ONT, AGENCIES_ONT);
-	public static final String HTTP_WWW_OWL_ONTOLOGIES_COM_UNNAMED_OWL = "http://www.owl-ontologies.com/unnamed.owl";
-	public static final String HTTP_WWW_EXAMPLE_ORG_TEST = "http://www.example.org/test";
-	public static final ArrayList<String> ONTOLOGIES1 = Lists.newArrayList(
-		HTTP_WWW_EXAMPLE_ORG_TEST, HTTP_WWW_OWL_ONTOLOGIES_COM_UNNAMED_OWL);
+	public static final List<String> ONTOLOGIES = Lists.<String>newArrayList(OWL2_ONT, AGENCIES_ONT);
+	public String agencies;
+	public String owl2;
+	public List<String> ontologies1 = Lists.newArrayList(owl2, agencies);
 	ProtegeServerState mServerState;
 
 	@Before
@@ -60,8 +58,10 @@ public class ProtegeServerStateTest extends ProtegeServerTest {
 			managerPassword.getPassword(),
 			protegeSettings.host() + ":8081");
 
-		createOwl2Ontology(managerClient);
-		createAgenciesOntology(managerClient);
+		owl2 = createOwl2Ontology(managerClient).toString();
+		agencies = createAgenciesOntology(managerClient).toString();
+		ontologies1 = Lists.newArrayList(owl2, agencies);
+
 		mServerState.close();
 
 		injector = Guice.createInjector(Modules.override(new PelletServerModule())
@@ -87,12 +87,12 @@ public class ProtegeServerStateTest extends ProtegeServerTest {
 
 	@Test
 	public void shouldHaveOntologies() throws Exception {
-		assertOntologies(ONTOLOGIES1);
+		assertOntologies(ontologies1);
 	}
 
 	@Test
 	public void addRemoveOntologies() throws Exception {
-		for (String s : ONTOLOGIES1) {
+		for (String s : ontologies1) {
 			assertTrue(mServerState.removeOntology(IRI.create(s)));
 		}
 		assertOntologies(Lists.<String>newArrayList());
