@@ -1,13 +1,13 @@
 package com.clarkparsia.pellet.server.handlers;
 
-import com.clarkparsia.pellet.server.protege.ProtegeOntologyState;
 import com.clarkparsia.owlapiv3.OWL;
 import com.clarkparsia.pellet.server.PelletServer;
 import com.clarkparsia.pellet.server.exceptions.ServerException;
 import com.clarkparsia.pellet.server.protege.ClientState;
+import com.clarkparsia.pellet.server.protege.ProtegeOntologyState;
 import com.clarkparsia.pellet.server.protege.ProtegeServerState;
-import com.google.common.base.Strings;
 import com.google.common.base.Optional;
+import com.google.common.base.Strings;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.PathTemplateMatch;
 import io.undertow.util.StatusCodes;

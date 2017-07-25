@@ -10,7 +10,6 @@ import com.google.common.base.Optional;
 
 import com.google.inject.assistedinject.FactoryModuleBuilder;
 import com.google.inject.name.Names;
-import okhttp3.Interceptor;
 
 import javax.inject.Provider;
 

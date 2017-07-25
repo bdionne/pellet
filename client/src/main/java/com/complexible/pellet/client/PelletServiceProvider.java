@@ -8,6 +8,7 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import com.clarkparsia.owlapiv3.OWL;
+import com.clarkparsia.pellet.service.PelletServiceConstants;
 import com.clarkparsia.pellet.service.messages.JsonMessage;
 import com.clarkparsia.pellet.service.reasoner.SchemaQuery;
 import com.google.common.base.Optional;
@@ -33,7 +34,6 @@ import retrofit2.Retrofit;
  */
 public class PelletServiceProvider implements Provider<PelletService> {
 
-	public static final String PROJECT_ID_HEADER = "X-projectId";
 	private final String endpoint;
 
 	private final long connTimeoutMin;
@@ -73,7 +73,7 @@ public class PelletServiceProvider implements Provider<PelletService> {
 		httpClientBuilder.interceptors().add(new Interceptor() {
 			@Override
 			public Response intercept(Chain chain) throws IOException {
-				final Request request = chain.request().newBuilder().addHeader(PROJECT_ID_HEADER, projectIdProvider.get()).build();
+				final Request request = chain.request().newBuilder().addHeader(PelletServiceConstants.PROJECT_ID_HEADER, projectIdProvider.get()).build();
 				return chain.proceed(request);
 			}
 		});
