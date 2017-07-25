@@ -34,28 +34,28 @@ import java.util.UUID;
 public abstract class AbstractRoutingHandler implements RoutingHandler {
 	public static String REASONER_PATH = PelletServer.ROOT_PATH + "reasoner";
 
-	private final String path;
-	private final String method;
+	private final String mPath;
+	private final String mMethod;
 	private final ProtegeServerState serverState;
 
 	protected final OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
 
-	public AbstractRoutingHandler(final String method,
-	                              final String path,
-	                              final ProtegeServerState serverState) {
-		this.serverState = serverState;
-		this.method = method;
-		this.path = REASONER_PATH + "/" + path;
+	public AbstractRoutingHandler(final String theMethod,
+	                              final String thePath,
+	                              final ProtegeServerState theServerState) {
+		serverState = theServerState;
+		mMethod = theMethod;
+		mPath = REASONER_PATH + "/" + thePath;
 	}
 
 	@Override
 	public final String getMethod() {
-		return method;
+		return mMethod;
 	}
 
 	@Override
 	public final String getPath() {
-		return path;
+		return mPath;
 	}
 
 
@@ -63,18 +63,18 @@ public abstract class AbstractRoutingHandler implements RoutingHandler {
 		return serverState;
 	}
 
-	protected ClientState getClientState(ProjectId projectId, final UUID clientId) throws ServerException {
+	protected ClientState getClientState(ProjectId projectId, final UUID theClientId) throws ServerException {
 		Optional<ProtegeOntologyState> aOntoState = getServerState().getOntology(projectId);
 		if (!aOntoState.isPresent()) {
 			throw new ServerException(StatusCodes.NOT_FOUND, "Project not found: " + projectId);
 		}
 
-		return aOntoState.get().getClient(clientId);
+		return aOntoState.get().getClient(theClientId);
 	}
 
-	protected static ProjectId getProjectId(final HttpServerExchange exchange) throws ServerException {
+	protected static ProjectId getProjectId(final HttpServerExchange theExchange) throws ServerException {
 		try {
-			return new ProjectIdImpl(exchange.getAttachment(PathTemplateMatch.ATTACHMENT_KEY)
+			return new ProjectIdImpl(theExchange.getAttachment(PathTemplateMatch.ATTACHMENT_KEY)
 				.getParameters().get("projectId"));
 		}
 		catch (Exception e) {
@@ -82,18 +82,18 @@ public abstract class AbstractRoutingHandler implements RoutingHandler {
 		}
 	}
 
-	protected static UUID getClientID(final HttpServerExchange exchange) throws ServerException {
+	protected static UUID getClientID(final HttpServerExchange theExchange) throws ServerException {
 		try {
-			return UUID.fromString(getQueryParameter(exchange, "client"));
+			return UUID.fromString(getQueryParameter(theExchange, "client"));
 		}
-		catch (IllegalArgumentException e) {
-			throw new ServerException(StatusCodes.BAD_REQUEST, "Error parsing Client ID - must be a UUID", e);
+		catch (IllegalArgumentException theE) {
+			throw new ServerException(StatusCodes.BAD_REQUEST, "Error parsing Client ID - must be a UUID", theE);
 		}
 	}
 
-	protected static String getQueryParameter(final HttpServerExchange exchange,
+	protected static String getQueryParameter(final HttpServerExchange theExchange,
 																						final String paramName) throws ServerException {
-		final Map<String, Deque<String>> queryParams = exchange.getQueryParameters();
+		final Map<String, Deque<String>> queryParams = theExchange.getQueryParameters();
 
 		if (!queryParams.containsKey(paramName) || queryParams.get(paramName).isEmpty()) {
 			throw new ServerException(StatusCodes.BAD_REQUEST, "Missing required parameter: "+ paramName);
@@ -108,10 +108,10 @@ public abstract class AbstractRoutingHandler implements RoutingHandler {
 	}
 
 
-	protected Set<OWLAxiom> readAxioms(final InputStream inputStream) throws ServerException {
+	protected Set<OWLAxiom> readAxioms(final InputStream theInStream) throws ServerException {
 		OWLOntology ontology = null;
 		try {
-			ontology = manager.loadOntologyFromOntologyDocument(inputStream);
+			ontology = manager.loadOntologyFromOntologyDocument(theInStream);
 
 			return ontology.getAxioms();
 		}
@@ -123,7 +123,7 @@ public abstract class AbstractRoutingHandler implements RoutingHandler {
 		}
 		finally {
 			try {
-				inputStream.close();
+				theInStream.close();
 			}
 			catch (IOException e) {
 				e.printStackTrace();
