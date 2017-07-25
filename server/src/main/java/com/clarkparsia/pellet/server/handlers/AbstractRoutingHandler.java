@@ -6,6 +6,7 @@ import com.clarkparsia.pellet.server.exceptions.ServerException;
 import com.clarkparsia.pellet.server.protege.ClientState;
 import com.clarkparsia.pellet.server.protege.ProtegeOntologyState;
 import com.clarkparsia.pellet.server.protege.ProtegeServerState;
+import com.clarkparsia.pellet.service.PelletServiceConstants;
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import edu.stanford.protege.metaproject.api.ProjectId;
@@ -73,12 +74,12 @@ public abstract class AbstractRoutingHandler implements RoutingHandler {
 	}
 
 	protected static ProjectId getProjectId(final HttpServerExchange exchange) throws ServerException {
-		try {
-			return new ProjectIdImpl(exchange.getAttachment(PathTemplateMatch.ATTACHMENT_KEY)
-				.getParameters().get("projectId"));
-		}
-		catch (Exception e) {
-			throw new ServerException(StatusCodes.BAD_REQUEST, "Error parsing Ontology IRI", e);
+		final String projectId = exchange.getRequestHeaders().getFirst(PelletServiceConstants.PROJECT_ID_HEADER);
+		if (projectId == null) {
+			throw new ServerException(StatusCodes.BAD_REQUEST,
+				"Header " + PelletServiceConstants.PROJECT_ID_HEADER + " doesn't exist");
+		} else {
+			return new ProjectIdImpl(projectId);
 		}
 	}
 
