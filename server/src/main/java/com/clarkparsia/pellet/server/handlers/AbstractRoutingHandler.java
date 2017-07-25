@@ -6,6 +6,7 @@ import com.clarkparsia.pellet.server.exceptions.ServerException;
 import com.clarkparsia.pellet.server.protege.ClientState;
 import com.clarkparsia.pellet.server.protege.ProtegeOntologyState;
 import com.clarkparsia.pellet.server.protege.ProtegeServerState;
+import com.clarkparsia.pellet.service.PelletServiceConstants;
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import io.undertow.server.HttpServerExchange;
@@ -17,6 +18,7 @@ import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
+import org.semanticweb.owlapi.vocab.Namespaces;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -75,8 +77,14 @@ public abstract class AbstractRoutingHandler implements RoutingHandler {
 
 	protected static IRI getOntology(final HttpServerExchange theExchange) throws ServerException {
 		try {
-			return IRI.create(URLDecoder.decode(theExchange.getAttachment(PathTemplateMatch.ATTACHMENT_KEY)
-					.getParameters().get("ontology"), StandardCharsets.UTF_8.name()));
+			final String projectId = theExchange.getRequestHeaders().getFirst(PelletServiceConstants.PROJECT_ID_HEADER);
+			if (projectId == null) {
+				throw new ServerException(StatusCodes.BAD_REQUEST, "Header "
+					+ PelletServiceConstants.PROJECT_ID_HEADER + " not provided");
+			}
+			final String ontology = URLDecoder.decode(theExchange.getAttachment(PathTemplateMatch.ATTACHMENT_KEY)
+				.getParameters().get("ontology"), StandardCharsets.UTF_8.name()) + "?projectId=" + projectId;
+			return IRI.create(ontology);
 		}
 		catch (Exception theE) {
 			throw new ServerException(StatusCodes.BAD_REQUEST, "Error parsing Ontology IRI", theE);
