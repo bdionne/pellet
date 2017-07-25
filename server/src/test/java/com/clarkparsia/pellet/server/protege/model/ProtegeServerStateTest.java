@@ -79,9 +79,9 @@ public class ProtegeServerStateTest extends ProtegeServerTest {
 		assertEquals(ontologies.size(), mServerState.ontologies().size());
 		for (String ontology : ontologies) {
 			IRI ontologyIRI = IRI.create(ontology);
-//			Optional<ProtegeOntologyState> state = mServerState.getOntology(ontologyIRI);
-//			assertTrue(state.isPresent());
-//			assertEquals(ontologyIRI, state.get().getIRI());
+			Optional<ProtegeOntologyState> state = mServerState.getOntology(ontologyIRI);
+			assertTrue(state.isPresent());
+			assertEquals(ontologyIRI, state.get().getIRI());
 		}
 	}
 
@@ -93,14 +93,14 @@ public class ProtegeServerStateTest extends ProtegeServerTest {
 	@Test
 	public void addRemoveOntologies() throws Exception {
 		for (String s : ONTOLOGIES1) {
-//			assertTrue(mServerState.removeOntology(IRI.create(s)));
+			assertTrue(mServerState.removeOntology(IRI.create(s)));
 		}
 		assertOntologies(Lists.<String>newArrayList());
 	}
 
 	@Test
 	public void removeNotExists() throws Exception {
-//		assertFalse(mServerState.removeOntology(IRI.create("http://www.example.com/does-not-exist")));
+		assertFalse(mServerState.removeOntology(IRI.create("http://www.example.com/does-not-exist")));
 	}
 
 	@Test

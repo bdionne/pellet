@@ -20,7 +20,7 @@ public class OntologyAddHandler extends AbstractRoutingHandler {
 	 */
 	@Override
 	public void handleRequest(final HttpServerExchange theExchange) throws Exception {
-		getServerState().addOntology(getProjectId(theExchange).toString());
+		getServerState().addOntology(getOntology(theExchange).toString());
 
 		theExchange.setStatusCode(StatusCodes.OK);
 		theExchange.endExchange();

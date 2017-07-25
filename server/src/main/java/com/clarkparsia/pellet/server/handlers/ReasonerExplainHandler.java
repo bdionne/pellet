@@ -1,29 +1,28 @@
 package com.clarkparsia.pellet.server.handlers;
 
+import java.io.InputStream;
+import java.io.StringWriter;
+import java.util.Set;
+import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import com.clarkparsia.owlapi.explanation.io.manchester.ManchesterSyntaxExplanationRenderer;
 import com.clarkparsia.pellet.server.exceptions.ServerException;
 import com.clarkparsia.pellet.server.protege.ProtegeServerState;
 import com.clarkparsia.pellet.service.reasoner.SchemaReasoner;
 import com.google.common.base.Predicate;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Sets;
 import com.google.inject.Inject;
-import edu.stanford.protege.metaproject.api.ProjectId;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.StatusCodes;
+import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAnnotation;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLOntology;
-
-import java.io.InputStream;
-import java.io.StringWriter;
-import java.util.Set;
-import java.util.UUID;
-import java.util.logging.Logger;
-
-import static com.google.common.collect.ImmutableSet.of;
-import static com.google.common.collect.Sets.newHashSet;
-import static java.util.logging.Level.INFO;
 
 /**
  * Specification for {@link SchemaReasoner#explain(OWLAxiom, int)} functionality within
@@ -41,17 +40,17 @@ public class ReasonerExplainHandler extends AbstractRoutingHandler {
 
 	@Override
 	public void handleRequest(final HttpServerExchange theExchange) throws Exception {
-		final ProjectId projectId = getProjectId(theExchange);
+		final IRI ontology = getOntology(theExchange);
 		final UUID clientId = getClientID(theExchange);
 
 		int limit = getLimit(theExchange);
 
 		OWLAxiom inference = readAxiom(theExchange.getInputStream());
 
-		final SchemaReasoner aReasoner = getClientState(projectId, clientId).getReasoner();
+		final SchemaReasoner aReasoner = getClientState(ontology, clientId).getReasoner();
 		final Set<Set<OWLAxiom>> explanations = aReasoner.explain(inference, limit);
 
-		if (LOGGER.isLoggable(INFO)) {
+		if (LOGGER.isLoggable(Level.INFO)) {
 			StringWriter sw = new StringWriter();
 			ManchesterSyntaxExplanationRenderer renderer = new ManchesterSyntaxExplanationRenderer();
 			renderer.startRendering(sw);
@@ -61,12 +60,12 @@ public class ReasonerExplainHandler extends AbstractRoutingHandler {
 		}
 
 		OWLDataFactory factory = manager.getOWLDataFactory();
-		Set<OWLAxiom> axioms = newHashSet();
+		Set<OWLAxiom> axioms = Sets.newHashSet();
 		int i = 1;
 		for (Set<OWLAxiom> explanation : explanations) {
 			OWLAnnotation annotation = factory.getOWLAnnotation(factory.getRDFSLabel(), factory.getOWLLiteral("explanation" + (i++)));
 			for (OWLAxiom axiom : explanation) {
-				axioms.add(axiom.getAnnotatedAxiom(of(annotation)));
+				axioms.add(axiom.getAnnotatedAxiom(ImmutableSet.of(annotation)));
 			}
 		}
 
