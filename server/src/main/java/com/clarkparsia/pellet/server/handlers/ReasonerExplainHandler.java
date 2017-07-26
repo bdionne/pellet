@@ -35,7 +35,7 @@ public class ReasonerExplainHandler extends AbstractRoutingHandler {
 
 	@Inject
 	public ReasonerExplainHandler(final ProtegeServerState theServerState) {
-		super("POST", "{ontology}/explain", theServerState);
+		super("POST", "explain", theServerState);
 	}
 
 	@Override

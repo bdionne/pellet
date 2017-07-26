@@ -12,7 +12,7 @@ public class OntologyAddHandler extends AbstractRoutingHandler {
 
 	@Inject
 	public OntologyAddHandler(final ProtegeServerState theServerState) {
-		super("PUT", "{ontology}", theServerState);
+		super("PUT", "", theServerState);
 	}
 
 	/**

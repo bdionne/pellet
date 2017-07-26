@@ -2,6 +2,7 @@ package com.complexible.pellet.client;
 
 import java.util.UUID;
 
+import com.clarkparsia.pellet.service.PelletServiceConstants;
 import com.clarkparsia.pellet.service.reasoner.SchemaQuery;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAxiom;
@@ -31,38 +32,38 @@ public interface PelletService {
 	@GET("/admin/restart")
 	Call<Void> restart();
 
-	@POST("/reasoner/{ontology}/query")
-	Call<NodeSet> query(@Path("ontology") IRI theOntology,
-	                    @Query("client") UUID theClientID,
-	                    @Body SchemaQuery query);
+	@POST("/reasoner/query")
+	Call<NodeSet> query(@Query(PelletServiceConstants.ONTOLOGY) IRI theOntology,
+											@Query("client") UUID theClientID,
+											@Body SchemaQuery query);
 
-	@POST("/reasoner/{ontology}/explain")
-	Call<OWLOntology> explain(@Path("ontology") IRI theOntology,
-	                           @Query("client") UUID theClientID,
-	                           @Query("limit") int limit,
-	                           @Body OWLAxiom inference);
+	@POST("/reasoner/explain")
+	Call<OWLOntology> explain(@Query(PelletServiceConstants.ONTOLOGY) IRI theOntology,
+														@Query("client") UUID theClientID,
+														@Query("limit") int limit,
+														@Body OWLAxiom inference);
 
-	@POST("/reasoner/{ontology}/insert")
-	Call<Void> insert(@Path("ontology") IRI theOntology,
-	                  @Query("client") UUID theClientID,
-	                  @Body OWLOntology axioms);
+	@POST("/reasoner/insert")
+	Call<Void> insert(@Query(PelletServiceConstants.ONTOLOGY) IRI theOntology,
+										@Query("client") UUID theClientID,
+										@Body OWLOntology axioms);
 
-	@POST("/reasoner/{ontology}/delete")
-	Call<Void> delete(@Path("ontology") IRI theOntology,
-	                  @Query("client") UUID theClientID,
-	                  @Body OWLOntology axioms);
+	@POST("/reasoner/delete")
+	Call<Void> delete(@Query(PelletServiceConstants.ONTOLOGY) IRI theOntology,
+										@Query("client") UUID theClientID,
+										@Body OWLOntology axioms);
 
-	@GET("/reasoner/{ontology}/classify")
-	Call<Void> classify(@Path("ontology") IRI theOntology,
-	                    @Query("client") UUID theClientID);
+	@GET("/reasoner/classify")
+	Call<Void> classify(@Query(PelletServiceConstants.ONTOLOGY) IRI theOntology,
+											@Query("client") UUID theClientID);
 
-	@GET("/reasoner/{ontology}/version")
-	Call<Integer> version(@Path("ontology") IRI theOntology,
-	                      @Query("client") UUID theClientID);
+	@GET("/reasoner/version")
+	Call<Integer> version(@Query(PelletServiceConstants.ONTOLOGY) IRI theOntology,
+												@Query("client") UUID theClientID);
 
-	@PUT("/reasoner/{ontology}")
-	Call<Void> load(@Path("ontology") String theOntologyPath);
+	@PUT("/reasoner")
+	Call<Void> load(@Query(PelletServiceConstants.ONTOLOGY) IRI theOntologyPath);
 
-	@DELETE("/reasoner/{ontology}")
-	Call<Void> unload(@Path("ontology") IRI theOntology);
+	@DELETE("/reasoner")
+	Call<Void> unload(@Query(PelletServiceConstants.ONTOLOGY) IRI theOntology);
 }

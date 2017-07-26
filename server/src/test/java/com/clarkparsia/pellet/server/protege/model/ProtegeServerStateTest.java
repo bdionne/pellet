@@ -37,7 +37,6 @@ public class ProtegeServerStateTest extends ProtegeServerTest {
 	public static final List<String> ONTOLOGIES = Lists.<String>newArrayList(OWL2_ONT, AGENCIES_ONT);
 	public String agencies;
 	public String owl2;
-	public List<String> ontologies1 = Lists.newArrayList(owl2, agencies);
 	ProtegeServerState mServerState;
 
 	@Before
@@ -58,9 +57,8 @@ public class ProtegeServerStateTest extends ProtegeServerTest {
 			managerPassword.getPassword(),
 			protegeSettings.host() + ":8081");
 
-		owl2 = createOwl2Ontology(managerClient).toString();
-		agencies = createAgenciesOntology(managerClient).toString();
-		ontologies1 = Lists.newArrayList(owl2, agencies);
+		owl2 = createOwl2Ontology(managerClient).projectIRI().toString();
+		agencies = createAgenciesOntology(managerClient).projectIRI().toString();
 
 		mServerState.close();
 
@@ -87,12 +85,12 @@ public class ProtegeServerStateTest extends ProtegeServerTest {
 
 	@Test
 	public void shouldHaveOntologies() throws Exception {
-		assertOntologies(ontologies1);
+		assertOntologies(Lists.newArrayList(owl2, agencies));
 	}
 
 	@Test
 	public void addRemoveOntologies() throws Exception {
-		for (String s : ontologies1) {
+		for (String s : Lists.newArrayList(owl2, agencies)) {
 			assertTrue(mServerState.removeOntology(IRI.create(s)));
 		}
 		assertOntologies(Lists.<String>newArrayList());

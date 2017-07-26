@@ -13,7 +13,7 @@ public class OntologyRemoveHandler extends AbstractRoutingHandler {
 
 	@Inject
 	public OntologyRemoveHandler(final ProtegeServerState theServerState) {
-		super("DELETE", "{ontology}", theServerState);
+		super("DELETE", "", theServerState);
 	}
 
 	/**

@@ -20,7 +20,7 @@ public class ReasonerUpdateHandler extends AbstractRoutingHandler {
 
 	public ReasonerUpdateHandler(final ProtegeServerState theServerState,
 	                             final boolean insert) {
-		super("POST", "{ontology}/" + (insert ? "insert" : "delete"), theServerState);
+		super("POST", (insert ? "insert" : "delete"), theServerState);
 
 		this.insert = insert;
 	}

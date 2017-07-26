@@ -73,7 +73,6 @@ public final class PelletServer {
 			router.add(spec.getMethod(), spec.getPath(), aHandler);
 		}
 
-		final Properties propreties = serverInjector.getInstance(Properties.class);
 		PelletSettings pelletSettings = serverInjector.getInstance(PelletSettings.class);
 		String managementPassword = pelletSettings.managementPassword();
 		// add shutdown path

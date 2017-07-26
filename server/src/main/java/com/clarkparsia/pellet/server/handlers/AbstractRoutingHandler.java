@@ -11,7 +11,6 @@ import com.clarkparsia.pellet.service.PelletServiceConstants;
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import io.undertow.server.HttpServerExchange;
-import io.undertow.util.PathTemplateMatch;
 import io.undertow.util.StatusCodes;
 import okhttp3.HttpUrl;
 import org.semanticweb.owlapi.apibinding.OWLManager;
@@ -23,6 +22,7 @@ import org.semanticweb.owlapi.model.OWLOntologyManager;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Deque;
@@ -49,7 +49,7 @@ public abstract class AbstractRoutingHandler implements RoutingHandler {
 	                              final ProtegeServerState theServerState) {
 		serverState = theServerState;
 		mMethod = theMethod;
-		mPath = REASONER_PATH + "/" + thePath;
+		mPath = REASONER_PATH + (Strings.isNullOrEmpty(thePath) ? "" : "/" + thePath);
 	}
 
 	@Override
@@ -77,19 +77,26 @@ public abstract class AbstractRoutingHandler implements RoutingHandler {
 	}
 
 	protected static IRI getOntology(final HttpServerExchange theExchange) throws ServerException {
+		String rawIRI = theExchange.getQueryParameters().get(PelletServiceConstants.ONTOLOGY).getFirst();
+		if (rawIRI == null) {
+			throw new ServerException(StatusCodes.BAD_REQUEST, "ontology query parameter not provided");
+		}
 		try {
-			final String projectId = theExchange.getRequestHeaders().getFirst(PelletServiceConstants.PROJECT_ID_HEADER);
-			if (projectId == null) {
-				throw new ServerException(StatusCodes.BAD_REQUEST, "Header "
-					+ PelletServiceConstants.PROJECT_ID_HEADER + " not provided");
-			}
-			final IRI iri = IRI.create(URLDecoder.decode(theExchange.getAttachment(PathTemplateMatch.ATTACHMENT_KEY)
-				.getParameters().get("ontology"), StandardCharsets.UTF_8.name()));
-			return IRIUtils.addProjectId(iri, projectId);
+			rawIRI = URLDecoder.decode(rawIRI, StandardCharsets.UTF_8.name());
+		} catch (UnsupportedEncodingException e) {
+			throw new ServerException(StatusCodes.BAD_REQUEST, "ontology query parameter not decodeable");
 		}
-		catch (Exception theE) {
-			throw new ServerException(StatusCodes.BAD_REQUEST, "Error parsing Ontology IRI", theE);
+		HttpUrl rawIRIUrl = HttpUrl.parse(rawIRI);
+		if (rawIRIUrl.queryParameter(PelletServiceConstants.PROJECT_ID) != null) {
+			return IRI.create(rawIRIUrl.uri());
 		}
+
+		final String projectId = theExchange.getRequestHeaders().getFirst(PelletServiceConstants.PROJECT_ID_HEADER);
+		if (projectId == null) {
+			throw new ServerException(StatusCodes.BAD_REQUEST, "Header "
+				+ PelletServiceConstants.PROJECT_ID_HEADER + " not provided");
+		}
+		return IRIUtils.addProjectId(IRI.create(rawIRI), projectId);
 	}
 
 	protected static UUID getClientID(final HttpServerExchange theExchange) throws ServerException {
