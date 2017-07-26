@@ -81,7 +81,7 @@ public class ProtegeServerStateTest extends ProtegeServerTest {
 			IRI ontologyIRI = IRI.create(ontology);
 			Optional<ProtegeOntologyState> state = mServerState.getOntology(ontologyIRI);
 			assertTrue(state.isPresent());
-			assertEquals(ontologyIRI, state.get().getIRI());
+			assertEquals(ontologyIRI, state.get().getIRI().get());
 		}
 	}
 
