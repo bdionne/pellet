@@ -12,6 +12,7 @@ import java.util.Set;
 
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLObject;
+import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
 import org.semanticweb.owlapi.reasoner.NodeSet;
 
 /**
@@ -59,4 +60,6 @@ public interface SchemaReasoner extends AutoCloseable {
 	 * Classifies the reasoner.
 	 */
 	void classify();
+
+	Set<OWLSubClassOfAxiom> getInferredAxioms();
 }

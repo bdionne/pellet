@@ -3,6 +3,7 @@ package com.clarkparsia.pellet.server;
 import java.util.Properties;
 import java.util.Set;
 
+import com.clarkparsia.pellet.server.handlers.InferredAxiomsHandler;
 import com.clarkparsia.pellet.server.handlers.OntologyAddHandler;
 import com.clarkparsia.pellet.server.handlers.OntologyRemoveHandler;
 import com.clarkparsia.pellet.server.handlers.ReasonerClassifyHandler;
@@ -41,6 +42,7 @@ public class PelletServerModule extends AbstractModule implements Module {
 	@Override
 	protected void configure() {
 		Multibinder<RoutingHandler> pathsBinder = Multibinder.newSetBinder(binder(), RoutingHandler.class);
+		pathsBinder.addBinding().to(InferredAxiomsHandler.class);
 		pathsBinder.addBinding().to(ReasonerQueryHandler.class);
 		pathsBinder.addBinding().to(ReasonerExplainHandler.class);
 		pathsBinder.addBinding().to(ReasonerInsertHandler.class);

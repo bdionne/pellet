@@ -75,6 +75,7 @@ public class PelletServiceProvider implements Provider<PelletService> {
 			.addConverterFactory(AXIOM_FACTORY)
 			.addConverterFactory(NODE_SET_FACTORY)
 			.addConverterFactory(QUERY_FACTORY)
+			.addConverterFactory(SUB_CLASS_OF_AXIOM_FACTORY)
 			.build();
 		return aRetrofit.create(PelletService.class);
 	}
@@ -156,6 +157,11 @@ public class PelletServiceProvider implements Provider<PelletService> {
 		}
 	};
 
+	private static final Converter<ResponseBody, InferredAxiomsResponse> SUB_CLASS_OF_AXIOM_CONVERTER =
+			(Converter<ResponseBody, InferredAxiomsResponse>) body ->
+					new InferredAxiomsResponse(JsonMessage.readSubclassSet(body.string()));
+
+
 	private static final Converter.Factory ONTOLOGY_FACTORY = new Converter.Factory() {
 		public Converter<OWLOntology, RequestBody> requestBodyConverter(Type type, Annotation[] annotations, Retrofit retrofit) {
 			return type.equals(OWLOntology.class) ? ONTOLOGY_REQUEST_CONVERTER : null;
@@ -221,7 +227,7 @@ public class PelletServiceProvider implements Provider<PelletService> {
 
 	private static final Converter<ResponseBody, NodeSet> NODE_SET_CONVERTER = new Converter<ResponseBody, NodeSet>() {
 		public NodeSet convert(ResponseBody body) throws IOException {
-			return JsonMessage.readNodeSet(body.byteStream());
+			return JsonMessage.readNodeSet(body.string());
 		}
 	};
 
@@ -244,4 +250,14 @@ public class PelletServiceProvider implements Provider<PelletService> {
 		}
 	};
 
+	private static final Converter.Factory SUB_CLASS_OF_AXIOM_FACTORY = new Converter.Factory() {
+		public Converter<InferredAxiomsResponse, RequestBody> requestBodyConverter(Type type, Annotation[] annotations, Retrofit retrofit) {
+			return null;
+		}
+
+		@Override
+		public Converter<ResponseBody, InferredAxiomsResponse> responseBodyConverter(final Type type, final Annotation[] annotations, final Retrofit retrofit) {
+			return type.equals(InferredAxiomsResponse.class) ? SUB_CLASS_OF_AXIOM_CONVERTER : null;
+		}
+	};
 }
