@@ -29,32 +29,24 @@ public class PelletReasonerPreferences {
     private boolean updated = false;
 
     private PelletReasonerPreferences() {
-        _load();
-    }
+			reasonerMode = PelletReasonerMode.valueOf(prefs.getString("reasonerMode", PelletReasonerMode.REGULAR.name()));
+			serverURL = prefs.getString("serverURL", "http://localhost:18080");
+			explanationCount = prefs.getInt("explanationCount", 0);
+		}
 
-    private void _load() {
-        reasonerMode = PelletReasonerMode.valueOf(prefs.getString("reasonerMode", PelletReasonerMode.REGULAR.name()));
-        serverURL = prefs.getString("serverURL", "http://localhost:18080");
-        explanationCount = prefs.getInt("explanationCount", 0);
-    }
+	public boolean save() {
+		if (!updated) {
+			return false;
+		}
 
-    private void _save() {
-        prefs.putString("reasonerMode", reasonerMode.name());
-        prefs.putString("serverURL", serverURL);
-        prefs.putInt("explanationCount", explanationCount);
-    }
+		updated = false;
 
-    public boolean save() {
-        if (!updated) {
-            return false;
-        }
+		prefs.putString("reasonerMode", reasonerMode.name());
+		prefs.putString("serverURL", serverURL);
+		prefs.putInt("explanationCount", explanationCount);
 
-        updated = false;
-
-        _save();
-
-        return true;
-    }
+		return true;
+	}
 
     private void update(Object oldValue, Object newValue) {
         if (!Objects.equals(oldValue, newValue)) {
