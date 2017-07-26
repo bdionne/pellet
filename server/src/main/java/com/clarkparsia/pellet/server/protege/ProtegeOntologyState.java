@@ -11,6 +11,7 @@ package com.clarkparsia.pellet.server.protege;
 import com.clarkparsia.modularity.IncrementalReasoner;
 import com.clarkparsia.modularity.IncrementalReasonerConfiguration;
 import com.google.common.base.Charsets;
+import com.google.common.base.Optional;
 import com.google.common.cache.*;
 import com.google.common.io.Files;
 import edu.stanford.protege.metaproject.api.ProjectId;
@@ -133,8 +134,8 @@ public class ProtegeOntologyState implements AutoCloseable {
 		}
 	}
 
-	public IRI getIRI() {
-		return ontology.getOntologyID().getOntologyIRI().orNull();
+	public Optional<IRI> getIRI() {
+		return ontology.getOntologyID().getOntologyIRI();
 	}
 
 	public boolean update() {
@@ -185,13 +186,13 @@ public class ProtegeOntologyState implements AutoCloseable {
 				reasoner.save(path.toFile());
 			}
 		} catch (IOException theE) {
-			LOGGER.log(Level.SEVERE, "Couldn't save the OntologyState " + getIRI().toQuotedString(), theE);
+			LOGGER.log(Level.SEVERE, "Couldn't save the OntologyState " + toString(), theE);
 		}
 
 		try {
 			writeRevision();
 		} catch (IOException theE) {
-			LOGGER.log(Level.SEVERE, "Couldn't save the ontology state " + getIRI().toQuotedString(), theE);
+			LOGGER.log(Level.SEVERE, "Couldn't save the ontology state " + toString(), theE);
 		}
 	}
 
@@ -209,8 +210,7 @@ public class ProtegeOntologyState implements AutoCloseable {
 
 	@Override
 	public String toString() {
-		IRI iri = getIRI();
-		return "State(" + (iri == null ? "Anonymous ontology" : iri) + ")";
+		return String.format("ProtegeOntologyState(projectId=%s, iri=%s)", projectId.get(), getIRI());
 	}
 
 	private LoadingCache<UUID, ClientState> initClientCache() {

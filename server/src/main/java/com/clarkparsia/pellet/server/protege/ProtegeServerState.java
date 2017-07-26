@@ -115,11 +115,12 @@ public final class ProtegeServerState {
 			System.out.println(e.getMessage());
 			throw new OWLOntologyCreationException("Could not load ontology from Protege server: " + ontologyPath, e);
 		}
-		if (result.getIRI() == null) {
+		if (result.getIRI().isPresent()) {
+			ontologies.put(result.getIRI().get(), result);
+			return result;
+		} else {
 			throw new RuntimeException("Failed to get IRI for " + ontologyPath);
 		}
-		ontologies.put(result.getIRI(), result);
-		return result;
 	}
 
 	public boolean removeOntology(final IRI ontology) {
