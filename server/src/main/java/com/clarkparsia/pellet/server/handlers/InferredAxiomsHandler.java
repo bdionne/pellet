@@ -1,6 +1,6 @@
 package com.clarkparsia.pellet.server.handlers;
 
-import com.clarkparsia.pellet.server.model.ServerState;
+import com.clarkparsia.pellet.server.protege.ProtegeServerState;
 import com.clarkparsia.pellet.service.messages.JsonMessage;
 import com.clarkparsia.pellet.service.reasoner.SchemaReasoner;
 import com.google.inject.Inject;
@@ -11,7 +11,7 @@ import java.util.UUID;
 
 public class InferredAxiomsHandler extends AbstractRoutingHandler {
 	@Inject
-	public InferredAxiomsHandler(final ServerState serverState) {
+	public InferredAxiomsHandler(final ProtegeServerState serverState) {
 		super("GET", "{ontology}/inferred_axioms", serverState);
 	}
 
@@ -20,7 +20,7 @@ public class InferredAxiomsHandler extends AbstractRoutingHandler {
 		final IRI ontology = getOntology(exchange);
 		final UUID clientId = getClientID(exchange);
 
-		final SchemaReasoner reasoner = getReasoner(ontology, clientId);
+		final SchemaReasoner reasoner = getClientState(ontology, clientId).getReasoner();
 
 		JsonMessage.writeSubclassSet(reasoner.getInferredAxioms(), exchange.getOutputStream());
 

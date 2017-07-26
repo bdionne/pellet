@@ -141,6 +141,6 @@ public class RemoteSchemaReasoner implements SchemaReasoner {
 
 	@Override
 	public Set<OWLSubClassOfAxiom> getInferredAxioms() {
-		return ClientTools.executeCall(mService.inferredAxioms(mOntologyIri, mClientID)).data;
+		return ClientTools.executeCall(pelletService.inferredAxioms(ontologyIri, CLIENT_ID)).data;
 	}
 }
