@@ -1,9 +1,9 @@
 package com.clarkparsia.pellet.server;
 
+import com.google.common.base.Optional;
 import io.undertow.io.Sender;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
-import okio.ByteString;
 
 
 /**
@@ -11,7 +11,7 @@ import okio.ByteString;
  */
 public class PelletAuthHandler implements HttpHandler {
 	private static final String PELLET_MANAGEMENT_USER = "pellet";
-	private static final String AUTHORIZATION_HEADER = "Authorization";
+	public static final String AUTHORIZATION_HEADER = "Authorization";
 	private final HttpHandler subHandler;
 	private final String managementPassword;
 
@@ -31,16 +31,17 @@ public class PelletAuthHandler implements HttpHandler {
 			return;
 		}
 
-		String decoded = ByteString.decodeBase64(authorization).utf8();
-		String[] parts = decoded.split(":", 2);
-		if (parts.length != 2) {
+		Optional<AuthPair> authPair = AuthPair.fromHeaderValue(authorization);
+		if (!authPair.isPresent()) {
 			sender.send("Authorization token isn't present");
 			exchange.setStatusCode(400);
 			exchange.endExchange();
 			return;
 		}
 
-		if (!parts[0].equals(PELLET_MANAGEMENT_USER) || !parts[1].equals(this.managementPassword)) {
+		AuthPair auth = authPair.get();
+
+		if (!auth.user.equals(PELLET_MANAGEMENT_USER) || !auth.password.equals(this.managementPassword)) {
 			sender.send("Incorrect username or password.");
 			exchange.setStatusCode(401);
 			exchange.endExchange();
