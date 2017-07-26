@@ -21,7 +21,7 @@ import org.semanticweb.owlapi.reasoner.NodeSet;
 public class ReasonerQueryHandler extends AbstractRoutingHandler {
 	@Inject
 	public ReasonerQueryHandler(final ProtegeServerState theServerState) {
-		super("POST", "{ontology}/query", theServerState);
+		super("POST", "query", theServerState);
 	}
 
 	@Override

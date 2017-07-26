@@ -10,10 +10,12 @@ package com.clarkparsia.pellet.server.protege;
 
 import com.clarkparsia.modularity.IncrementalReasoner;
 import com.clarkparsia.modularity.IncrementalReasonerConfiguration;
+import com.clarkparsia.owlapiv3.IRIUtils;
 import com.google.common.base.Charsets;
 import com.google.common.cache.*;
 import com.google.common.io.Files;
 import edu.stanford.protege.metaproject.api.ProjectId;
+import okhttp3.HttpUrl;
 import org.mindswap.pellet.utils.progress.ConsoleProgressMonitor;
 import org.protege.editor.owl.client.LocalHttpClient;
 import org.protege.editor.owl.client.api.exception.AuthorizationException;
@@ -134,7 +136,8 @@ public class ProtegeOntologyState implements AutoCloseable {
 	}
 
 	public IRI getIRI() {
-		return ontology.getOntologyID().getOntologyIRI().orNull();
+		return ontology.getOntologyID().getOntologyIRI()
+			.transform(iri -> IRIUtils.addProjectId(iri, this.projectId.get())).orNull();
 	}
 
 	public boolean update() {

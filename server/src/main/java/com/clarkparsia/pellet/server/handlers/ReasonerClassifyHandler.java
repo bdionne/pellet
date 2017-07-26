@@ -15,7 +15,7 @@ public class ReasonerClassifyHandler extends AbstractRoutingHandler {
 
 	@Inject
 	public ReasonerClassifyHandler(final ProtegeServerState theServerState) {
-		super("GET", "{ontology}/classify", theServerState);
+		super("GET", "classify", theServerState);
 	}
 
 	/**

@@ -17,7 +17,7 @@ public class ReasonerVersionHandler extends AbstractRoutingHandler {
 
 	@Inject
 	public ReasonerVersionHandler(final ProtegeServerState theServerState) {
-		super("GET", "{ontology}/version", theServerState);
+		super("GET", "version", theServerState);
 	}
 
 	/**

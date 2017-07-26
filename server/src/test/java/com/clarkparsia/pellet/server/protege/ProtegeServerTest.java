@@ -1,6 +1,7 @@
 package com.clarkparsia.pellet.server.protege;
 
 import com.clarkparsia.owlapiv3.OntologyUtils;
+import com.clarkparsia.pellet.server.protege.model.ProjectIRI;
 import com.google.common.base.Charsets;
 import com.google.common.base.Optional;
 import com.google.common.io.Files;
@@ -8,6 +9,7 @@ import com.google.common.io.Resources;
 import edu.stanford.protege.metaproject.ConfigurationManager;
 import edu.stanford.protege.metaproject.api.PolicyFactory;
 import edu.stanford.protege.metaproject.api.Project;
+import edu.stanford.protege.metaproject.api.ProjectId;
 import edu.stanford.protege.metaproject.api.ProjectOptions;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.BasicConfigurator;
@@ -17,7 +19,6 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.protege.editor.owl.client.LocalHttpClient;
 import org.protege.editor.owl.server.http.HTTPServer;
-import org.protege.editor.owl.server.versioning.api.ServerDocument;
 import org.semanticweb.owlapi.model.IRI;
 
 import java.io.File;
@@ -89,24 +90,25 @@ public abstract class ProtegeServerTest {
 		OntologyUtils.clearOWLOntologyManager();
 	}
 
-	protected static IRI createOwl2Ontology(final LocalHttpClient client) throws Exception {
-		createOntology(OWL2_ONT, OWL2_FILE, client);
-		return IRI.create("http://www.example.org/test");
+	protected static ProjectIRI createOwl2Ontology(final LocalHttpClient client) throws Exception {
+		final ProjectId projectId = createOntology(OWL2_ONT, OWL2_FILE, client);
+		return new ProjectIRI(IRI.create("http://www.example.org/test"), projectId);
 	}
 
-	protected static IRI createAgenciesOntology(final LocalHttpClient client) throws Exception {
-		createOntology(AGENCIES_ONT, AGENCIES_FILE, client);
-		return  IRI.create("http://www.owl-ontologies.com/unnamed.owl");
+	protected static ProjectIRI createAgenciesOntology(final LocalHttpClient client) throws Exception {
+		final ProjectId projectId = createOntology(AGENCIES_ONT, AGENCIES_FILE, client);
+		return new ProjectIRI(IRI.create("http://www.owl-ontologies.com/unnamed.owl"), projectId);
 	}
 
-	protected static void createOntology(final String resourceName, final File ont, final LocalHttpClient client) throws Exception {
+	protected static ProjectId createOntology(final String resourceName, final File ont, final LocalHttpClient client) throws Exception {
 		PolicyFactory f = ConfigurationManager.getFactory();
-		Project p = f.getProject(f.getProjectId(resourceName),
+		final ProjectId projectId = f.getProjectId(resourceName);
+		Project p = f.getProject(projectId,
 		                         f.getName(resourceName),
 		                         f.getDescription(resourceName),
 		                         f.getUserId("admin"),
 		                         Optional.<ProjectOptions>absent());
-		ServerDocument s = client.createProject(p, ont);
-		System.out.println(s);
+		client.createProject(p, ont);
+		return projectId;
 	}
 }

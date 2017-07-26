@@ -11,6 +11,7 @@ import com.google.common.base.Optional;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
 import com.google.inject.name.Names;
 
+import javax.inject.Provider;
 
 
 /**
@@ -18,26 +19,27 @@ import com.google.inject.name.Names;
  */
 public class ClientModule extends AbstractModule {
 
-	private final String mEndpoint;
+	public static final int TIMEOUT_MIN = 3;
+	private final String endpoint;
 
-	private final long mConnTimeoutMin;
+	private final long connTimeoutMin;
 
-	private final long mReadTimeoutMin;
+	private final long readTimeoutMin;
 
-	private final long mWriteTimeoutMin;
+	private final long writeTimeoutMin;
 	private final Optional<String> managementPassword;
+	// Should really be Provider<ProjectId> but we don't have the correct dependency on hand
+	private final Provider<String> projectIdProvider;
 
-	public ClientModule(final String theEndpoint, final long theConnTimeoutMin, final long theReadTimeoutMin,
-											final long theWriteTimeoutMin, final Optional<String> managementPassword) {
-		mEndpoint = theEndpoint;
-		mConnTimeoutMin = theConnTimeoutMin;
-		mReadTimeoutMin = theReadTimeoutMin;
-		mWriteTimeoutMin = theWriteTimeoutMin;
+	public ClientModule(final String endpoint,
+											final Optional<String> managementPassword,
+											final Provider<String> projectIdProvider) {
+		this.endpoint = endpoint;
+		this.connTimeoutMin = TIMEOUT_MIN;
+		this.readTimeoutMin = TIMEOUT_MIN;
+		this.writeTimeoutMin = TIMEOUT_MIN;
 		this.managementPassword = managementPassword;
-	}
-
-	public ClientModule(final String theEndpoint, final Optional<String> managementPassword) {
-		this(theEndpoint, 3, 3, 3, managementPassword);
+		this.projectIdProvider = projectIdProvider;
 	}
 
 	@Override
@@ -47,16 +49,19 @@ public class ClientModule extends AbstractModule {
 			        .build(SchemaReasonerFactory.class));
 
 		bind(String.class).annotatedWith(Names.named("endpoint"))
-		                  .toInstance(mEndpoint);
+		                  .toInstance(endpoint);
 		bind(Long.class).annotatedWith(Names.named("conn_timeout"))
-		                   .toInstance(mConnTimeoutMin);
+		                   .toInstance(connTimeoutMin);
 		bind(Long.class).annotatedWith(Names.named("read_timeout"))
-		                   .toInstance(mReadTimeoutMin);
+		                   .toInstance(readTimeoutMin);
 		bind(Long.class).annotatedWith(Names.named("write_timeout"))
-		                   .toInstance(mWriteTimeoutMin);
+		                   .toInstance(writeTimeoutMin);
 		bind(new TypeLiteral<Optional<String>>(){ }).annotatedWith(Names.named("management_password"))
 			.toInstance(managementPassword);
 
+		bind(new TypeLiteral<Provider<String>>() {})
+			.annotatedWith(Names.named("project_id_provider"))
+			.toInstance(projectIdProvider);
 		bind(PelletService.class).toProvider(PelletServiceProvider.class).in(Singleton.class);
 	}
 }

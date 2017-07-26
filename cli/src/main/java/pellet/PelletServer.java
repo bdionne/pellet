@@ -116,7 +116,7 @@ public class PelletServer extends PelletCmdApp {
 			endpoint = pelletSettings.endpoint();
 		}
 
-		Injector aInjector = Guice.createInjector(new ClientModule(endpoint, Optional.of(pelletSettings.managementPassword())));
+		Injector aInjector = Guice.createInjector(new ClientModule(endpoint, Optional.of(pelletSettings.managementPassword()), null));
 
 		Call<Void> shutdownCall = aInjector.getInstance(PelletService.class).shutdown();
 		ClientTools.executeCall(shutdownCall);
