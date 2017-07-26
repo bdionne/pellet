@@ -10,6 +10,7 @@ import io.undertow.server.HttpServerExchange;
 import io.undertow.util.StatusCodes;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAxiom;
+import org.semanticweb.owlapi.model.OWLOntologyManager;
 
 /**
  * @author Evren Sirin
@@ -17,11 +18,14 @@ import org.semanticweb.owlapi.model.OWLAxiom;
 public class ReasonerUpdateHandler extends AbstractRoutingHandler {
 	private static final Logger LOGGER = Logger.getLogger(ReasonerUpdateHandler.class.getName());
 	private final boolean insert;
+	private OWLOntologyManager manager;
 
-	public ReasonerUpdateHandler(final ProtegeServerState theServerState,
+	public ReasonerUpdateHandler(final OWLOntologyManager manager,
+															 final ProtegeServerState theServerState,
 	                             final boolean insert) {
 		super("POST", "{ontology}/" + (insert ? "insert" : "delete"), theServerState);
 
+		this.manager = manager;
 		this.insert = insert;
 	}
 
@@ -32,7 +36,7 @@ public class ReasonerUpdateHandler extends AbstractRoutingHandler {
 
 		final SchemaReasoner aReasoner = getClientState(ontology, clientId).getReasoner();
 
-		final Set<OWLAxiom> axioms = readAxioms(theExchange.getInputStream());
+		final Set<OWLAxiom> axioms = HandlerUtils.readAxioms(manager, theExchange.getInputStream());
 
 		LOGGER.info("Updating client " + clientId + " (+" + axioms.size() + ")");
 

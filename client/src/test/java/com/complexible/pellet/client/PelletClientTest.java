@@ -3,6 +3,7 @@ package com.complexible.pellet.client;
 import com.clarkparsia.pellet.server.PelletServer;
 import com.clarkparsia.pellet.server.PelletServerModule;
 import com.clarkparsia.pellet.server.TestModule;
+import com.clarkparsia.pellet.server.protege.PelletTestModule;
 import com.clarkparsia.pellet.server.protege.ProtegeServerTest;
 import com.clarkparsia.pellet.server.protege.TestUtilities;
 import com.google.common.base.Optional;
@@ -15,6 +16,8 @@ import edu.stanford.protege.metaproject.api.UserId;
 import org.junit.After;
 import org.junit.Before;
 import org.protege.editor.owl.client.LocalHttpClient;
+import uk.ac.manchester.cs.owl.owlapi.OWLAPIImplModule;
+import uk.ac.manchester.cs.owl.owlapi.concurrent.Concurrency;
 
 import java.util.List;
 
@@ -44,8 +47,7 @@ public abstract class PelletClientTest extends ProtegeServerTest {
 	}
 
 	public void startPelletServer(List<String> ontologies) throws Exception {
-		pelletServer = new PelletServer(Guice.createInjector(Modules.override(new PelletServerModule())
-			.with(new TestModule(ontologies))));
+		pelletServer = new PelletServer(PelletTestModule.testInjector(ontologies));
 		pelletServer.start();
 	}
 

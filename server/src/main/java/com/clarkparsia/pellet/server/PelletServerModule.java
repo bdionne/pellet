@@ -3,6 +3,7 @@ package com.clarkparsia.pellet.server;
 import java.util.Properties;
 import java.util.Set;
 
+import com.clarkparsia.owlapiv3.OWL;
 import com.clarkparsia.pellet.server.handlers.InferredAxiomsHandler;
 import com.clarkparsia.pellet.server.handlers.OntologyAddHandler;
 import com.clarkparsia.pellet.server.handlers.OntologyRemoveHandler;
@@ -21,6 +22,7 @@ import com.google.inject.Module;
 import com.google.inject.Singleton;
 import com.google.inject.TypeLiteral;
 import com.google.inject.multibindings.Multibinder;
+import org.semanticweb.owlapi.model.OWLOntologyManager;
 
 /**
  * @author Edgar Rodriguez-Diaz

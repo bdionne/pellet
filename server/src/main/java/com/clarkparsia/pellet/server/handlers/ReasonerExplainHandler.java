@@ -18,11 +18,13 @@ import com.google.common.collect.Sets;
 import com.google.inject.Inject;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.StatusCodes;
+import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAnnotation;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLDataFactory;
 import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyManager;
 
 /**
  * Specification for {@link SchemaReasoner#explain(OWLAxiom, int)} functionality within
@@ -33,9 +35,12 @@ import org.semanticweb.owlapi.model.OWLOntology;
 public class ReasonerExplainHandler extends AbstractRoutingHandler {
 	private static final Logger LOGGER = Logger.getLogger(ReasonerExplainHandler.class.getName());
 
+	protected final OWLOntologyManager manager;
+
 	@Inject
-	public ReasonerExplainHandler(final ProtegeServerState theServerState) {
+	public ReasonerExplainHandler(final OWLOntologyManager manager, final ProtegeServerState theServerState) {
 		super("POST", "{ontology}/explain", theServerState);
+		this.manager = manager;
 	}
 
 	@Override
@@ -87,7 +92,7 @@ public class ReasonerExplainHandler extends AbstractRoutingHandler {
 	}
 
 	private OWLAxiom readAxiom(final InputStream theInStream) throws ServerException {
-		Set<OWLAxiom> axioms = readAxioms(theInStream);
+		Set<OWLAxiom> axioms = HandlerUtils.readAxioms(manager, theInStream);
 		Iterables.removeIf(axioms, new Predicate<OWLAxiom>() {
 			@Override
 			public boolean apply(final OWLAxiom axiom) {

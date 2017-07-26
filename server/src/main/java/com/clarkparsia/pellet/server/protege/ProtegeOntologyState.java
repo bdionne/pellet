@@ -12,7 +12,11 @@ import com.clarkparsia.modularity.IncrementalReasoner;
 import com.clarkparsia.modularity.IncrementalReasonerConfiguration;
 import com.google.common.base.Charsets;
 import com.google.common.base.Optional;
-import com.google.common.cache.*;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
+import com.google.common.cache.RemovalListener;
+import com.google.common.cache.RemovalNotification;
 import com.google.common.io.Files;
 import edu.stanford.protege.metaproject.api.ProjectId;
 import org.mindswap.pellet.utils.progress.ConsoleProgressMonitor;
@@ -24,7 +28,6 @@ import org.protege.editor.owl.server.util.SnapShot;
 import org.protege.editor.owl.server.versioning.api.ChangeHistory;
 import org.protege.editor.owl.server.versioning.api.DocumentRevision;
 import org.protege.editor.owl.server.versioning.api.ServerDocument;
-import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
@@ -56,7 +59,7 @@ public class ProtegeOntologyState implements AutoCloseable {
 
 	private boolean snapshotLoaded = false;
 
-	protected static final OWLOntologyManager MANAGER = OWLManager.createOWLOntologyManager();
+	protected final OWLOntologyManager manager;
 
 	private final OWLOntology ontology;
 
@@ -66,12 +69,14 @@ public class ProtegeOntologyState implements AutoCloseable {
 
 	public final Path path;
 
-	public ProtegeOntologyState(final LocalHttpClient client,
+	public ProtegeOntologyState(final OWLOntologyManager manager,
+															final LocalHttpClient client,
 															final ProjectId projectId,
 															final Path path) throws IOException, ClientRequestException, AuthorizationException {
+		this.manager = manager;
 		this.path = path;
 
-		IncrementalReasonerConfiguration config = IncrementalReasoner.config().manager(MANAGER);
+		IncrementalReasonerConfiguration config = IncrementalReasoner.config().manager(manager);
 		OWLOntology ont = null;
 		if (java.nio.file.Files.exists(path)) {
 			config.file(path.toFile());
@@ -80,7 +85,7 @@ public class ProtegeOntologyState implements AutoCloseable {
 				if (!java.nio.file.Files.exists(path)) {
 					java.nio.file.Files.createDirectories(path.getParent());
 				}
-				ont = MANAGER.createOntology();
+				ont = manager.createOntology();
 			} catch (Exception e) {
 				throw new RuntimeException("Cannot initialize ontology state", e);
 			}
@@ -145,8 +150,8 @@ public class ProtegeOntologyState implements AutoCloseable {
 			if (loadSnapshot) {
 				SnapShot snapshot = client.getSnapShot(projectId);
 				OWLOntology snapshotOnt = snapshot.getOntology();
-				MANAGER.addAxioms(ontology, snapshotOnt.getAxioms());
-				MANAGER.applyChange(new SetOntologyID(ontology, snapshotOnt.getOntologyID()));
+				manager.addAxioms(ontology, snapshotOnt.getAxioms());
+				manager.applyChange(new SetOntologyID(ontology, snapshotOnt.getOntologyID()));
 				snapshotLoaded = true;
 			}
 
@@ -157,7 +162,7 @@ public class ProtegeOntologyState implements AutoCloseable {
 
 				LOGGER.info("Updating " + this + " from " + revision + " to " + headRevision);
 
-				ClientUtils.updateOntology(ontology, history, ontology.getOWLOntologyManager());
+				ClientUtils.updateOntology(ontology, history, manager);
 
 				revision = headRevision;
 			}
