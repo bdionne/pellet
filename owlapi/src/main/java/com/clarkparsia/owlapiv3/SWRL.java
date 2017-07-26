@@ -8,15 +8,10 @@
 
 package com.clarkparsia.owlapiv3;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
-
 import org.mindswap.pellet.utils.SetUtils;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDataPropertyExpression;
-import org.semanticweb.owlapi.model.OWLDataRange;
 import org.semanticweb.owlapi.model.OWLDatatype;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLLiteral;
@@ -26,7 +21,6 @@ import org.semanticweb.owlapi.model.SWRLBuiltInAtom;
 import org.semanticweb.owlapi.model.SWRLClassAtom;
 import org.semanticweb.owlapi.model.SWRLDArgument;
 import org.semanticweb.owlapi.model.SWRLDataPropertyAtom;
-import org.semanticweb.owlapi.model.SWRLDataRangeAtom;
 import org.semanticweb.owlapi.model.SWRLDifferentIndividualsAtom;
 import org.semanticweb.owlapi.model.SWRLIArgument;
 import org.semanticweb.owlapi.model.SWRLIndividualArgument;
@@ -36,6 +30,9 @@ import org.semanticweb.owlapi.model.SWRLRule;
 import org.semanticweb.owlapi.model.SWRLSameIndividualAtom;
 import org.semanticweb.owlapi.model.SWRLVariable;
 import org.semanticweb.owlapi.vocab.SWRLBuiltInsVocabulary;
+
+import java.util.Arrays;
+import java.util.Set;
 
 /**
  * <p>
@@ -58,18 +55,10 @@ public class SWRL {
 		return SetUtils.create( atoms );
 	}
 
-	public static Set<SWRLAtom> atoms(SWRLAtom... atoms) {
-		return SetUtils.create( atoms );
-	}
-
 	public static SWRLBuiltInAtom builtIn(SWRLBuiltInsVocabulary builtIn, SWRLDArgument... args) {
 		return OWL.factory.getSWRLBuiltInAtom( builtIn.getIRI(), Arrays.asList( args ) );
 	}
 	
-	public static SWRLBuiltInAtom builtIn(SWRLBuiltInsVocabulary builtIn, List<SWRLDArgument> args) {
-		return OWL.factory.getSWRLBuiltInAtom( builtIn.getIRI(), args );
-	}
-
 	public static SWRLClassAtom classAtom(OWLClassExpression desc, SWRLIArgument arg) {
 		return OWL.factory.getSWRLClassAtom( desc, arg );
 	}
@@ -110,10 +99,6 @@ public class SWRL {
 		return OWL.factory.getSWRLLiteralArgument( OWL.constant( value, lang ) );
 	}
 
-	public static SWRLDataRangeAtom dataRangeAtom(OWLDataRange rng, SWRLLiteralArgument arg) {
-		return OWL.factory.getSWRLDataRangeAtom( rng, arg );
-	}
-
 	public static SWRLDifferentIndividualsAtom differentFrom(SWRLIArgument ind1, SWRLIArgument ind2) {
 		return OWL.factory.getSWRLDifferentIndividualsAtom( ind1, ind2 );
 	}
@@ -136,11 +121,6 @@ public class SWRL {
 				arg1, arg2 ) );
 	}
 
-	public static SWRLBuiltInAtom greaterThanOrEqual(SWRLDArgument arg1, SWRLDArgument arg2) {
-		return OWL.factory.getSWRLBuiltInAtom( SWRLBuiltInsVocabulary.GREATER_THAN_OR_EQUAL.getIRI(), Arrays.asList(
-				arg1, arg2 ) );
-	}
-
 	public static SWRLIndividualArgument individual(OWLIndividual individual) {
 		return OWL.factory.getSWRLIndividualArgument( individual );
 	}
@@ -151,16 +131,6 @@ public class SWRL {
 
 	public static SWRLBuiltInAtom lessThan(SWRLDArgument arg1, SWRLDArgument arg2) {
 		return OWL.factory.getSWRLBuiltInAtom( SWRLBuiltInsVocabulary.LESS_THAN.getIRI(), Arrays.asList(
-				arg1, arg2 ) );
-	}
-
-	public static SWRLBuiltInAtom lessThanOrEqual(SWRLDArgument arg1, SWRLDArgument arg2) {
-		return OWL.factory.getSWRLBuiltInAtom( SWRLBuiltInsVocabulary.LESS_THAN_OR_EQUAL.getIRI(), Arrays.asList(
-				arg1, arg2 ) );
-	}
-
-	public static SWRLBuiltInAtom notEqual(SWRLDArgument arg1, SWRLDArgument arg2) {
-		return OWL.factory.getSWRLBuiltInAtom( SWRLBuiltInsVocabulary.NOT_EQUAL.getIRI(), Arrays.asList(
 				arg1, arg2 ) );
 	}
 
