@@ -1,8 +1,7 @@
 #!/bin/bash -e
 
 HOST=$1
-PASS=$2
-
-USER="pellet"
+USER=$2
+PASS=$3
 
 curl -v -X GET --basic --user $USER:$PASS $HOST/admin/restart
