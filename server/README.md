@@ -21,19 +21,24 @@ $ mkdir /data/pellet
 ontologies that will be loaded by the Pellet server and other server settings. An example configuration file is as follows:
 ```
 # info about how to connect to the protege server
-protege.host=localhost
+protege.host=http://localhost
 protege.port=5100
+# add a user/name from protege that has workflow manager permissions
 protege.username=admin
 protege.password=admin
 
 # data directory that will be used by Pellet server
 pellet.home=/data/pellet
+
+pellet.host=http://localhost
 # port used by Pellet server
 pellet.port=18080
 
 # comma separated list of ontologies to load from the protege server. the ontologies
 # are identified by their location
-protege.ontologies=pizza.history,koala.history
+#NOTE: These are no longer needed as the pellet server will ask the protege
+#      server for the projects that are classifiable
+#protege.ontologies=pizza.history,koala.history
 
 # frequency (in seconds) at which pellet server will check protege server for new commits
 pellet.update.interval.sec=60
