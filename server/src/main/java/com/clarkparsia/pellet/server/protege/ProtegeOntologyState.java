@@ -199,12 +199,7 @@ public class ProtegeOntologyState implements AutoCloseable {
 	@Override
 	public void close() {
 		clients.invalidateAll();
-
-		OWLOntologyManager manager = ontology.getOWLOntologyManager();
-		if (manager != null) {
-			manager.removeOntology(ontology);
-		}
-
+		ontology.getOWLOntologyManager().removeOntology(ontology);
 		reasoner.dispose();
 	}
 
