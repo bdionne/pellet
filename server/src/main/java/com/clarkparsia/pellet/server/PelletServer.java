@@ -2,9 +2,11 @@ package com.clarkparsia.pellet.server;
 
 import com.clarkparsia.pellet.server.exceptions.ServerException;
 import com.clarkparsia.pellet.server.handlers.RoutingHandler;
+import com.clarkparsia.pellet.server.handlers.ServerExceptionHandler;
 import com.clarkparsia.pellet.server.jobs.ServerStateUpdate;
 import com.clarkparsia.pellet.server.protege.ProtegeServerState;
 import com.google.common.base.Strings;
+import com.google.common.base.Throwables;
 import com.google.inject.Injector;
 import com.google.inject.Key;
 import io.undertow.Handlers;
@@ -21,7 +23,6 @@ import org.protege.editor.owl.server.security.SSLContextInitializationException;
 import javax.net.ssl.SSLContext;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -63,6 +64,12 @@ public final class PelletServer {
 
 		// Exceptions handler
 		final ExceptionHandler aExceptionHandler = Handlers.exceptionHandler(router);
+		aExceptionHandler.addExceptionHandler(ServerException.class, new ServerExceptionHandler());
+		aExceptionHandler.addExceptionHandler(Throwable.class, exchange -> {
+			Throwable t =  exchange.getAttachment(ExceptionHandler.THROWABLE);
+			exchange.getResponseSender().send(Throwables.getStackTraceAsString(t));
+			exchange.setStatusCode(500);
+		});
 
 		// Shutdown handler
 		final GracefulShutdownHandler aShutdownHandler = Handlers.gracefulShutdown(aExceptionHandler);
@@ -73,7 +80,6 @@ public final class PelletServer {
 			router.add(spec.getMethod(), spec.getPath(), aHandler);
 		}
 
-		final Properties propreties = serverInjector.getInstance(Properties.class);
 		PelletSettings pelletSettings = serverInjector.getInstance(PelletSettings.class);
 		String managementPassword = pelletSettings.managementPassword();
 		// add shutdown path
