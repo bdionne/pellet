@@ -8,13 +8,6 @@
 
 package com.clarkparsia.owlapiv3;
 
-import java.rmi.server.UID;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
-
 import org.mindswap.pellet.utils.Namespaces;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.IRI;
@@ -92,6 +85,12 @@ import org.semanticweb.owlapi.model.OWLSymmetricObjectPropertyAxiom;
 import org.semanticweb.owlapi.model.OWLTransitiveObjectPropertyAxiom;
 import org.semanticweb.owlapi.vocab.OWLFacet;
 import org.semanticweb.owlapi.vocab.OWLRDFVocabulary;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
 
 /**
  * <p>
@@ -185,10 +184,6 @@ public class OWL {
 
 	public static OWLDataIntersectionOf dataAnd(OWLDataRange... descriptions) {
 		return factory.getOWLDataIntersectionOf( set( descriptions ) );
-	}
-
-	public static OWLDataIntersectionOf dataAnd(Set<? extends OWLDataRange> descriptions) {
-		return factory.getOWLDataIntersectionOf( descriptions );
 	}
 
 	public static OWLAnnotationAssertionAxiom annotation(OWLEntity entity, OWLAnnotation annotation) {
@@ -389,11 +384,6 @@ public class OWL {
 		return factory.getOWLEquivalentDataPropertiesAxiom( set( p1, p2 ) );
 	}
 
-	public static OWLEquivalentDataPropertiesAxiom equivalentDataProperties(
-			Set<? extends OWLDataPropertyExpression> properties) {
-		return factory.getOWLEquivalentDataPropertiesAxiom( properties );
-	}
-	
 	public static OWLEquivalentObjectPropertiesAxiom equivalentProperties(OWLObjectPropertyExpression p1,
 			OWLObjectPropertyExpression p2) {
 		return factory.getOWLEquivalentObjectPropertiesAxiom( set( p1, p2 ) );
@@ -528,16 +518,6 @@ public class OWL {
 				OWLFacet.MAX_INCLUSIVE, constant );
 	}
 
-	public static OWLFacetRestriction maxLength(int constant) {
-		return factory.getOWLFacetRestriction(
-				OWLFacet.MAX_LENGTH, constant );
-	}
-
-	public static OWLFacetRestriction maxLength(OWLLiteral constant) {
-		return factory.getOWLFacetRestriction(
-				OWLFacet.MAX_LENGTH, constant );
-	}
-
 	public static OWLDataMinCardinality min(OWLDataPropertyExpression p, int min) {
 		return factory.getOWLDataMinCardinality( min, p );
 	}
@@ -561,17 +541,7 @@ public class OWL {
 				OWLFacet.MIN_EXCLUSIVE, constant );
 	}
 
-	public static OWLFacetRestriction minExclusive(float constant) {
-		return factory.getOWLFacetRestriction(
-				OWLFacet.MIN_EXCLUSIVE, constant );
-	}
-
 	public static OWLFacetRestriction minExclusive(int constant) {
-		return factory.getOWLFacetRestriction(
-				OWLFacet.MIN_EXCLUSIVE, constant );
-	}
-
-	public static OWLFacetRestriction minExclusive(OWLLiteral constant) {
 		return factory.getOWLFacetRestriction(
 				OWLFacet.MIN_EXCLUSIVE, constant );
 	}
@@ -594,16 +564,6 @@ public class OWL {
 	public static OWLFacetRestriction minInclusive(OWLLiteral constant) {
 		return factory.getOWLFacetRestriction(
 				OWLFacet.MIN_INCLUSIVE, constant );
-	}
-
-	public static OWLFacetRestriction minLength(int constant) {
-		return factory.getOWLFacetRestriction(
-				OWLFacet.MIN_LENGTH, constant );
-	}
-
-	public static OWLFacetRestriction minLength(OWLLiteral constant) {
-		return factory.getOWLFacetRestriction(
-				OWLFacet.MIN_LENGTH, constant );
 	}
 
 	public static OWLObjectComplementOf not(OWLClassExpression description) {
@@ -630,14 +590,6 @@ public class OWL {
 		return factory.getOWLObjectOneOf( set( individuals ) );
 	}
 
-	public static OWLDataOneOf dataOneOf(Set<? extends OWLLiteral> constants) {
-		return factory.getOWLDataOneOf( constants );
-	}
-
-	public static OWLObjectOneOf objectOneOf(Set<OWLIndividual> individuals) {
-		return factory.getOWLObjectOneOf( individuals );
-	}
-
 	public static OWLDataAllValuesFrom only(OWLDataPropertyExpression property,
 			OWLDataRange datatype) {
 		return factory.getOWLDataAllValuesFrom( property, datatype );
@@ -658,10 +610,6 @@ public class OWL {
 
 	public static OWLDataUnionOf dataOr(OWLDataRange... descriptions) {
 		return factory.getOWLDataUnionOf( set( descriptions ) );
-	}
-
-	public static OWLDataUnionOf dataOr(Set<? extends OWLDataRange> descriptions) {
-		return factory.getOWLDataUnionOf( descriptions );
 	}
 
 	public static OWLDataPropertyAssertionAxiom propertyAssertion(OWLIndividual subj,
@@ -692,11 +640,6 @@ public class OWL {
 		return factory.getOWLDatatypeRestriction( datatype, restrictions );
 	}
 
-	public static OWLDataRange restrict(OWLDatatype datatype,
-			Set<OWLFacetRestriction> restrictions) {
-		return factory.getOWLDatatypeRestriction( datatype, restrictions );
-	}
-
 	public static OWLSameIndividualAxiom sameAs(OWLIndividual i1, OWLIndividual i2) {
 		return factory.getOWLSameIndividualAxiom( set( i1, i2 ) );
 	}
@@ -714,14 +657,6 @@ public class OWL {
 		for( T e : elements ) {
 			set.add( e );
 		}
-
-		return set;
-	}
-
-	private static <T> Set<T> set(T e1, T e2) {
-		Set<T> set = new HashSet<T>();
-		set.add( e1 );
-		set.add( e2 );
 
 		return set;
 	}

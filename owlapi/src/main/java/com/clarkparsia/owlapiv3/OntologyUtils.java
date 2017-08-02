@@ -6,23 +6,12 @@
 
 package com.clarkparsia.owlapiv3;
 
-import java.io.File;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import org.semanticweb.owlapi.model.AddAxiom;
 import org.semanticweb.owlapi.model.AxiomType;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAxiom;
-import org.semanticweb.owlapi.model.OWLClass;
-import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLDeclarationAxiom;
 import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLOntology;
@@ -34,19 +23,28 @@ import org.semanticweb.owlapi.model.OWLOntologyStorageException;
 import org.semanticweb.owlapi.model.OWLRuntimeException;
 import org.semanticweb.owlapi.model.RemoveAxiom;
 
+import java.io.File;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 /**
  * <p>Title: </p>
- *
+ * <p>
  * <p>Description: </p>
- *
+ * <p>
  * <p>Copyright: Copyright (c) 2007</p>
- *
+ * <p>
  * <p>Company: Clark & Parsia, LLC. <http://www.clarkparsia.com></p>
  *
  * @author Evren Sirin
  */
 public class OntologyUtils {
-	private static OWLOntologyManager	manager		= OWL.manager;
+	private static OWLOntologyManager manager = OWL.manager;
 
 	public static void addAxioms(OWLOntology ontology, Collection<? extends OWLAxiom> axioms) {
 		updateOntology(ontology, axioms, ImmutableSet.<OWLAxiom>of());
@@ -54,16 +52,6 @@ public class OntologyUtils {
 
 	public static void addAxioms(OWLOntology ontology, OWLAxiom... axioms) {
 		addAxioms(ontology, Arrays.asList(axioms));
-	}
-
-	public static boolean containsClass(Set<Set<OWLClass>> classes, OWLClass cls) {
-		for( Set<OWLClass> set : classes ) {
-			if( set.contains( cls ) ) {
-                return true;
-            }
-		}
-
-		return false;
 	}
 
 	/**
@@ -76,109 +64,89 @@ public class OntologyUtils {
 	public static OWLOntologyManager getOWLOntologyManager() {
 		return manager;
 	}
-	
+
 	public static void clearOWLOntologyManager() {
 		for (OWLOntology ont : manager.getOntologies()) {
-            manager.removeOntology(ont);
-        }
-	}
-	
-	/**
-	 * Loads the ontology with given URI.
-	 * 
-	 * @param uri the ontology uri
-	 * @return the ontology
-	 */
-	public static OWLOntology loadOntology( String uri ) {
-		try {
-			return manager.loadOntology(IRI.create(uri));
-		} catch( OWLOntologyCreationException e ) {
-			throw new OWLRuntimeException( e );
+			manager.removeOntology(ont);
 		}
 	}
 
-    /**
-     * Loads the ontology from the given stream
-     */
-    public static OWLOntology loadOntology( InputStream inputStream ) {
-        try {
-            return manager.loadOntologyFromOntologyDocument(inputStream);
-        } catch( OWLOntologyCreationException e ) {
-            throw new OWLRuntimeException( e );
-        }
-    }
+	/**
+	 * Loads the ontology with given URI.
+	 *
+	 * @param uri the ontology uri
+	 * @return the ontology
+	 */
+	public static OWLOntology loadOntology(String uri) {
+		try {
+			return manager.loadOntology(IRI.create(uri));
+		} catch (OWLOntologyCreationException e) {
+			throw new OWLRuntimeException(e);
+		}
+	}
+
+	/**
+	 * Loads the ontology from the given stream
+	 */
+	public static OWLOntology loadOntology(InputStream inputStream) {
+		try {
+			return manager.loadOntologyFromOntologyDocument(inputStream);
+		} catch (OWLOntologyCreationException e) {
+			throw new OWLRuntimeException(e);
+		}
+	}
 
 	/**
 	 * Loads the axioms from the given stream
 	 */
-	public static Set<OWLAxiom> loadAxioms( InputStream inputStream ) {
+	public static Set<OWLAxiom> loadAxioms(InputStream inputStream) {
 		try {
-			OWLOntology ont = manager.loadOntologyFromOntologyDocument( inputStream );
+			OWLOntology ont = manager.loadOntologyFromOntologyDocument(inputStream);
 			manager.removeOntology(ont);
 			return ont.getAxioms();
-		} catch( OWLOntologyCreationException e ) {
-			throw new OWLRuntimeException( e );
+		} catch (OWLOntologyCreationException e) {
+			throw new OWLRuntimeException(e);
 		}
 	}
 
 	/**
 	 * Loads the ontology with given URI and optionally removes all annotations
 	 * leaving only logical axioms.
-	 * 
-	 * @see #removeAllAnnotations(OWLOntology, OWLOntologyManager)
-	 * @param uri
-	 *            the ontology uri
-	 * @param withAnnotations
-	 *            if <code>false</code> removes all annotation axioms from the
-	 *            ontology, otherwise leaves the ontology intact
+	 *
+	 * @param uri             the ontology uri
+	 * @param withAnnotations if <code>false</code> removes all annotation axioms from the
+	 *                        ontology, otherwise leaves the ontology intact
 	 * @return the ontology
+	 * @see #removeAllAnnotations(OWLOntology, OWLOntologyManager)
 	 */
-	public static OWLOntology loadOntology( String uri, boolean withAnnotations ) {
-		OWLOntology ont = loadOntology( uri );
-		
-		if( !withAnnotations ) {
-            removeAllAnnotations( ont, manager );
-        }
-		
+	public static OWLOntology loadOntology(String uri, boolean withAnnotations) {
+		OWLOntology ont = loadOntology(uri);
+
+		if (!withAnnotations) {
+			removeAllAnnotations(ont, manager);
+		}
+
 		return ont;
-	}
-	
-    /**
-     * Loads the ontology with given URI and optionally removes all annotations
-     * leaving only logical axioms.
-     * 
-     * @see #removeAllAnnotations(OWLOntology, OWLOntologyManager)
-     * @param inputStream
-     *            input stream
-     * @param withAnnotations
-     *            if <code>false</code> removes all annotation axioms from the
-     *            ontology, otherwise leaves the ontology intact
-     * @return the ontology
-     */
-    public static OWLOntology loadOntology( InputStream inputStream, boolean withAnnotations ) {
-        OWLOntology ont = loadOntology( inputStream );
-        
-        if( !withAnnotations ) {
-            removeAllAnnotations( ont, manager );
-        }
-        
-        return ont;
-    }
-    
-	/**
-	 * Prints a set of axioms to console
-	 */
-	public static void printAxioms(Collection<? extends OWLAxiom> axioms) {
-		for( OWLAxiom axiom : axioms ) {
-            System.out.println( axiom );
-        }		
 	}
 
 	/**
-	 * Prints an ontology to console
+	 * Loads the ontology with given URI and optionally removes all annotations
+	 * leaving only logical axioms.
+	 *
+	 * @param inputStream     input stream
+	 * @param withAnnotations if <code>false</code> removes all annotation axioms from the
+	 *                        ontology, otherwise leaves the ontology intact
+	 * @return the ontology
+	 * @see #removeAllAnnotations(OWLOntology, OWLOntologyManager)
 	 */
-	public static void printOntology(OWLOntology ont) {
-		printAxioms(ont.getAxioms());
+	public static OWLOntology loadOntology(InputStream inputStream, boolean withAnnotations) {
+		OWLOntology ont = loadOntology(inputStream);
+
+		if (!withAnnotations) {
+			removeAllAnnotations(ont, manager);
+		}
+
+		return ont;
 	}
 
 	public static void removeAxioms(OWLOntology ontology, Collection<? extends OWLAxiom> axioms) {
@@ -210,70 +178,19 @@ public class OntologyUtils {
 	}
 
 	/**
-	 * Determines if a class description contains any unreferenced entities with
-	 * respect to the ontology that contains the entailments which are being
-	 * explained.
-	 * 
-	 * @param desc
-	 *            The description to be searched
-	 * @return <code>true</code> if the description references entities that
-	 *         the ontology that contains entailments which are being explained,
-	 *         otherwise <code>false</code>
-	 */
-	public static boolean containsUnreferencedEntity(OWLOntology ontology, OWLClassExpression desc) {
-		for( OWLEntity entity : desc.getSignature() ) {
-			if( !ontology.containsEntityInSignature( entity ) ) {
-				if( entity instanceof OWLClass
-						&& (((OWLClass) entity).isOWLThing() || ((OWLClass) entity).isOWLNothing()) ) {
-					continue;
-				}
-				return true;
-			}
-		}
-		return false;
-	}
-
-	/**
-	 * Removes an axiom from all the given ontologies that contains the axiom
-	 * and returns those ontologies.
-	 * 
-	 * @param axiom
-	 *            axiom being removed
-	 * @param ontologies
-	 *            ontologies from which axiom is being removed
-	 * @param manager
-	 *            manager to apply the actual change
-	 * @return set of ontologies that have been affected
-	 */
-	public static Set<OWLOntology> removeAxiom(OWLAxiom axiom, Set<OWLOntology> ontologies,
-			OWLOntologyManager manager) {
-		Set<OWLOntology> modifiedOnts = new HashSet<OWLOntology>();
-
-		for( OWLOntology ont : ontologies ) {
-			if( ont.getAxioms().contains( axiom ) ) {
-				modifiedOnts.add( ont );
-
-				manager.applyChange( new RemoveAxiom( ont, axiom ) );
-			}
-		}
-
-		return modifiedOnts;
-	}
-
-	/**
 	 * Add the axiom to all the given ontologies.
-	 * 
+	 *
 	 * @param axiom
 	 * @param ontologies
 	 * @param manager
 	 */
 	public static void addAxiom(OWLAxiom axiom, Set<OWLOntology> ontologies,
-			OWLOntologyManager manager) {
-		for( OWLOntology ont : ontologies ) {
-			manager.applyChange( new AddAxiom( ont, axiom ) );
+															OWLOntologyManager manager) {
+		for (OWLOntology ont : ontologies) {
+			manager.applyChange(new AddAxiom(ont, axiom));
 		}
 	}
-	
+
 	/**
 	 * Removes all annotations (non-logical axioms) but not declarations from the ontology causing
 	 * the ontology to be changed in an unreversible way. For any entity that is
@@ -284,60 +201,58 @@ public class OntologyUtils {
 	 * Removing them from the ontology completely reduces the memory
 	 * requirements which is very high for large-scale annotation-heavy
 	 * ontologies.
-	 * 
-	 * @param ontology
-	 *            the ontology being changed
+	 *
+	 * @param ontology the ontology being changed
 	 */
 	public static void removeAllAnnotations(OWLOntology ontology, OWLOntologyManager manager) {
 		try {
 			Set<OWLEntity> referencedEntities = new HashSet<OWLEntity>();
-			referencedEntities.addAll( ontology.getClassesInSignature() );
-			referencedEntities.addAll( ontology.getObjectPropertiesInSignature() );
-			referencedEntities.addAll( ontology.getDataPropertiesInSignature() );
-			referencedEntities.addAll( ontology.getIndividualsInSignature() );
+			referencedEntities.addAll(ontology.getClassesInSignature());
+			referencedEntities.addAll(ontology.getObjectPropertiesInSignature());
+			referencedEntities.addAll(ontology.getDataPropertiesInSignature());
+			referencedEntities.addAll(ontology.getIndividualsInSignature());
 
 			List<OWLOntologyChange> changes = new ArrayList<OWLOntologyChange>();
-			for( OWLAxiom axiom : ontology.getAxioms() ) {
+			for (OWLAxiom axiom : ontology.getAxioms()) {
 				AxiomType<?> axiomType = axiom.getAxiomType();
-				if( !axiomType.isLogical() && axiomType != AxiomType.DECLARATION) {
-					changes.add( new RemoveAxiom( ontology, axiom ) );
+				if (!axiomType.isLogical() && axiomType != AxiomType.DECLARATION) {
+					changes.add(new RemoveAxiom(ontology, axiom));
 				}
 			}
 
-			manager.applyChanges( changes ); 
+			manager.applyChanges(changes);
 
 			changes = new ArrayList<OWLOntologyChange>();
-			for( OWLEntity entity : referencedEntities ) {
-				if( !ontology.containsEntityInSignature( entity ) ) {
+			for (OWLEntity entity : referencedEntities) {
+				if (!ontology.containsEntityInSignature(entity)) {
 					OWLDeclarationAxiom declaration = manager.getOWLDataFactory()
-							.getOWLDeclarationAxiom( entity );
-					changes.add( new AddAxiom( ontology, declaration ) );
+						.getOWLDeclarationAxiom(entity);
+					changes.add(new AddAxiom(ontology, declaration));
 				}
 			}
-			
-			manager.applyChanges( changes );
-		} catch( OWLOntologyChangeException e ) {
-			throw new OWLRuntimeException( e );			
-		} 
+
+			manager.applyChanges(changes);
+		} catch (OWLOntologyChangeException e) {
+			throw new OWLRuntimeException(e);
+		}
 	}
 
 	/**
 	 * Finds an entity (class, individual, object or data property) in the given
 	 * set of ontologies that has the given local name or URI.
-	 * 
-	 * @see #findEntity(String, OWLOntology)
-	 * @param name
-	 *            URI or local name for an entity
-	 * @param ontologies
-	 *            ontologies we are searching
+	 *
+	 * @param name       URI or local name for an entity
+	 * @param ontologies ontologies we are searching
 	 * @return an entity referenced in the given ontology that has the given URI
-	 *         or local name	 */
+	 * or local name
+	 * @see #findEntity(String, OWLOntology)
+	 */
 	public static OWLEntity findEntity(String name, Set<OWLOntology> ontologies) {
 		OWLEntity entity = null;
-		for( OWLOntology ontology : ontologies ) {
-			if( (entity = findEntity( name, ontology )) != null ) {
-                break;
-            }
+		for (OWLOntology ontology : ontologies) {
+			if ((entity = findEntity(name, ontology)) != null) {
+				break;
+			}
 		}
 		return entity;
 	}
@@ -349,45 +264,43 @@ public class OntologyUtils {
 	 * and search for an entity with that URI. If the URI is punned in the
 	 * ontology , e.g. used both as a class and as an individual, any one of the
 	 * punned entities may be returned.
-	 * 
-	 * @param name
-	 *            URI or local name for an entity
-	 * @param ontology
-	 *            ontology we are searching
+	 *
+	 * @param name     URI or local name for an entity
+	 * @param ontology ontology we are searching
 	 * @return an entity referenced in the given ontology that has the given URI
-	 *         or local name
+	 * or local name
 	 */
 	public static OWLEntity findEntity(String name, OWLOntology ontology) {
 		OWLEntity entity = null;
 
-		if( name.equals( "owl:Thing" ) ) {
-            entity = OWL.Thing;
-        } else if( name.equals( "owl:Nothing" ) ) {
-            entity = OWL.Nothing;
-        } else {
-			IRI iri = IRI.create( name );
+		if (name.equals("owl:Thing")) {
+			entity = OWL.Thing;
+		} else if (name.equals("owl:Nothing")) {
+			entity = OWL.Nothing;
+		} else {
+			IRI iri = IRI.create(name);
 
-			if( iri == null ) {
-				throw new RuntimeException( "Invalid IRI: " + iri );
+			if (iri == null) {
+				throw new RuntimeException("Invalid IRI: " + iri);
 			}
 
-			if( !iri.isAbsolute() ) {
-                IRI baseIRI = ontology.getOntologyID().getOntologyIRI()
-                        .orNull();
-				if( baseIRI != null ) {
-                    iri = baseIRI.resolve( "#" + iri );
-                }
+			if (!iri.isAbsolute()) {
+				IRI baseIRI = ontology.getOntologyID().getOntologyIRI()
+					.orNull();
+				if (baseIRI != null) {
+					iri = baseIRI.resolve("#" + iri);
+				}
 			}
 
-            if (ontology.containsClassInSignature(iri)) {
-                entity = OWL.Class( iri );
-            } else if (ontology.containsObjectPropertyInSignature(iri)) {
-                entity = OWL.ObjectProperty( iri );
-            } else if (ontology.containsDataPropertyInSignature(iri)) {
-                entity = OWL.DataProperty( iri );
-            } else if (ontology.containsIndividualInSignature(iri)) {
-                entity = OWL.Individual( iri ).asOWLNamedIndividual();
-            }
+			if (ontology.containsClassInSignature(iri)) {
+				entity = OWL.Class(iri);
+			} else if (ontology.containsObjectPropertyInSignature(iri)) {
+				entity = OWL.ObjectProperty(iri);
+			} else if (ontology.containsDataPropertyInSignature(iri)) {
+				entity = OWL.DataProperty(iri);
+			} else if (ontology.containsIndividualInSignature(iri)) {
+				entity = OWL.Individual(iri).asOWLNamedIndividual();
+			}
 		}
 
 		return entity;
