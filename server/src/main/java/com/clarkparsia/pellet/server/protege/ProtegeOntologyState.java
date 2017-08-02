@@ -126,6 +126,10 @@ public class ProtegeOntologyState implements AutoCloseable {
 		if (file.exists()) {
 			file.delete();
 		}
+		final File pathFile = path.toFile();
+		if (pathFile.exists()) {
+			pathFile.delete();
+		}
 	}
 
 	public int getVersion() {
