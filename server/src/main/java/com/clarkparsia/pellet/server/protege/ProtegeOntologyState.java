@@ -121,6 +121,13 @@ public class ProtegeOntologyState implements AutoCloseable {
 		Files.write(String.valueOf(getVersion()), aHeadFile, Charsets.UTF_8);
 	}
 
+	public void clearRevisionFile() throws IOException {
+		final File file = revisionFile();
+		if (file.exists()) {
+			file.delete();
+		}
+	}
+
 	public int getVersion() {
 		return revision.getRevisionNumber();
 	}
@@ -198,6 +205,11 @@ public class ProtegeOntologyState implements AutoCloseable {
 
 	@Override
 	public void close() {
+		try {
+			clearRevisionFile();
+		} catch (IOException e) {
+			LOGGER.log(Level.INFO, "Couldn't delete revision file for " + this.projectId.get() + ": " + e);
+		}
 		clients.invalidateAll();
 		ontology.getOWLOntologyManager().removeOntology(ontology);
 		reasoner.dispose();
