@@ -196,7 +196,7 @@ public final class PelletServer {
                         stop();
                         try {
                             start();
-                            getState().start();
+                            //getState().start();
                         } catch (ServerException e) {
                             throw new RuntimeException(e);
                         }
