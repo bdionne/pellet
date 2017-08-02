@@ -230,7 +230,7 @@ public class IncrementalReasoner extends AbstractOWLListeningReasoner {
 
 		try {
 			OWLOntology ont = that.getRootOntology();
-			OWLOntologyManager manager = ont.getOWLOntologyManager();
+			OWLOntologyManager manager = OntologyUtils.getOWLOntologyManager();
 			OWLOntology copyOnt = manager.createOntology();
 			manager.addAxioms(copyOnt, ont.getAxioms());
 
