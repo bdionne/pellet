@@ -26,7 +26,7 @@ import java.util.logging.Logger;
 /**
  * @author Edgar Rodriguez-Diaz
  */
-public final class ProtegeServerState {
+public final class ProtegeServerState implements AutoCloseable {
 
 	private static final Logger LOGGER = Logger.getLogger(ProtegeServerState.class.getName());
 	private final OntologyProvider ontologyProvider;
@@ -142,7 +142,8 @@ public final class ProtegeServerState {
 		}
 	}
 
-	public void close() throws Exception {
+	@Override
+	public void close() {
 		for (ProtegeOntologyState ontology : ontologies()) {
 			ontology.close();
 		}
