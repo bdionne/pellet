@@ -42,11 +42,6 @@ public class ClientState implements AutoCloseable {
 	public void close() {
 		try {
 			reasoner.close();
-
-			OWLOntologyManager manager = ontology.getOWLOntologyManager();
-			if (manager != null) {
-				manager.removeOntology(ontology);
-			}
 		} catch (Exception e) {
 			Throwables.propagate(e);
 		}
