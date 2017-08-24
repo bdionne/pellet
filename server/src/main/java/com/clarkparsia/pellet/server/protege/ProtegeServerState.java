@@ -8,7 +8,6 @@ import com.google.inject.Inject;
 import edu.stanford.protege.metaproject.api.ProjectId;
 import edu.stanford.protege.metaproject.impl.ProjectIdImpl;
 import org.protege.editor.owl.client.LocalHttpClient;
-import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
@@ -43,9 +42,11 @@ public final class ProtegeServerState implements AutoCloseable {
 	private final PelletSettings pelletSettings;
 
 	@Inject
-	public ProtegeServerState(final PelletSettings pelletSettings,
+	public ProtegeServerState(final OWLOntologyManager manager,
+														final PelletSettings pelletSettings,
 														final ProtegeSettings protegeSettings,
 														final OntologyProvider ontologyProvider) throws Exception {
+		this.manager = manager;
 		this.pelletSettings = pelletSettings;
 		this.protegeSettings = protegeSettings;
 		this.ontologyProvider = ontologyProvider;
@@ -54,7 +55,6 @@ public final class ProtegeServerState implements AutoCloseable {
 
 	public void start() {
 		this.updateLock = new ReentrantLock();
-		this.manager = OWLManager.createOWLOntologyManager();
 		this.ontologies = Maps.newConcurrentMap();
 		this.client = ProtegeServiceUtils.connect(protegeSettings);
 
@@ -106,7 +106,7 @@ public final class ProtegeServerState implements AutoCloseable {
 
 		try {
 			ProjectId projectID = new ProjectIdImpl(ontologyPath);
-			result = new ProtegeOntologyState(client, projectID,
+			result = new ProtegeOntologyState(manager, client, projectID,
 				Paths.get(pelletSettings.home()).resolve(projectID.get()).resolve("reasoner_state.bin"));
 			LOGGER.info("Loaded revision " + result.getVersion());
 			result.update();

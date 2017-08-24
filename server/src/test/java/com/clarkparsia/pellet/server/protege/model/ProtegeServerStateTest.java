@@ -3,6 +3,7 @@ package com.clarkparsia.pellet.server.protege.model;
 import com.clarkparsia.pellet.server.PelletServerModule;
 import com.clarkparsia.pellet.server.ProtegeSettings;
 import com.clarkparsia.pellet.server.TestModule;
+import com.clarkparsia.pellet.server.protege.PelletTestModule;
 import com.clarkparsia.pellet.server.protege.ProtegeOntologyState;
 import com.clarkparsia.pellet.server.protege.ProtegeServerState;
 import com.clarkparsia.pellet.server.protege.ProtegeServerTest;
@@ -20,6 +21,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.protege.editor.owl.client.LocalHttpClient;
 import org.semanticweb.owlapi.model.IRI;
+import uk.ac.manchester.cs.owl.owlapi.OWLAPIImplModule;
+import uk.ac.manchester.cs.owl.owlapi.concurrent.Concurrency;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -46,8 +49,7 @@ public class ProtegeServerStateTest extends ProtegeServerTest {
 	public void before() throws Exception {
 		super.before();
 
-		Injector injector = Guice.createInjector(Modules.override(new PelletServerModule())
-			.with(new TestModule(Lists.<String>newArrayList())));
+		Injector injector = PelletTestModule.testInjector(Lists.newArrayList());
 
 		mServerState = (ProtegeServerState) injector.getInstance(ProtegeServerState.class);
 		assertTrue(mServerState.ontologies().isEmpty());
@@ -64,8 +66,7 @@ public class ProtegeServerStateTest extends ProtegeServerTest {
 		createAgenciesOntology(managerClient);
 		mServerState.close();
 
-		injector = Guice.createInjector(Modules.override(new PelletServerModule())
-			.with(new TestModule(ONTOLOGIES)));
+		injector = PelletTestModule.testInjector(ONTOLOGIES);
 		mServerState = (ProtegeServerState) injector.getInstance(ProtegeServerState.class);
 	}
 

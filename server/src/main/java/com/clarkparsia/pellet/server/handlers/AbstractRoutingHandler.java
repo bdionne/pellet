@@ -39,8 +39,6 @@ public abstract class AbstractRoutingHandler implements RoutingHandler {
 	private final String mMethod;
 	private final ProtegeServerState serverState;
 
-	protected final OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
-
 	public AbstractRoutingHandler(final String theMethod,
 	                              final String thePath,
 	                              final ProtegeServerState theServerState) {
@@ -106,33 +104,5 @@ public abstract class AbstractRoutingHandler implements RoutingHandler {
 		}
 
 		return paramVal;
-	}
-
-
-	protected Set<OWLAxiom> readAxioms(final InputStream theInStream) throws ServerException {
-		OWLOntology ontology = null;
-		try {
-			ontology = manager.loadOntologyFromOntologyDocument(theInStream);
-
-			return ontology.getAxioms();
-		}
-		catch (OWLOntologyCreationException e) {
-			throw new ServerException(400, "There was an error parsing axioms", e);
-		}
-		catch (Exception e) {
-			throw new ServerException(500, "There was an IO error while reading input stream", e);
-		}
-		finally {
-			try {
-				theInStream.close();
-			}
-			catch (IOException e) {
-				e.printStackTrace();
-			}
-
-			if (ontology != null) {
-				OWL.manager.removeOntology(ontology);
-			}
-		}
 	}
 }
