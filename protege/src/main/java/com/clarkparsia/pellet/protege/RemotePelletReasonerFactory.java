@@ -89,7 +89,7 @@ public class RemotePelletReasonerFactory implements OWLReasonerFactory {
 			throw new RuntimeException("no editor kits");
 		} else {
 			final OWLWorkspace workspace = (OWLWorkspace) editorKits.get(0).getWorkspace();
-			workspace.pelletRestartCallback = Optional.of(() -> {
+			workspace.reasonerRestartCallback = Optional.of(() -> {
 				LocalHttpClient client = (LocalHttpClient) connectionManager.getActiveClient();
 				if (!client.isWorkFlowManager(connectionManager.getActiveProject())) {
 					throw new RuntimeException("Not a workflow manager");
