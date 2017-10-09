@@ -75,7 +75,7 @@ public class IncremantalReasonerFactory implements OWLReasonerFactory {
 	 */
 	@Override
 	public IncrementalReasoner createNonBufferingReasoner(OWLOntology ontology) {
-		return new IncrementalReasoner( ontology, new IncrementalReasonerConfiguration() );
+		return new IncrementalReasoner( ontology, (new IncrementalReasonerConfiguration()).buffering(false) );
 	}
 
 	/**
@@ -83,7 +83,7 @@ public class IncremantalReasonerFactory implements OWLReasonerFactory {
 	 */
 	@Override
 	public IncrementalReasoner createNonBufferingReasoner(OWLOntology ontology, OWLReasonerConfiguration config) throws IllegalConfigurationException {
-		return new IncrementalReasoner( ontology, config(config) );
+		return new IncrementalReasoner( ontology, config(config).buffering(false) );
 	}
 
 	private IncrementalReasonerConfiguration config(OWLReasonerConfiguration config) {
