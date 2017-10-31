@@ -94,6 +94,8 @@ import org.semanticweb.owlapi.util.Version;
  */
 public class IncrementalReasoner extends AbstractOWLListeningReasoner {
 	public static final Logger log = Logger.getLogger(IncrementalReasoner.class.getName());
+	
+	public static long TIME_IN_INCR_CLASSIFIER = 0;
 
 	public static IncrementalReasonerConfiguration config() {
 		return new IncrementalReasonerConfiguration();
@@ -314,7 +316,9 @@ public class IncrementalReasoner extends AbstractOWLListeningReasoner {
 		classified = true;
 
 		if( extractor.canUpdate() ) {
+			long now = System.currentTimeMillis();
 	        incrementalClassify();
+	        System.out.println("Time spent in incremental classifier: " + (System.currentTimeMillis() - now));
         }
         else {
 	        regularClassify();

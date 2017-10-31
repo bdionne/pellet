@@ -12,10 +12,19 @@ import retrofit2.Response;
  * @author edgar
  */
 public final class ClientTools {
+	
+	public static int NO_CALLS = 0;
+	public static long TIME_IN_CALLS = 0;
 
 	public static <O> O executeCall(final Call<O> theCall) {
 		try {
-			Response<O> aResp = theCall.execute();
+				long now = System.currentTimeMillis();
+				Response<O> aResp = theCall.execute();
+				TIME_IN_CALLS += System.currentTimeMillis() - now;
+				if (NO_CALLS++ % 5 == 0) {
+				System.out.println("Executed calls: " + NO_CALLS);
+				System.out.println("Total time to date on server: " + TIME_IN_CALLS);
+				}
 
 			if (!aResp.isSuccess()) {
 				throw new RuntimeException(String.format("Request call failed: [%d] %s",

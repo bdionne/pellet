@@ -42,13 +42,15 @@ public class RemoteSchemaReasoner implements SchemaReasoner {
 	private static final UUID CLIENT_ID = UUID.randomUUID();
 
 	private LoadingCache<SchemaQuery, NodeSet<?>> cache = CacheBuilder.newBuilder()
-		                   .maximumSize(1024)
+		                   .maximumSize(1024000)
 		                   .build(new CacheLoader<SchemaQuery, NodeSet<?>>() {
 			                   @Override
 			                   public NodeSet<?> load(final SchemaQuery query) throws Exception {
 				                   return executeRemoteQuery(query);
 			                   }
 		                   });
+	
+	private Set<OWLSubClassOfAxiom> inferredCache = null;
 
 
 	@SuppressWarnings("unused")
@@ -72,6 +74,8 @@ public class RemoteSchemaReasoner implements SchemaReasoner {
 
 	private <T extends OWLObject> NodeSet<T> executeRemoteQuery(final SchemaQuery query) {
 		Call<NodeSet> queryCall = pelletService.query(ontologyIri, CLIENT_ID, query);
+		//System.out.println("The remote query to execute is: " + query.getEntity() + " of type: " + query.getType());
+	
 		return ClientTools.executeCall(queryCall);
 	}
 
@@ -106,6 +110,7 @@ public class RemoteSchemaReasoner implements SchemaReasoner {
 	public void classify() {
 		try {
 			ClientTools.executeCall(pelletService.classify(ontologyIri, CLIENT_ID));
+			inferredCache = null;
 		}
 		catch (Exception e) {
 			Throwables.propagate(e);
@@ -141,6 +146,9 @@ public class RemoteSchemaReasoner implements SchemaReasoner {
 
 	@Override
 	public Set<OWLSubClassOfAxiom> getInferredAxioms() {
-		return ClientTools.executeCall(pelletService.inferredAxioms(ontologyIri, CLIENT_ID)).data;
+		if (this.inferredCache == null) {
+			inferredCache = ClientTools.executeCall(pelletService.inferredAxioms(ontologyIri, CLIENT_ID)).data;
+		}
+		return inferredCache;
 	}
 }

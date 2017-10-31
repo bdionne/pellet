@@ -6,6 +6,8 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.clarkparsia.owlapiv3.OWL;
 import com.clarkparsia.pellet.service.messages.JsonMessage;
@@ -57,6 +59,7 @@ public class PelletServiceProvider implements Provider<PelletService> {
 
 	@Override
 	public PelletService get() {
+		Logger.getLogger(OkHttpClient.class.getName()).setLevel(Level.FINE);
 		final OkHttpClient.Builder httpClientBuilder = new OkHttpClient.Builder()
 			.connectTimeout(connTimeoutMin, TimeUnit.MINUTES)
 			.readTimeout(readTimeoutMin, TimeUnit.MINUTES)
