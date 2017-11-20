@@ -136,8 +136,8 @@ public class SchemaOWLReasoner implements OWLReasoner {
 
 		if (!isFlushed()) {
 			LOGGER.info("Flushing schema reasoner  with updates (+" + changeListener.getAdditions().size() + ", -" + changeListener.getAdditions().size() + ")");
-			client.insert(changeListener.getAdditions());
-			client.delete(changeListener.getRemovals());
+			//client.insert(changeListener.getAdditions());
+			//client.delete(changeListener.getRemovals());
 			client.classify();
 			changeListener.reset();
 		}

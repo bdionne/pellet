@@ -109,7 +109,8 @@ public class RemoteSchemaReasoner implements SchemaReasoner {
 	@Override
 	public void classify() {
 		try {
-			ClientTools.executeCall(pelletService.classify(ontologyIri, CLIENT_ID));
+			//ClientTools.executeCall(pelletService.classify(ontologyIri, CLIENT_ID));
+			cache.invalidateAll();
 			inferredCache = null;
 		}
 		catch (Exception e) {
@@ -121,6 +122,7 @@ public class RemoteSchemaReasoner implements SchemaReasoner {
 	public void insert(Set<OWLAxiom> additions) {
 		try {
 			cache.invalidateAll();
+			inferredCache = null;
 			ClientTools.executeCall(pelletService.insert(ontologyIri, CLIENT_ID, OWL.Ontology(additions)));
 		}
 		catch (Exception e) {
@@ -132,6 +134,7 @@ public class RemoteSchemaReasoner implements SchemaReasoner {
 	public void delete(Set<OWLAxiom> removals) {
 		try {
 			cache.invalidateAll();
+			inferredCache = null;
 			ClientTools.executeCall(pelletService.delete(ontologyIri, CLIENT_ID, OWL.Ontology(removals)));
 		}
 		catch (Exception e) {
