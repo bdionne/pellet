@@ -23,13 +23,13 @@ public final class ServerStateUpdate implements Runnable {
 	 */
 	@Override
 	public void run() {
-		LOGGER.info("Checking for updated ontologies...");
+		//LOGGER.info("Checking for updated ontologies...");
 		boolean updated = serverState.update();
 		if (updated) {
 			LOGGER.info("Ontology updates are complete");
 		}
 		else {
-			LOGGER.info("No ontologies were updated");
+			//LOGGER.info("No ontologies were updated");
 		}
 	}
 }
