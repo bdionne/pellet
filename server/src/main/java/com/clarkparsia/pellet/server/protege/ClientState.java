@@ -25,7 +25,7 @@ public class ClientState implements AutoCloseable {
 
 	public ClientState(final IncrementalReasoner reasoner, final int version) {
 		// create the reasoner with a copy of the incremental reasoner so it won't be affected if the original reasoner is updated
-		this.reasoner = new LocalSchemaReasoner(reasoner.copy());
+		this.reasoner = new LocalSchemaReasoner(reasoner);
 		this.ontology = reasoner.getRootOntology();
 		this.version = version;
 	}
