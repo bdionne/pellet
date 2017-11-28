@@ -41,7 +41,7 @@ public class ClientState implements AutoCloseable {
 	@Override
 	public void close() {
 		try {
-			reasoner.close();
+			//reasoner.close();
 		} catch (Exception e) {
 			Throwables.propagate(e);
 		}
