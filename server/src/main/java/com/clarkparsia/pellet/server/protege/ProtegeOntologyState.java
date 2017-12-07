@@ -99,7 +99,7 @@ public class ProtegeOntologyState implements AutoCloseable {
 
 		this.revision = readRevision();
 		this.snapshotLoaded = revision.getRevisionNumber() > 0;
-		writeRevision();
+		//writeRevision();
 	}
 
 	public File revisionFile() throws IOException {
@@ -185,7 +185,7 @@ public class ProtegeOntologyState implements AutoCloseable {
 
 			reasoner.classify();
 
-			save();
+			//save();
 		}
 
 		return updated;
