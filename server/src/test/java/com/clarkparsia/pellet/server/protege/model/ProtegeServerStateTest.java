@@ -58,7 +58,7 @@ public class ProtegeServerStateTest extends ProtegeServerTest {
 		ProtegeSettings protegeSettings = injector.getInstance(ProtegeSettings.class);
 		LocalHttpClient managerClient = new LocalHttpClient(managerId.get(),
 			managerPassword.getPassword(),
-			protegeSettings.host() + ":8081");
+			protegeSettings.host() + ":8080", true);
 
 		createOwl2Ontology(managerClient);
 		createAgenciesOntology(managerClient);

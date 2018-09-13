@@ -74,7 +74,7 @@ public class RemoteSchemaReasoner implements SchemaReasoner {
 
 	private <T extends OWLObject> NodeSet<T> executeRemoteQuery(final SchemaQuery query) {
 		Call<NodeSet> queryCall = pelletService.query(ontologyIri, CLIENT_ID, query);
-		//System.out.println("The remote query to execute is: " + query.getEntity() + " of type: " + query.getType());
+		System.out.println("The remote query to execute is: " + query.getEntity() + " of type: " + query.getType());
 	
 		return ClientTools.executeCall(queryCall);
 	}

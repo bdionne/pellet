@@ -36,11 +36,11 @@ public abstract class PelletClientTest extends ProtegeServerTest {
 	public void before() throws Exception {
 		super.before();
 
-		client = new LocalHttpClient(PROTEGE_USERNAME, PROTEGE_PASSWORD, PROTEGE_HOST + ":" + PROTEGE_PORT);
+		client = new LocalHttpClient(PROTEGE_USERNAME, PROTEGE_PASSWORD, PROTEGE_HOST + ":" + PROTEGE_PORT, false);
 		PolicyFactory f = ConfigurationManager.getFactory();
 		UserId managerId = f.getUserId("bob");
 		PlainPassword managerPassword = f.getPlainPassword("bob");
-		managerClient = new LocalHttpClient(managerId.get(), managerPassword.getPassword(), "http://localhost:8081");
+		managerClient = new LocalHttpClient(managerId.get(), managerPassword.getPassword(), "http://localhost:8080", true);
 	}
 
 	public void startPelletServer(List<String> ontologies) throws Exception {
