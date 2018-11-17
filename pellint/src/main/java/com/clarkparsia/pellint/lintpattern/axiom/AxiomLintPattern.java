@@ -6,12 +6,14 @@
 
 package com.clarkparsia.pellint.lintpattern.axiom;
 
-import org.semanticweb.owlapi.model.OWLAxiom;
-import org.semanticweb.owlapi.model.OWLOntology;
-import org.semanticweb.owlapi.util.OWLAxiomVisitorAdapter;
+import java.util.Collection;
 
+import org.semanticweb.owlapi.model.OWLAxiom;
+import org.semanticweb.owlapi.model.OWLEntity;
+import org.semanticweb.owlapi.model.OWLOntology;
 import com.clarkparsia.pellint.lintpattern.LintPattern;
 import com.clarkparsia.pellint.model.Lint;
+import com.clarkparsia.pellint.util.OWLDeepEntityVisitorAdapter;
 
 /**
  * <p>
@@ -30,7 +32,12 @@ import com.clarkparsia.pellint.model.Lint;
  * 
  * @author Harris Lin
  */
-public abstract class AxiomLintPattern extends OWLAxiomVisitorAdapter implements LintPattern {
+public abstract class AxiomLintPattern extends OWLDeepEntityVisitorAdapter implements LintPattern {
+	public AxiomLintPattern(Collection<OWLEntity> toReturn) {
+		super(toReturn);
+		// TODO Auto-generated constructor stub
+	}
+
 	private Lint m_Lint;
 	private OWLOntology m_Ontology;
 	

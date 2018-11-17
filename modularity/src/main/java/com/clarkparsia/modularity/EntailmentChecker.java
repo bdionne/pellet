@@ -55,7 +55,7 @@ import org.semanticweb.owlapi.model.OWLSymmetricObjectPropertyAxiom;
 import org.semanticweb.owlapi.model.OWLTransitiveObjectPropertyAxiom;
 import org.semanticweb.owlapi.model.SWRLRule;
 import org.semanticweb.owlapi.reasoner.UnsupportedEntailmentTypeException;
-import org.semanticweb.owlapi.util.OWLAxiomVisitorAdapter;
+//import org.semanticweb.owlapi.util.OWLAxiomVisitorAdapter;
 
 import com.clarkparsia.owlapiv3.OWL;
 
@@ -75,7 +75,7 @@ import com.clarkparsia.owlapiv3.OWL;
  * 
  * @author Evren Sirin
  */
-public class EntailmentChecker extends OWLAxiomVisitorAdapter implements OWLAxiomVisitor {
+public class EntailmentChecker implements OWLAxiomVisitor {
 	public static Logger	log			= Logger.getLogger( EntailmentChecker.class.getName() );
 	
 

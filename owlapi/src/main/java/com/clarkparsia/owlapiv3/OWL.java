@@ -428,7 +428,7 @@ public class OWL {
 
 	
 	public static OWLObjectInverseOf inverse(OWLObjectPropertyExpression p) {
-		return factory.getOWLObjectInverseOf( p );
+		return factory.getOWLObjectInverseOf( p.asOWLObjectProperty() );
 	}
 
 	public static OWLInverseFunctionalObjectPropertyAxiom inverseFunctional(

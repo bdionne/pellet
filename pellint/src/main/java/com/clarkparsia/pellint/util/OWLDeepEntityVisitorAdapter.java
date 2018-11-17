@@ -6,12 +6,16 @@
 
 package com.clarkparsia.pellint.util;
 
+import java.util.Collection;
+
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLDataProperty;
 import org.semanticweb.owlapi.model.OWLDatatype;
+import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLIndividual;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
 import org.semanticweb.owlapi.util.DeprecatedOWLEntityCollector;
+import org.semanticweb.owlapi.util.OWLEntityCollector;
 
 /**
  * <p>
@@ -32,16 +36,24 @@ import org.semanticweb.owlapi.util.DeprecatedOWLEntityCollector;
  * @author Harris Lin
  */
 public abstract class OWLDeepEntityVisitorAdapter extends
-        DeprecatedOWLEntityCollector {
+        OWLEntityCollector {
 
+	public OWLDeepEntityVisitorAdapter(Collection<OWLEntity> toReturn) {
+		super(toReturn);
+		// TODO Auto-generated constructor stub
+	}
 	@Override
-    public void visit(OWLClass desc) {}
+    public Collection<OWLEntity> visit(OWLClass desc) {
+		return objects;}
 	@Override
-    public void visit(OWLObjectProperty property) {}
+    public Collection<OWLEntity> visit(OWLObjectProperty property) {
+		return objects;}
 	@Override
-    public void visit(OWLDataProperty property) {}
+    public Collection<OWLEntity> visit(OWLDataProperty property) {
+		return objects;}
 	public void visit(OWLIndividual individual) {}
 	@Override
-    public void visit(OWLDatatype datatype) {}
+    public Collection<OWLEntity> visit(OWLDatatype datatype) {
+		return objects;}
 	
 }

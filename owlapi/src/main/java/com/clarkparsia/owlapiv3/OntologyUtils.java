@@ -286,7 +286,7 @@ public class OntologyUtils {
 
 			if (!iri.isAbsolute()) {
 				IRI baseIRI = ontology.getOntologyID().getOntologyIRI()
-					.orNull();
+					.orElse(null);
 				if (baseIRI != null) {
 					iri = baseIRI.resolve("#" + iri);
 				}

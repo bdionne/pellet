@@ -6,6 +6,7 @@
 
 package com.clarkparsia.pellint.lintpattern.axiom;
 
+import java.util.Collection;
 import java.util.Set;
 
 import org.semanticweb.owlapi.model.OWLAxiom;
@@ -14,6 +15,7 @@ import org.semanticweb.owlapi.model.OWLClassExpression;
 import org.semanticweb.owlapi.model.OWLEquivalentClassesAxiom;
 import org.semanticweb.owlapi.model.OWLObjectAllValuesFrom;
 import org.semanticweb.owlapi.model.OWLDataAllValuesFrom;
+import org.semanticweb.owlapi.model.OWLEntity;
 
 import com.clarkparsia.owlapiv3.OWL;
 import com.clarkparsia.pellint.format.CompactClassLintFormat;
@@ -38,6 +40,11 @@ import com.clarkparsia.pellint.model.LintFixer;
  * @author Harris Lin
  */
 public class EquivalentToAllValuePattern extends AxiomLintPattern {
+	public EquivalentToAllValuePattern(Collection<OWLEntity> toReturn) {
+		super(toReturn);
+		// TODO Auto-generated constructor stub
+	}
+
 	private static final LintFormat DEFAULT_LINT_FORMAT = new CompactClassLintFormat();
 	
 	public String getName() {
@@ -56,9 +63,9 @@ public class EquivalentToAllValuePattern extends AxiomLintPattern {
 		return DEFAULT_LINT_FORMAT;
 	}
 
-	public void visit(OWLEquivalentClassesAxiom axiom) {
+	public Collection<OWLEntity> visit(OWLEquivalentClassesAxiom axiom) {
 		Set<OWLClassExpression> owlDescs = axiom.getClassExpressions();
-		if (owlDescs.size() != 2) return;
+		if (owlDescs.size() != 2) return objects;
 		
 		OWLClass namedClass = null;
 		OWLClassExpression all = null;
@@ -81,5 +88,6 @@ public class EquivalentToAllValuePattern extends AxiomLintPattern {
 			lint.setLintFixer(fixer);
 			setLint(lint);
 		}
+		return objects;
 	}
 }

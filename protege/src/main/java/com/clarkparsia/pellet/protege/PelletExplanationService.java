@@ -19,9 +19,13 @@ import org.protege.editor.owl.ui.frame.*;
 import org.protege.editor.owl.ui.framelist.OWLFrameList;
 import org.protege.editor.owl.ui.framelist.OWLFrameListPopupMenuAction;
 import org.semanticweb.owl.explanation.api.Explanation;
+import org.semanticweb.owlapi.model.OWLAnnotationAssertionAxiom;
+import org.semanticweb.owlapi.model.OWLAnnotationPropertyDomainAxiom;
+import org.semanticweb.owlapi.model.OWLAnnotationPropertyRangeAxiom;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLObject;
 import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLSubAnnotationPropertyOfAxiom;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import uk.ac.manchester.cs.owl.explanation.JustificationFormattingManager;
 import uk.ac.manchester.cs.owl.explanation.JustificationFrameListRenderer;
@@ -160,6 +164,30 @@ public class PelletExplanationService extends ExplanationService {
 
 		public boolean canAcceptDrop(List<OWLObject> objects) {
 			return false;
+		}
+
+		@Override
+		public void visit(OWLAnnotationAssertionAxiom axiom) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void visit(OWLSubAnnotationPropertyOfAxiom axiom) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void visit(OWLAnnotationPropertyDomainAxiom axiom) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void visit(OWLAnnotationPropertyRangeAxiom axiom) {
+			// TODO Auto-generated method stub
+			
 		}
 	}
 

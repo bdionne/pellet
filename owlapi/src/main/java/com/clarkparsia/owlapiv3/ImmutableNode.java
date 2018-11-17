@@ -4,6 +4,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.stream.Stream;
+
 import javax.annotation.Nonnull;
 
 import com.google.common.collect.ImmutableSet;
@@ -117,4 +119,10 @@ public class ImmutableNode<E extends OWLObject> implements Node<E> {
     public int hashCode() {
         return this.entities.hashCode();
     }
+
+	@Override
+	public Stream<E> entities() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

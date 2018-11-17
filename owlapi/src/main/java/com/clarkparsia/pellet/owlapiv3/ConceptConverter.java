@@ -400,7 +400,7 @@ public class ConceptConverter extends ATermBaseVisitor implements ATermVisitor {
 		OWLObjectPropertyExpression prop = (OWLObjectPropertyExpression) convert( (ATermAppl) p
 				.getArgument( 0 ) );
 
-		obj = factory.getOWLObjectInverseOf( prop );
+		obj = factory.getOWLObjectInverseOf( prop.asOWLObjectProperty() );
 	}
 	
 	

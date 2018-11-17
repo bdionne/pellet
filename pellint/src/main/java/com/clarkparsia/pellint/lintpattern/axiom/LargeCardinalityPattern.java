@@ -6,9 +6,12 @@
 
 package com.clarkparsia.pellint.lintpattern.axiom;
 
+import java.util.Collection;
+
 import org.semanticweb.owlapi.model.OWLClassAxiom;
 import org.semanticweb.owlapi.model.OWLDisjointClassesAxiom;
 import org.semanticweb.owlapi.model.OWLDisjointUnionAxiom;
+import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLEquivalentClassesAxiom;
 import org.semanticweb.owlapi.model.OWLObjectCardinalityRestriction;
 import org.semanticweb.owlapi.model.OWLObjectExactCardinality;
@@ -39,14 +42,20 @@ import com.clarkparsia.pellint.util.OWLDeepEntityVisitorAdapter;
  * @author Harris Lin
  */
 public class LargeCardinalityPattern extends AxiomLintPattern {
+	public LargeCardinalityPattern(Collection<OWLEntity> toReturn) {
+		super(toReturn);
+		m_Visitor = new CardinalitySizeCollector(toReturn);
+		// TODO Auto-generated constructor stub
+	}
+
 	private static final LintFormat DEFAULT_LINT_FORMAT = new SimpleLintFormat();
 	
 	private int m_MaxAllowed = 10;
 	private CardinalitySizeCollector m_Visitor;
 	
-	public LargeCardinalityPattern() {
-		m_Visitor = new CardinalitySizeCollector();
-	}
+	//public LargeCardinalityPattern() {
+		//m_Visitor = new CardinalitySizeCollector();
+	//}
 	
 	public String getName() {
 		return getClass().getSimpleName() + " (MaxAllowed = " + m_MaxAllowed + ")";
@@ -68,20 +77,25 @@ public class LargeCardinalityPattern extends AxiomLintPattern {
 		m_MaxAllowed = value;
 	}
 
-	public void visit(OWLDisjointClassesAxiom axiom) {
+	public 
+	Collection<OWLEntity> visit(OWLDisjointClassesAxiom axiom) {
 		visitNaryClassAxiom(axiom);
+		return objects;
 	}
 	
-	public void visit(OWLDisjointUnionAxiom axiom) {
+	public Collection<OWLEntity> visit(OWLDisjointUnionAxiom axiom) {
 		visitNaryClassAxiom(axiom);
+		return objects;
 	}
 	
-	public void visit(OWLEquivalentClassesAxiom axiom) {
+	public Collection<OWLEntity> visit(OWLEquivalentClassesAxiom axiom) {
 		visitNaryClassAxiom(axiom);
+		return objects;
 	}
 	
-	public void visit(OWLSubClassOfAxiom axiom) {
+	public Collection<OWLEntity> visit(OWLSubClassOfAxiom axiom) {
 		visitNaryClassAxiom(axiom);
+		return objects;
 	}
 	
 	private void visitNaryClassAxiom(OWLClassAxiom axiom) {
@@ -98,6 +112,11 @@ public class LargeCardinalityPattern extends AxiomLintPattern {
 }
 
 class CardinalitySizeCollector extends OWLDeepEntityVisitorAdapter {
+	public CardinalitySizeCollector(Collection<OWLEntity> toReturn) {
+		super(toReturn);
+		// TODO Auto-generated constructor stub
+	}
+
 	private int m_Size;
 	
 	public void reset() {
@@ -108,19 +127,19 @@ class CardinalitySizeCollector extends OWLDeepEntityVisitorAdapter {
 		return m_Size;
 	}
 
-	public void visit(OWLObjectExactCardinality card) {
+	public Collection<OWLEntity> visit(OWLObjectExactCardinality card) {
 		process(card);
-		super.visit(card);
+		return super.visit(card);
 	}
 	
-	public void visit(OWLObjectMaxCardinality card) {
+	public Collection<OWLEntity> visit(OWLObjectMaxCardinality card) {
 		process(card);
-		super.visit(card);
+		return super.visit(card);
 	}
 	
-	public void visit(OWLObjectMinCardinality card) {
+	public Collection<OWLEntity> visit(OWLObjectMinCardinality card) {
 		process(card);
-		super.visit(card);
+		return super.visit(card);
 	}
 	
 	protected void process(OWLObjectCardinalityRestriction card) {

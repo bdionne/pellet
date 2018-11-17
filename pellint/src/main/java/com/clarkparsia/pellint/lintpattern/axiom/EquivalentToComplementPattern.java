@@ -6,11 +6,13 @@
 
 package com.clarkparsia.pellint.lintpattern.axiom;
 
+import java.util.Collection;
 import java.util.Set;
 
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLEquivalentClassesAxiom;
 import org.semanticweb.owlapi.model.OWLObjectComplementOf;
 
@@ -37,6 +39,11 @@ import com.clarkparsia.pellint.model.LintFixer;
  * @author Harris Lin
  */
 public class EquivalentToComplementPattern extends AxiomLintPattern {
+	public EquivalentToComplementPattern(Collection<OWLEntity> toReturn) {
+		super(toReturn);
+		// TODO Auto-generated constructor stub
+	}
+
 	private static final LintFormat DEFAULT_LINT_FORMAT = new CompactClassLintFormat();
 	
 	public String getName() {
@@ -55,9 +62,9 @@ public class EquivalentToComplementPattern extends AxiomLintPattern {
 		return DEFAULT_LINT_FORMAT;
 	}
 
-	public void visit(OWLEquivalentClassesAxiom axiom) {
+	public Collection<OWLEntity> visit(OWLEquivalentClassesAxiom axiom) {
 		Set<OWLClassExpression> owlDescs = axiom.getClassExpressions();
-		if (owlDescs.size() != 2) return;
+		if (owlDescs.size() != 2) return objects;
 		
 		OWLClass namedClass = null;
 		OWLClassExpression complementOf = null;
@@ -78,5 +85,6 @@ public class EquivalentToComplementPattern extends AxiomLintPattern {
 			lint.setLintFixer(fixer);
 			setLint(lint);
 		}
+		return objects;
 	}
 }

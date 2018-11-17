@@ -55,13 +55,13 @@ public class LintPatternLoader {
 	private static final Logger LOGGER = Logger.getLogger(LintPatternLoader.class.getName());
 	
 	public static final List<AxiomLintPattern> DEFAULT_AXIOM_LINT_PATTERNS = Arrays.asList(
-			new EquivalentToAllValuePattern(),
-			new EquivalentToMaxCardinalityPattern(),
-			new EquivalentToComplementPattern(),
-			new EquivalentToTopPattern(),
-			new GCIPattern(),
-			new LargeCardinalityPattern(),
-			new LargeDisjunctionPattern()			
+			new EquivalentToAllValuePattern(null),
+			new EquivalentToMaxCardinalityPattern(null),
+			new EquivalentToComplementPattern(null),
+			new EquivalentToTopPattern(null),
+			new GCIPattern(null),
+			new LargeCardinalityPattern(null),
+			new LargeDisjunctionPattern(null)			
 		);
 	
 	public static final List<OntologyLintPattern> DEFAULT_ONTOLOGY_LINT_PATTERNS = Arrays.asList(

@@ -6,7 +6,10 @@
 
 package com.clarkparsia.pellint.lintpattern.axiom;
 
+import java.util.Collection;
+
 import org.semanticweb.owlapi.model.OWLClassExpression;
+import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLEquivalentClassesAxiom;
 import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
 
@@ -32,6 +35,11 @@ import com.clarkparsia.pellint.util.OWLUtil;
  * @author Harris Lin
  */
 public class GCIPattern extends AxiomLintPattern {
+	public GCIPattern(Collection<OWLEntity> toReturn) {
+		super(toReturn);
+		// TODO Auto-generated constructor stub
+	}
+
 	private static final LintFormat DEFAULT_LINT_FORMAT = new SimpleLintFormat();
 	
 	public String getName() {
@@ -50,7 +58,7 @@ public class GCIPattern extends AxiomLintPattern {
 		return DEFAULT_LINT_FORMAT;
 	}
 
-	public void visit(OWLEquivalentClassesAxiom axiom) {
+	public Collection<OWLEntity> visit(OWLEquivalentClassesAxiom axiom) {
 		int complexCount = 0;
 		for (OWLClassExpression desc : axiom.getClassExpressions()) {
 			if (OWLUtil.isComplex(desc)) {
@@ -63,13 +71,15 @@ public class GCIPattern extends AxiomLintPattern {
 			lint.addParticipatingAxiom(axiom);
 			setLint(lint);
 		}
+		return objects;
 	}
 	
-	public void visit(OWLSubClassOfAxiom axiom) {
+	public Collection<OWLEntity> visit(OWLSubClassOfAxiom axiom) {
 		if (OWLUtil.isComplex(axiom.getSubClass())) {
 			Lint lint = makeLint();
 			lint.addParticipatingAxiom(axiom);
 			setLint(lint);			
-		}		
+		}
+		return objects;		
 	}
 }

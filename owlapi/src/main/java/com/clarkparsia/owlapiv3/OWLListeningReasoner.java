@@ -17,6 +17,7 @@ import org.semanticweb.owlapi.model.OWLException;
 import org.semanticweb.owlapi.model.OWLOntologyChange;
 import org.semanticweb.owlapi.model.OWLOntologyChangeListener;
 import org.semanticweb.owlapi.model.OWLOntologyID;
+import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 
 /**
@@ -24,6 +25,8 @@ import org.semanticweb.owlapi.reasoner.OWLReasoner;
  */
 public interface OWLListeningReasoner extends OWLReasoner, OWLOntologyChangeListener {
 	void setListenChanges(boolean listen);
+	
+	Set<OWLSubClassOfAxiom> getAllInferredSuperClasses();
 
 	boolean isListenChanges();
 }

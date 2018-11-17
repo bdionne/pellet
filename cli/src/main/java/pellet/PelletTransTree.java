@@ -126,7 +126,7 @@ public class PelletTransTree extends PelletCmdApp {
         }
 
         if (!EntitySearcher.isTransitive((OWLObjectProperty) entity,
-                loader.getAllOntologies())) {
+                loader.getAllOntologies().stream())) {
             throw new PelletCmdException( "Not a transitive property: " + propertyName );
         }
 

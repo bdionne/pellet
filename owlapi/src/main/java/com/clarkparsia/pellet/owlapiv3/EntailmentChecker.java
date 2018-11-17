@@ -110,7 +110,7 @@ public class EntailmentChecker implements OWLAxiomVisitor {
 	
 	private void deferAxiom(OWLIndividualAxiom axiom) {
 		isDeferred = true;
-		axiom.accept( queryVisitor );
+		axiom.accept( (OWLAxiomVisitor) queryVisitor );
 	}
 
 	private boolean isEntailed(OWLAxiom axiom) {

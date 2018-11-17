@@ -8,6 +8,7 @@
 
 package com.clarkparsia.pellet.server.reasoner;
 
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.locks.ReadWriteLock;

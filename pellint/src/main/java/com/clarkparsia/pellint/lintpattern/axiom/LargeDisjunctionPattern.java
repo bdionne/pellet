@@ -6,9 +6,12 @@
 
 package com.clarkparsia.pellint.lintpattern.axiom;
 
+import java.util.Collection;
+
 import org.semanticweb.owlapi.model.OWLClassAxiom;
 import org.semanticweb.owlapi.model.OWLDisjointClassesAxiom;
 import org.semanticweb.owlapi.model.OWLDisjointUnionAxiom;
+import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLEquivalentClassesAxiom;
 import org.semanticweb.owlapi.model.OWLObjectUnionOf;
 import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
@@ -36,14 +39,20 @@ import com.clarkparsia.pellint.util.OWLDeepEntityVisitorAdapter;
  * @author Harris Lin
  */
 public class LargeDisjunctionPattern extends AxiomLintPattern {
+	public LargeDisjunctionPattern(Collection<OWLEntity> toReturn) {		
+		super(toReturn);
+		m_Visitor = new DisjunctionSizeCollector(toReturn);
+		// TODO Auto-generated constructor stub
+	}
+
 	private static final LintFormat DEFAULT_LINT_FORMAT = new SimpleLintFormat();
 	
 	private int m_MaxAllowed = 10;
 	private DisjunctionSizeCollector m_Visitor;
 	
-	public LargeDisjunctionPattern() {
-		m_Visitor = new DisjunctionSizeCollector();
-	}
+	//public LargeDisjunctionPattern() {
+		//m_Visitor = new DisjunctionSizeCollector();
+	//}
 	
 	public String getName() {
 		return getClass().getSimpleName() + " (MaxAllowed = " + m_MaxAllowed + ")";
@@ -65,20 +74,24 @@ public class LargeDisjunctionPattern extends AxiomLintPattern {
 		m_MaxAllowed = value;
 	}
 	
-	public void visit(OWLDisjointClassesAxiom axiom) {
+	public Collection<OWLEntity> visit(OWLDisjointClassesAxiom axiom) {
 		visitNaryClassAxiom(axiom);
+		return objects;
 	}
 	
-	public void visit(OWLDisjointUnionAxiom axiom) {
+	public Collection<OWLEntity> visit(OWLDisjointUnionAxiom axiom) {
 		visitNaryClassAxiom(axiom);
+		return objects;
 	}
 	
-	public void visit(OWLEquivalentClassesAxiom axiom) {
+	public Collection<OWLEntity> visit(OWLEquivalentClassesAxiom axiom) {
 		visitNaryClassAxiom(axiom);
+		return objects;
 	}
 	
-	public void visit(OWLSubClassOfAxiom axiom) {
+	public Collection<OWLEntity> visit(OWLSubClassOfAxiom axiom) {
 		visitNaryClassAxiom(axiom);
+		return objects;
 	}
 	
 	private void visitNaryClassAxiom(OWLClassAxiom axiom) {
@@ -95,6 +108,11 @@ public class LargeDisjunctionPattern extends AxiomLintPattern {
 }
 
 class DisjunctionSizeCollector extends OWLDeepEntityVisitorAdapter {
+	public DisjunctionSizeCollector(Collection<OWLEntity> toReturn) {
+		super(toReturn);
+		// TODO Auto-generated constructor stub
+	}
+
 	private int m_Size;
 	
 	public void reset() {
@@ -105,11 +123,11 @@ class DisjunctionSizeCollector extends OWLDeepEntityVisitorAdapter {
 		return m_Size;
 	}
 	
-	public void visit(OWLObjectUnionOf union) {
+	public Collection<OWLEntity> visit(OWLObjectUnionOf union) {
 		int size = union.getOperands().size();
 		if (size > m_Size) {
 			m_Size = size;
 		}
-		super.visit(union);
+		return super.visit(union);
 	}
 }

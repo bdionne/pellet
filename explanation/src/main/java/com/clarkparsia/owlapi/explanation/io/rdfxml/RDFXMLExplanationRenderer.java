@@ -7,6 +7,7 @@
 package com.clarkparsia.owlapi.explanation.io.rdfxml;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.io.Writer;
 import java.util.HashSet;
 import java.util.Set;
@@ -57,7 +58,7 @@ public class RDFXMLExplanationRenderer implements ExplanationRenderer {
 	@Override
     public void endRendering() throws IOException {
 		OWLOntology ontology = OWL.Ontology( axioms );
-        RDFXMLRenderer renderer = new RDFXMLRenderer(ontology, writer);
+        RDFXMLRenderer renderer = new RDFXMLRenderer(ontology, (PrintWriter) writer);
 		renderer.render();
 	}
 

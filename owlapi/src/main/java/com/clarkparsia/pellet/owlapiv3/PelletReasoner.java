@@ -33,7 +33,7 @@ import org.semanticweb.owlapi.reasoner.Node;
 import org.semanticweb.owlapi.reasoner.NodeSet;
 import org.semanticweb.owlapi.reasoner.ReasonerInterruptedException;
 import org.semanticweb.owlapi.reasoner.ReasonerProgressMonitor;
-import org.semanticweb.owlapi.reasoner.SupFindVisitor;
+//import org.semanticweb.owlapi.reasoner.SupFindVisitor;
 import org.semanticweb.owlapi.reasoner.TimeOutException;
 import org.semanticweb.owlapi.reasoner.UnsupportedEntailmentTypeException;
 import org.semanticweb.owlapi.reasoner.impl.NodeFactory;
@@ -227,7 +227,7 @@ public class PelletReasoner extends AbstractOWLListeningReasoner {
 			if( ATermUtils.BOTTOM_OBJECT_PROPERTY.equals( term ) )
 				return factory.getOWLBottomObjectProperty();
 			if( ATermUtils.isInv( term ) )
-				return factory.getOWLObjectInverseOf( OP_MAPPER.map(term) );
+				return factory.getOWLObjectInverseOf( OP_MAPPER.map(term).asOWLObjectProperty() );
 			return factory.getOWLObjectProperty( iri( term ) );
 		}
 	}
@@ -730,15 +730,17 @@ public class PelletReasoner extends AbstractOWLListeningReasoner {
 			throw convert( e );
 		}
 	}
-
+	
 	public Set<OWLSubClassOfAxiom> getAllInferredSuperClasses() {
 		refreshCheck();
 
 		Set<OWLClass> allClasses = kb.getAllClasses().stream().map( CLASS_MAPPER::map ).collect( Collectors.toSet() );
 
+		//allClasses.
 		return getInferredClasses( factory, allClasses );
+		//return new HashSet<OWLSubClassOfAxiom>();
 	}
-
+	
 	public NodeSet<OWLDataProperty> getSuperDataProperties(OWLDataProperty pe, boolean direct)
 			throws InconsistentOntologyException, FreshEntitiesException,
 			ReasonerInterruptedException, TimeOutException {
@@ -870,7 +872,7 @@ public class PelletReasoner extends AbstractOWLListeningReasoner {
 	/**
 	 * {@inheritDoc}
 	 */
-	public void ontologiesChanged(List<? extends OWLOntologyChange> changes) throws OWLException {
+	public void ontologiesChanged(List<? extends OWLOntologyChange> changes) {
 		switch( bufferingMode ) {
 		case BUFFERING:
 			pendingChanges.addAll( changes );
@@ -972,6 +974,32 @@ public class PelletReasoner extends AbstractOWLListeningReasoner {
 			throw new InternalReasonerException( "Cannot create ATerm from description " + d );
 
 		return a;
+	}
+	
+	private NodeSet<OWLClass> toFilteredClassNodeSet( Set<Set<ATermAppl>> termSets, OWLClassExpression entity ) {
+
+		Set<Node<OWLClass>> nodes = new HashSet<Node<OWLClass>>();
+
+		if (!this.isSatisfiable(entity)) {
+			nodes.add(NodeFactory.getOWLClassBottomNode());            
+		}
+
+		SupFindVisitor sfv = new SupFindVisitor(entity.asOWLClass(), this.getRootOntology());
+		entity.accept(sfv);
+
+		Set<OWLClass> superClasses = this.getSuperClasses(entity, true).getFlattened();
+
+		Set<OWLClass> difference = Sets.difference(superClasses, sfv.sups);
+
+
+		for( Set<ATermAppl> termSet : termSets ) {
+			Node<OWLClass> n = toClassNode( termSet );
+			if (n.entities().anyMatch(e -> difference.contains(e))) {
+				nodes.add( n );
+			}
+		}
+
+		return new OWLClassNodeSet( nodes );
 	}
 
 	private NodeSet<OWLClass> toClassNodeSet( Set<Set<ATermAppl>> termSets ) {

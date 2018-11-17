@@ -8,13 +8,16 @@
 
 package com.clarkparsia.pellet.server.protege;
 
-import com.clarkparsia.modularity.IncrementalReasoner;
-import com.clarkparsia.modularity.IncrementalReasonerConfiguration;
-import com.google.common.base.Charsets;
-import com.google.common.base.Optional;
-import com.google.common.cache.*;
-import com.google.common.io.Files;
-import edu.stanford.protege.metaproject.api.ProjectId;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.util.Objects;
+import java.util.UUID;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.mindswap.pellet.utils.progress.ConsoleProgressMonitor;
 import org.protege.editor.owl.client.LocalHttpClient;
 import org.protege.editor.owl.client.api.exception.AuthorizationException;
@@ -30,15 +33,17 @@ import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.semanticweb.owlapi.model.SetOntologyID;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Path;
-import java.util.Objects;
-import java.util.UUID;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import com.clarkparsia.modularity.IncrementalReasoner;
+import com.clarkparsia.modularity.IncrementalReasonerConfiguration;
+import com.google.common.base.Charsets;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
+import com.google.common.cache.RemovalListener;
+import com.google.common.cache.RemovalNotification;
+import com.google.common.io.Files;
+
+import edu.stanford.protege.metaproject.api.ProjectId;
 
 /**
  * @author Evren Sirin
@@ -145,7 +150,7 @@ public class ProtegeOntologyState implements AutoCloseable {
 		}
 	}
 
-	public Optional<IRI> getIRI() {
+	public java.util.Optional<IRI> getIRI() {
 		return ontology.getOntologyID().getOntologyIRI();
 	}
 
@@ -156,7 +161,7 @@ public class ProtegeOntologyState implements AutoCloseable {
 			if (loadSnapshot) {
 				SnapShot snapshot = client.getSnapShot(projectId);
 				OWLOntology snapshotOnt = snapshot.getOntology();
-				MANAGER.addAxioms(ontology, snapshotOnt.getAxioms());
+				MANAGER.addAxioms(ontology, snapshotOnt.axioms());
 				MANAGER.applyChange(new SetOntologyID(ontology, snapshotOnt.getOntologyID()));
 				snapshotLoaded = true;
 			}

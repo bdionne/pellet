@@ -33,6 +33,7 @@ import com.clarkparsia.owlapiv3.OWL;
 import com.clarkparsia.owlapiv3.OntologyUtils;
 import com.clarkparsia.pellet.owlapiv3.PelletReasoner;
 import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
+import com.clarkparsia.pellet.owlapiv3.SupFindVisitor;
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
@@ -64,7 +65,7 @@ import org.semanticweb.owlapi.reasoner.Node;
 import org.semanticweb.owlapi.reasoner.NodeSet;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.semanticweb.owlapi.reasoner.ReasonerInterruptedException;
-import org.semanticweb.owlapi.reasoner.SupFindVisitor;
+//import org.semanticweb.owlapi.reasoner.SupFindVisitor;
 import org.semanticweb.owlapi.reasoner.TimeOutException;
 import org.semanticweb.owlapi.reasoner.UnsupportedEntailmentTypeException;
 import org.semanticweb.owlapi.reasoner.impl.NodeFactory;
@@ -458,7 +459,7 @@ public class IncrementalReasoner extends AbstractOWLListeningReasoner {
 		return !getUnsatisfiableClasses().contains( (OWLClass) description );
 	}
 
-	public void ontologiesChanged(List<? extends OWLOntologyChange> changes) throws OWLException {
+	public void ontologiesChanged(List<? extends OWLOntologyChange> changes) {
 		OWLOntology ont = getRootOntology();
 
 		if (ont == null || ont.getOWLOntologyManager() == null || !ont.getOWLOntologyManager().contains(ont.getOntologyID())) {
@@ -619,7 +620,7 @@ public class IncrementalReasoner extends AbstractOWLListeningReasoner {
 
 			Properties properties = new Properties();
 			properties.setProperty(Persistence.REALIZED_PROPERTY, String.valueOf(realized));
-			Optional<IRI> ontIRI = getRootOntology().getOntologyID().getOntologyIRI();
+			java.util.Optional<IRI> ontIRI = getRootOntology().getOntologyID().getOntologyIRI();
 			if (ontIRI.isPresent()) {
 				properties.setProperty(Persistence.ONTOLOGY_IRI_PROPERTY, ontIRI.get().toString());
 			}
@@ -987,9 +988,11 @@ public class IncrementalReasoner extends AbstractOWLListeningReasoner {
 		classify();
 
 		final OWLDataFactory factory = getManager().getOWLDataFactory();
-
+		
 		return getInferredClasses(factory, taxonomy.getClasses());
 	}
+	
+	
 
 	/**
 	 * {@inheritDoc}

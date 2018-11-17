@@ -6,10 +6,12 @@
 
 package com.clarkparsia.pellint.lintpattern.axiom;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 
 import org.semanticweb.owlapi.model.OWLAxiom;
+import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLEquivalentClassesAxiom;
 
 import com.clarkparsia.owlapiv3.OWL;
@@ -35,6 +37,11 @@ import com.clarkparsia.pellint.model.LintFixer;
  * @author Harris Lin
  */
 public class EquivalentToTopPattern extends AxiomLintPattern {
+	public EquivalentToTopPattern(Collection<OWLEntity> toReturn) {
+		super(toReturn);
+		// TODO Auto-generated constructor stub
+	}
+
 	private static final LintFormat DEFAULT_LINT_FORMAT = new CompactClassLintFormat();
 	
 	public String getName() {
@@ -53,7 +60,7 @@ public class EquivalentToTopPattern extends AxiomLintPattern {
 		return DEFAULT_LINT_FORMAT;
 	}
 
-	public void visit(OWLEquivalentClassesAxiom axiom) {
+	public Collection<OWLEntity> visit(OWLEquivalentClassesAxiom axiom) {
 		if (axiom.getClassExpressions().contains(OWL.Thing)) {
 			Lint lint = makeLint();
 			lint.addParticipatingAxiom(axiom);
@@ -61,5 +68,6 @@ public class EquivalentToTopPattern extends AxiomLintPattern {
 			lint.setLintFixer(fixer);
 			setLint(lint);
 		}
+		return objects;
 	}
 }

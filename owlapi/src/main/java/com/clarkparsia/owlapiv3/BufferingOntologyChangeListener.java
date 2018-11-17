@@ -31,7 +31,7 @@ public class BufferingOntologyChangeListener implements OWLOntologyChangeListene
 	}
 
 	@Override
-	public void ontologiesChanged(final List<? extends OWLOntologyChange> changeList) throws OWLException {
+	public void ontologiesChanged(final List<? extends OWLOntologyChange> changeList) {
 		for (OWLOntologyChange change : changeList) {
 			if (ontologies.contains(change.getOntology().getOntologyID())) {
 				if (change.isAxiomChange()) {

@@ -12,7 +12,9 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import org.semanticweb.owlapi.model.IRI;
 import org.semanticweb.owlapi.model.OWLAnnotation;
@@ -65,9 +67,9 @@ public class TestRunResultParser {
 		TestRunner<?> runner = runners.get( iri );
 		if( runner == null ) {
 			String name;
-            Collection<OWLAnnotation> s = EntitySearcher.getAnnotations(
+            Set<OWLAnnotation> s = EntitySearcher.getAnnotations(
                     i.getIRI(), o, o.getOWLOntologyManager()
-                            .getOWLDataFactory().getRDFSLabel());
+                            .getOWLDataFactory().getRDFSLabel()).collect(Collectors.toSet());
 			if( s == null || s.isEmpty() ) {
                 name = i.getIRI().toURI().toASCIIString();
             } else {
@@ -132,7 +134,7 @@ public class TestRunResultParser {
 			runner = getRunner( runnerIris.iterator().next().asOWLNamedIndividual(), o );
 
             Collection<OWLClassExpression> types = EntitySearcher
-                    .getTypes(i, o);
+                    .getTypes(i, o).collect(Collectors.toSet());
 
 			RunResultType resultType = null;
 			for( RunResultType t : RunResultType.values() ) {
@@ -153,7 +155,7 @@ public class TestRunResultParser {
                             o,
                             o.getOWLOntologyManager()
 					.getOWLDataFactory().getOWLAnnotationProperty(
-							DETAILS.getAnnotationPropertyIRI() ) );
+							DETAILS.getAnnotationPropertyIRI() ) ).collect(Collectors.toSet());
 			String details = null;
 			int ndetails = detailsAnnotations.size();
 			if( ndetails > 0 ) {

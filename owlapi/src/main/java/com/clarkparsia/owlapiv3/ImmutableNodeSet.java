@@ -3,6 +3,7 @@ package com.clarkparsia.owlapiv3;
 
 import java.util.Iterator;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
@@ -110,4 +111,16 @@ public class ImmutableNodeSet<E extends OWLObject> implements NodeSet<E> {
     public int hashCode() {
         return nodes.hashCode();
     }
+
+	@Override
+	public Stream<E> entities() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Stream<Node<E>> nodes() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

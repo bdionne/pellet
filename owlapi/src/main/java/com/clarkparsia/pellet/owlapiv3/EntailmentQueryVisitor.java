@@ -15,7 +15,7 @@ import org.semanticweb.owlapi.model.OWLNegativeDataPropertyAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLNegativeObjectPropertyAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLObjectPropertyAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLSameIndividualAxiom;
-import org.semanticweb.owlapi.util.OWLAxiomVisitorAdapter;
+//import org.semanticweb.owlapi.util.OWLAxiomVisitorAdapter;
 
 import aterm.ATermAppl;
 
@@ -25,7 +25,7 @@ import com.clarkparsia.pellet.sparqldl.model.QueryAtomFactory;
 import com.clarkparsia.pellet.sparqldl.model.QueryImpl;
 import com.clarkparsia.pellet.sparqldl.model.QueryResult;
 
-public class EntailmentQueryVisitor extends OWLAxiomVisitorAdapter {
+public class EntailmentQueryVisitor {
 	
 	private IndividualTermConverter indConv;
 	
@@ -70,14 +70,13 @@ public class EntailmentQueryVisitor extends OWLAxiomVisitorAdapter {
 		query = new QueryImpl(reasoner.getKB(), false);
 	}
 	
-	@Override
 	public void visit(final OWLClassAssertionAxiom axiom) {
 		ATermAppl ind = indConv.getTerm( axiom.getIndividual() );
 		ATermAppl cls = reasoner.term( axiom.getClassExpression() );
 		query.add( QueryAtomFactory.TypeAtom(ind, cls) );
 	}
 	
-	@Override
+	
 	public void visit(final OWLDataPropertyAssertionAxiom axiom) {
 		ATermAppl subj = indConv.getTerm( axiom.getSubject() );
 		ATermAppl pred = reasoner.term( axiom.getProperty() );
@@ -85,7 +84,7 @@ public class EntailmentQueryVisitor extends OWLAxiomVisitorAdapter {
 		query.add( QueryAtomFactory.PropertyValueAtom(subj, pred, obj) );
 	}
 	
-	@Override
+	
 	public void visit(final OWLDifferentIndividualsAxiom axiom) {
 		List<ATermAppl> differents = new ArrayList<ATermAppl>();
 		for (OWLIndividual ind : axiom.getIndividuals()) {
@@ -96,7 +95,7 @@ public class EntailmentQueryVisitor extends OWLAxiomVisitorAdapter {
 		}
 	}
 	
-	@Override
+	
 	public void visit(final OWLNegativeDataPropertyAssertionAxiom axiom) {
 		ATermAppl subj = indConv.getTerm( axiom.getSubject() );
 		ATermAppl pred = reasoner.term( axiom.getProperty() );
@@ -104,7 +103,7 @@ public class EntailmentQueryVisitor extends OWLAxiomVisitorAdapter {
 		query.add( QueryAtomFactory.NegativePropertyValueAtom(subj, pred, obj) );
 	}
 	
-	@Override
+	
 	public void visit(final OWLNegativeObjectPropertyAssertionAxiom axiom) {
 		ATermAppl subj = indConv.getTerm( axiom.getSubject() );
 		ATermAppl pred = reasoner.term( axiom.getProperty() );
@@ -112,7 +111,7 @@ public class EntailmentQueryVisitor extends OWLAxiomVisitorAdapter {
 		query.add( QueryAtomFactory.NegativePropertyValueAtom(subj, pred, obj) );
 	}
 	
-	@Override
+	
 	public void visit(final OWLObjectPropertyAssertionAxiom axiom) {
 		ATermAppl subj = indConv.getTerm( axiom.getSubject() );
 		ATermAppl pred = reasoner.term( axiom.getProperty() );
@@ -120,7 +119,7 @@ public class EntailmentQueryVisitor extends OWLAxiomVisitorAdapter {
 		query.add( QueryAtomFactory.PropertyValueAtom(subj, pred, obj) );
 	}
 	
-	@Override
+	
 	public void visit(final OWLSameIndividualAxiom axiom) {
 		ATermAppl head = null;
 		for (OWLIndividual ind : axiom.getIndividuals() ) {

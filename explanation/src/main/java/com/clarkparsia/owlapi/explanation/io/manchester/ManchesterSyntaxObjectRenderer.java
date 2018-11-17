@@ -500,7 +500,7 @@ public class ManchesterSyntaxObjectRenderer implements OWLObjectVisitor {
 
 	@Override
     public void visit(OWLOntology ontology) {
-        write(ontology.getOntologyID().getOntologyIRI().orNull());
+        write(ontology.getOntologyID().getOntologyIRI().orElse(null));
 	}
 
 	@Override

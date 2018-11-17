@@ -9,6 +9,7 @@ package com.clarkparsia.pellint.lintpattern.ontology;
 import java.io.BufferedWriter;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -38,8 +39,7 @@ import org.semanticweb.owlapi.model.OWLObjectSomeValuesFrom;
 import org.semanticweb.owlapi.model.OWLObjectUnionOf;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLSubClassOfAxiom;
-import org.semanticweb.owlapi.util.OWLClassExpressionVisitorAdapter;
-
+import org.semanticweb.owlapi.util.OWLClassExpressionCollector;
 import com.clarkparsia.pellint.format.LintFormat;
 import com.clarkparsia.pellint.format.SimpleLintFormat;
 import com.clarkparsia.pellint.model.Lint;
@@ -154,11 +154,11 @@ public class ExistentialExplosionPattern implements OntologyLintPattern {
 		
 		visitor.reset();
 		superDesc.accept(visitor);
-		for (OWLClass superClass : visitor.getCollectedClasses()) {
+		for (OWLClassExpression superClass : visitor.getCollectedClasses()) {
 			if (!subClass.equals(superClass)) {
 				graph.addVertex(subClass);
-				graph.addVertex(superClass);
-				graph.addEdge(subClass, superClass);
+				graph.addVertex((OWLClass) superClass);
+				graph.addEdge(subClass, (OWLClass) superClass);
 			}
 		}
 	}
@@ -342,67 +342,75 @@ public class ExistentialExplosionPattern implements OntologyLintPattern {
 
 
 
-abstract class ClassCollector extends OWLClassExpressionVisitorAdapter {
-	protected Set<OWLClass> m_Classes;
+abstract class ClassCollector extends OWLClassExpressionCollector {
+	protected Collection<OWLClassExpression> m_Classes;
 	
 	public ClassCollector() {
-		m_Classes = new HashSet<OWLClass>();
+		m_Classes = new HashSet<OWLClassExpression>();
 	}
 	
 	public void reset() {
 		m_Classes.clear();
 	}
 	
-	public Set<OWLClass> getCollectedClasses() {
+	public Collection<OWLClassExpression> getCollectedClasses() {
 		return m_Classes;
 	}
 }
 
 class NamedClassCollector extends ClassCollector {
-	public void visit(OWLClass desc) {
+	public Collection<OWLClassExpression> visit(OWLClass desc) {
 		m_Classes.add(desc);
+		return m_Classes;
 	}
 	
-	public void visit(OWLObjectIntersectionOf desc) {
+	public Collection<OWLClassExpression> visit(OWLObjectIntersectionOf desc) {
 		for (OWLClassExpression op : desc.getOperands()) {
 			op.accept(this);
 		}
+		return m_Classes;
 	}
 	
-	public void visit(OWLObjectUnionOf desc) {
+	public Collection<OWLClassExpression> visit(OWLObjectUnionOf desc) {
 		for (OWLClassExpression op : desc.getOperands()) {
 			op.accept(this);
 		}
+		return m_Classes;
 	}
 }
 
 class ExistentialClassCollector extends ClassCollector {
-	public void visit(OWLObjectSomeValuesFrom desc) {
+	public Collection<OWLClassExpression> visit(OWLObjectSomeValuesFrom desc) {
 		visitObject(desc.getFiller());
+		return m_Classes;
 	}
 	
-	public void visit(OWLObjectMinCardinality desc) {
+	public Collection<OWLClassExpression> visit(OWLObjectMinCardinality desc) {
 		if (desc.getCardinality() > 0) {
 			visitObject(desc.getFiller());
 		}
+		return m_Classes;
 	}
 	
-	public void visit(OWLObjectExactCardinality desc) {
+	public Collection<OWLClassExpression> visit(OWLObjectExactCardinality desc) {
 		if (desc.getCardinality() > 0) {
 			visitObject(desc.getFiller());
 		}
+		return m_Classes;
 	}
 	
-	public void visit(OWLObjectIntersectionOf desc) {
+	public Collection<OWLClassExpression> visit(OWLObjectIntersectionOf desc) {
 		for (OWLClassExpression op : desc.getOperands()) {
 			op.accept(this);
 		}
+		return m_Classes;
 	}
 	
-	public void visit(OWLObjectUnionOf desc) {
+	public Collection<OWLClassExpression> visit(OWLObjectUnionOf desc) {
 		for (OWLClassExpression op : desc.getOperands()) {
 			op.accept(this);
 		}
+		return m_Classes;
 	}
 	
 	private void visitObject(OWLClassExpression filler) {
