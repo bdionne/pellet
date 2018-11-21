@@ -976,32 +976,6 @@ public class PelletReasoner extends AbstractOWLListeningReasoner {
 		return a;
 	}
 	
-	private NodeSet<OWLClass> toFilteredClassNodeSet( Set<Set<ATermAppl>> termSets, OWLClassExpression entity ) {
-
-		Set<Node<OWLClass>> nodes = new HashSet<Node<OWLClass>>();
-
-		if (!this.isSatisfiable(entity)) {
-			nodes.add(NodeFactory.getOWLClassBottomNode());            
-		}
-
-		SupFindVisitor sfv = new SupFindVisitor(entity.asOWLClass(), this.getRootOntology());
-		entity.accept(sfv);
-
-		Set<OWLClass> superClasses = this.getSuperClasses(entity, true).getFlattened();
-
-		Set<OWLClass> difference = Sets.difference(superClasses, sfv.sups);
-
-
-		for( Set<ATermAppl> termSet : termSets ) {
-			Node<OWLClass> n = toClassNode( termSet );
-			if (n.entities().anyMatch(e -> difference.contains(e))) {
-				nodes.add( n );
-			}
-		}
-
-		return new OWLClassNodeSet( nodes );
-	}
-
 	private NodeSet<OWLClass> toClassNodeSet( Set<Set<ATermAppl>> termSets ) {
 		Set<Node<OWLClass>> nodes = new HashSet<Node<OWLClass>>();
 		for( Set<ATermAppl> termSet : termSets ) {
