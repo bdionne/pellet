@@ -736,9 +736,8 @@ public class PelletReasoner extends AbstractOWLListeningReasoner {
 
 		Set<OWLClass> allClasses = kb.getAllClasses().stream().map( CLASS_MAPPER::map ).collect( Collectors.toSet() );
 
-		//allClasses.
 		return getInferredClasses( factory, allClasses );
-		//return new HashSet<OWLSubClassOfAxiom>();
+		
 	}
 	
 	public NodeSet<OWLDataProperty> getSuperDataProperties(OWLDataProperty pe, boolean direct)
