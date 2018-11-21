@@ -190,7 +190,7 @@ public class ProtegeOntologyState implements AutoCloseable {
 
 			reasoner.classify();
 
-			//save();
+			save();
 		}
 
 		return updated;
