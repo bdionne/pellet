@@ -11,7 +11,7 @@
 	<name>Pellet :: OWL API</name>
 
 	<properties>
-		<owlapi.version>5.1.6</owlapi.version>
+		<owlapi.version>5.1.6-SNAPSHOT</owlapi.version>
 	</properties>
 
 	<dependencies>
@@ -22,7 +22,7 @@
 		</dependency>
 		<dependency>
 			<groupId>net.sourceforge.owlapi</groupId>
-			<artifactId>owlapi-distribution</artifactId>
+			<artifactId>owlapi-osgidistribution</artifactId>
 			<version>${owlapi.version}</version>
 		</dependency>
 		<dependency>
