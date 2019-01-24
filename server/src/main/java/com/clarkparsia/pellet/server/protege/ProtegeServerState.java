@@ -109,7 +109,17 @@ public final class ProtegeServerState implements AutoCloseable {
 			result = new ProtegeOntologyState(client, projectID,
 				Paths.get(pelletSettings.home()).resolve(projectID.get()).resolve("reasoner_state.bin"));
 			LOGGER.info("Loaded revision " + result.getVersion());
-			result.update();
+			if (result.isSnapShotLoaded()) {
+				result.update();
+			} else {
+				result.update();
+				ontologies.put(result.getIRI().get(), result);
+				removeOntology(result.getIRI().get());
+				
+				result = new ProtegeOntologyState(client, projectID,
+						Paths.get(pelletSettings.home()).resolve(projectID.get()).resolve("reasoner_state.bin"));
+								
+			}
 		}
 		catch (Exception e) {
 			System.out.println(e.getMessage());

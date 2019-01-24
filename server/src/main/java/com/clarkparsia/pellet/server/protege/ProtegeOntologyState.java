@@ -60,6 +60,10 @@ public class ProtegeOntologyState implements AutoCloseable {
 	private DocumentRevision revision;
 
 	private boolean snapshotLoaded = false;
+	
+	public boolean isSnapShotLoaded() {
+		return snapshotLoaded;
+	}
 
 	protected static final OWLOntologyManager MANAGER = OWLManager.createOWLOntologyManager();
 
@@ -103,7 +107,7 @@ public class ProtegeOntologyState implements AutoCloseable {
 		this.remoteOnt = client.openProject(projectId).serverDocument;
 
 		this.revision = readRevision();
-		this.snapshotLoaded = revision.getRevisionNumber() > 0;
+		this.snapshotLoaded = revisionFile().exists();
 		//writeRevision();
 	}
 
@@ -214,11 +218,12 @@ public class ProtegeOntologyState implements AutoCloseable {
 
 	@Override
 	public void close() {
-		try {
+		/** try {
 			clearRevisionFile();
 		} catch (IOException e) {
 			LOGGER.log(Level.INFO, "Couldn't delete revision file for " + this.projectId.get() + ": " + e);
 		}
+		**/
 		clients.invalidateAll();
 		ontology.getOWLOntologyManager().removeOntology(ontology);
 		reasoner.dispose();
