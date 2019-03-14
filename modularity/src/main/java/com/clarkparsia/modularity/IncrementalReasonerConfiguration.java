@@ -26,7 +26,7 @@ public class IncrementalReasonerConfiguration extends PelletReasonerConfiguratio
 	private ModuleExtractor moduleExtractor;
 	private PelletReasoner reasoner;
 	private File source;
-	private boolean multiThreaded = true;
+	private boolean multiThreaded = false;
 
 	public IncrementalReasonerConfiguration() {
 	}

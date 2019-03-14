@@ -539,8 +539,8 @@ public class IncrementalReasoner extends AbstractOWLListeningReasoner {
 				partitioning.join();
 			}
 			else {
-				classification.run();
 				partitioning.run();
+				classification.run();				
 			}
 
 			timer.stop();
