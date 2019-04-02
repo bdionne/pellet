@@ -338,7 +338,7 @@ public class IncrementalReasoner extends AbstractOWLListeningReasoner {
 	        throw new IllegalArgumentException( "This reasoner only supports named classes" );
         }
 
-		classify();
+		//classify();
 
 		return NodeFactory.getOWLClassNode( taxonomy.getAllEquivalents( (OWLClass) clsC ) );
 	}
@@ -362,7 +362,7 @@ public class IncrementalReasoner extends AbstractOWLListeningReasoner {
 	        throw new UnsupportedOperationException( "This reasoner only supports named classes" );
         }
 
-		classify();
+		//classify();
 
 		Set<Node<OWLClass>> values = new HashSet<Node<OWLClass>>();
 		for( Set<OWLClass> val : taxonomy.getSubs( (OWLClass) clsC, direct ) ) {
@@ -970,7 +970,7 @@ public class IncrementalReasoner extends AbstractOWLListeningReasoner {
 	        throw new UnsupportedOperationException( "This reasoner only supports named classes" );
         }
 
-		classify();
+		//classify();
 
 		Set<Node<OWLClass>> values = new HashSet<Node<OWLClass>>();
 		for( Set<OWLClass> val : taxonomy.getSupers( (OWLClass) ce, direct ) ) {
@@ -984,7 +984,7 @@ public class IncrementalReasoner extends AbstractOWLListeningReasoner {
 	 * {@inheritDoc}
 	 */
 	public Set<OWLSubClassOfAxiom> getAllInferredSuperClasses() {
-		classify();
+		//classify();
 
 		final OWLDataFactory factory = getManager().getOWLDataFactory();
 		
@@ -1068,7 +1068,7 @@ public class IncrementalReasoner extends AbstractOWLListeningReasoner {
 	 */
 	public Node<OWLClass> getUnsatisfiableClasses() throws ReasonerInterruptedException,
 			TimeOutException {
-		classify();
+		//classify();
 
 		return getBottomClassNode();
 	}

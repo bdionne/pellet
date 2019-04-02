@@ -1853,7 +1853,7 @@ public class KnowledgeBase {
 
 		if( !reuseTaxonomy ) {
 			state.remove( ReasoningState.CLASSIFY );
-			builder = null;
+			//builder = null;
 			// taxonomy = null;
 		}
 
@@ -2136,7 +2136,7 @@ public class KnowledgeBase {
 		if( isRealized() )
 			return;
 
-		classify();
+		//classify();
 
 		if( !isClassified() )
 			return;
@@ -3194,7 +3194,7 @@ public class KnowledgeBase {
 
 		c = ATermUtils.normalize( c );
 
-		classify();
+		//classify();
 
 		Taxonomy<ATermAppl> taxonomy = builder.getTaxonomy();
 
@@ -3368,7 +3368,7 @@ public class KnowledgeBase {
 		Set<Set<ATermAppl>> types = isClassified() ? getPrimitiveTypes(ind, direct) : Collections.<Set<ATermAppl>>emptySet();
 		
 		if (types.isEmpty() && !PelletOptions.AUTO_REALIZE) {
-			classify();
+			//classify();
 			builder.realize(ind);
 			types = getPrimitiveTypes(ind, direct);
 		}
@@ -3557,7 +3557,7 @@ public class KnowledgeBase {
 
 		c = ATermUtils.normalize( c );
 
-		classify();
+		//classify();
 
 		Taxonomy<ATermAppl> taxonomy = builder.getTaxonomy();
 
@@ -3624,7 +3624,7 @@ public class KnowledgeBase {
 
 		c = ATermUtils.normalize( c );
 
-		classify();
+		//classify();
 
 		Taxonomy<ATermAppl> taxonomy = builder.getTaxonomy();
 
@@ -4434,13 +4434,13 @@ public class KnowledgeBase {
 	 * Print the class hierarchy on the standard output.
 	 */
 	public void printClassTree() {
-		classify();
+		//classify();
 
 		new ClassTreePrinter().print( builder.getTaxonomy() );
 	}
 
 	public void printClassTree(PrintWriter out) {
-		classify();
+		//classify();
 
 		new ClassTreePrinter().print( builder.getTaxonomy(), out );
 	}
@@ -4552,7 +4552,7 @@ public class KnowledgeBase {
 	 * Get the classification results.
 	 */
 	public Taxonomy<ATermAppl> getTaxonomy() {
-		classify();
+		//classify();
 
 		return builder.getTaxonomy();
 	}
