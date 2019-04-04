@@ -35,40 +35,17 @@ public class PelletReasonerFactory extends AbstractProtegeOWLReasonerInfo {
 		}
 		// enable/disable tracing based on the preference
 		PelletOptions.USE_TRACING = prefs.getExplanationCount() != 0;
-		PelletReasonerMode reasonerMode = prefs.getReasonerMode();
-		switch (reasonerMode) {
-			case REGULAR:
-				factory = com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory.getInstance();
-				break;
-			case INCREMENTAL:
-				factory = IncremantalReasonerFactory.getInstance();
-				break;
-			case REMOTE: {
-				final String serverURL = PelletReasonerPreferences.getInstance().getServerURL();
-				// TODO: read timeout from preferences too and pass to ClientModule, 3 min by default
-				final Injector aInjector = Guice.createInjector(new ClientModule(serverURL, Optional.<String>absent()));
-				factory = new RemotePelletReasonerFactory(aInjector.getInstance(SchemaReasonerFactory.class), getOWLModelManager());
-				break;
-			}
-			default: {
-				throw new UnsupportedOperationException("Unrecognized reasoner type: " + reasonerMode);
-			}
-		}
+		
+		factory = IncremantalReasonerFactory.getInstance();
 		return factory;
 	}
 
 	@Override
 	public BufferingMode getRecommendedBuffering() {
-		PelletReasonerMode reasonerMode = prefs.getReasonerMode();
-		switch (reasonerMode) {
-			case REGULAR:
-			case INCREMENTAL:
-				return BufferingMode.NON_BUFFERING;
-			case REMOTE:
-				return BufferingMode.BUFFERING;
-			default:
-				throw new UnsupportedOperationException("Unrecognized reasoner type: " + reasonerMode);
-		}
+				
+		// TODO: Make this buffered
+		
+		return BufferingMode.BUFFERING;
 	}
 
 	public void preferencesUpdated() {

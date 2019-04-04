@@ -48,12 +48,6 @@ public class PelletPreferencesPanel extends OWLPreferencesPanel {
 			return label;
 		}
 	}
-
-	private ButtonGroup reasonerModeGroup = new ButtonGroup();;
-	private EnumMap<PelletReasonerMode, JRadioButton> reasonerModeButtons = new EnumMap<PelletReasonerMode, JRadioButton>(PelletReasonerMode.class);
-	private JTextField serverURL = new JTextField();
-
-
 	private ButtonGroup explanationModeGroup = new ButtonGroup();;
 	private EnumMap<ExplanationMode, JRadioButton> explanationModeButtons = new EnumMap<ExplanationMode, JRadioButton>(ExplanationMode.class);
 	private JSpinner explanationCount;
@@ -63,8 +57,6 @@ public class PelletPreferencesPanel extends OWLPreferencesPanel {
 		setLayout(new BorderLayout());
 
 		Box box = Box.createVerticalBox();
-		box.add(createTypePanel());
-		box.add(Box.createVerticalStrut(15));
 		box.add(createExplanationPanel());
 		box.add(Box.createVerticalGlue());
 		add(box, BorderLayout.NORTH);
@@ -78,52 +70,6 @@ public class PelletPreferencesPanel extends OWLPreferencesPanel {
 		return BorderFactory.createTitledBorder(etchedLine, title);
 	}
 
-	private JPanel createTypePanel() {
-		JPanel panel = new JPanel();
-		panel.setLayout(new GridBagLayout());
-		panel.setBorder(createTitledBorder(panel, "Reasoner mode"));
-
-		GridBagConstraints c = new GridBagConstraints();
-
-		ActionListener listener = new ActionListener() {
-			@Override
-			public void actionPerformed(final ActionEvent e) {
-				serverURL.setEnabled(reasonerModeButtons.get(PelletReasonerMode.REMOTE).isSelected());
-			}
-		};
-
-		PelletReasonerPreferences prefs = PelletReasonerPreferences.getInstance();
-
-		reasonerModeGroup = new ButtonGroup();
-
-		c.gridx = 0;
-		c.gridy = 0;
-		c.gridwidth = 1;
-		c.gridheight = 1;
-		c.fill = GridBagConstraints.NONE;
-		c.insets = new Insets(5,10,0,10);
-		c.anchor = GridBagConstraints.FIRST_LINE_START;
-		panel.add(createButton(PelletReasonerMode.REGULAR, listener), c);
-
-		c.gridy = 1;
-		panel.add(createButton(PelletReasonerMode.INCREMENTAL, listener), c);
-
-		c.gridy = 2;
-		panel.add(createButton(PelletReasonerMode.REMOTE, listener), c);
-
-		c.gridx = 1;
-		c.fill = GridBagConstraints.HORIZONTAL;
-		c.weightx = 1.0;
-		c.insets = new Insets(5, 0, 0, 10);
-		serverURL = new JTextField();
-		serverURL.setText(prefs.getServerURL());
-		serverURL.setEnabled(prefs.getReasonerMode() == PelletReasonerMode.REMOTE);
-		panel.add(serverURL, c);
-
-		reasonerModeButtons.get(prefs.getReasonerMode()).setSelected(true);
-
-		return panel;
-	}
 
 	private JPanel createExplanationPanel() {
 		JPanel panel = new JPanel();
@@ -181,14 +127,6 @@ public class PelletPreferencesPanel extends OWLPreferencesPanel {
 		return explanationMode == ExplanationMode.NONE ? 0 : explanationMode == ExplanationMode.ALL ? -1 : expCount;
 	}
 
-	private JRadioButton createButton(PelletReasonerMode type, ActionListener listener) {
-		return createButton(type, reasonerModeButtons, reasonerModeGroup, listener);
-	}
-
-	private JRadioButton createButton(ExplanationMode type, ActionListener listener) {
-		return createButton(type, explanationModeButtons, explanationModeGroup, listener);
-	}
-
 	private <E extends Enum<E>> JRadioButton createButton(E type, EnumMap<E, JRadioButton> buttons, ButtonGroup group, ActionListener listener) {
 		String label = type.toString();
 		JRadioButton button = new JRadioButton(label.charAt(0) + label.substring(1).toLowerCase());
@@ -204,11 +142,6 @@ public class PelletPreferencesPanel extends OWLPreferencesPanel {
 	@Override
 	public void applyChanges() {
 		PelletReasonerPreferences prefs = PelletReasonerPreferences.getInstance();
-
-		PelletReasonerMode selectedType = PelletReasonerMode.valueOf(reasonerModeGroup.getSelection().getActionCommand());
-		prefs.setReasonerMode(selectedType);
-
-		prefs.setServerURL(serverURL.getText());
 
 		ExplanationMode explanationMode = ExplanationMode.valueOf(explanationModeGroup.getSelection().getActionCommand());
 		System.out.println(explanationCount(explanationMode, (Integer) explanationCount.getValue()));

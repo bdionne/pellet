@@ -662,7 +662,7 @@ public class IncrementalReasoner extends AbstractOWLListeningReasoner {
 	 * {@inheritDoc}
 	 */
 	public BufferingMode getBufferingMode() {
-		return BufferingMode.NON_BUFFERING;
+		return BufferingMode.BUFFERING;
 	}
 
 	/**

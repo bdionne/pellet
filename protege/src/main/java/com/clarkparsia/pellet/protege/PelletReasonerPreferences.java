@@ -22,15 +22,11 @@ public class PelletReasonerPreferences {
 
     private final Preferences prefs = PreferencesManager.getInstance().getApplicationPreferences(KEY);
 
-    private PelletReasonerMode reasonerMode;
-    private String serverURL;
     private int explanationCount;
 
     private boolean updated = false;
 
     private PelletReasonerPreferences() {
-			reasonerMode = PelletReasonerMode.valueOf(prefs.getString("reasonerMode", PelletReasonerMode.REGULAR.name()));
-			serverURL = prefs.getString("serverURL", "http://localhost:18080");
 			explanationCount = prefs.getInt("explanationCount", 0);
 		}
 
@@ -40,9 +36,7 @@ public class PelletReasonerPreferences {
 		}
 
 		updated = false;
-
-		prefs.putString("reasonerMode", reasonerMode.name());
-		prefs.putString("serverURL", serverURL);
+		
 		prefs.putInt("explanationCount", explanationCount);
 
 		return true;
@@ -54,23 +48,6 @@ public class PelletReasonerPreferences {
         }
     }
 
-    public PelletReasonerMode getReasonerMode() {
-        return reasonerMode;
-    }
-
-    public void setReasonerMode(final PelletReasonerMode Mode) {
-        update(reasonerMode, Mode);
-        reasonerMode = Mode;
-    }
-
-    public String getServerURL() {
-        return serverURL;
-    }
-
-    public void setServerURL(final String url) {
-        update(serverURL, url);
-        serverURL = url;
-    }
 
     public int getExplanationCount() {
         return explanationCount;
