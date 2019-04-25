@@ -33,6 +33,7 @@ import com.clarkparsia.owlapiv3.OWL;
 import com.clarkparsia.owlapiv3.OntologyUtils;
 import com.clarkparsia.pellet.owlapiv3.PelletReasoner;
 import com.clarkparsia.pellet.owlapiv3.PelletReasonerFactory;
+import com.clarkparsia.pellet.owlapiv3.ProgressAdapter;
 import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
@@ -142,6 +143,8 @@ public class IncrementalReasoner extends AbstractOWLListeningReasoner {
 	public IncrementalReasoner(OWLOntology ontology, IncrementalReasonerConfiguration config) {
 		extractor = config.getModuleExtractor() != null ? config.getModuleExtractor() : ModuleExtractorFactory.createModuleExtractor();
 
+		extractor.setProgressMonitor(new ProgressAdapter(config.getProgressMonitor()));
+		
 		timers = extractor.getTimers();
 
 		multiThreaded = config.isMultiThreaded();
@@ -486,13 +489,15 @@ public class IncrementalReasoner extends AbstractOWLListeningReasoner {
             }
 		}
 	}
+	
+	private Thread classy = null;
 
 	private void regularClassify() {
 		if( log.isLoggable( Level.FINE ) ) {
 	        log.fine( "Regular classification starting" );
         }
 
-		Thread classification = new Thread( "classification" ) {
+		classy = new Thread( "classification" ) {
 			@Override
             public void run() {
 				// classify ontology
@@ -532,15 +537,15 @@ public class IncrementalReasoner extends AbstractOWLListeningReasoner {
 
 
 			if( multiThreaded ) {
-				classification.start();
+				classy.start();
 				partitioning.start();
 
-				classification.join();
+				classy.join();
 				partitioning.join();
 			}
 			else {
 				partitioning.run();
-				classification.run();				
+				classy.run();				
 			}
 
 			timer.stop();
@@ -1077,6 +1082,11 @@ public class IncrementalReasoner extends AbstractOWLListeningReasoner {
 	 * {@inheritDoc}
 	 */
 	public void interrupt() {
+		reasoner.dispose();
+		if (classy != null) {
+			classy.interrupt();
+			
+		}
 
 	}
 
@@ -1372,6 +1382,7 @@ public class IncrementalReasoner extends AbstractOWLListeningReasoner {
     		switch (inferenceType) {
     			case CLASS_HIERARCHY:
     				classify();
+    				break;
     			case CLASS_ASSERTIONS:
     				realize();
     			default:

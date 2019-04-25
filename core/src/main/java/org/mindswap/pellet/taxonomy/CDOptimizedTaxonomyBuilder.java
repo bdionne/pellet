@@ -225,7 +225,7 @@ public class CDOptimizedTaxonomyBuilder implements TaxonomyBuilder {
 		}
 
 		// Reset the definition order, so the sorted copy can be gc'd
-		definitionOrder = null;
+		createDefinitionOrder();
 
 		taxonomy.assertValid();
 		
@@ -312,7 +312,7 @@ public class CDOptimizedTaxonomyBuilder implements TaxonomyBuilder {
 
 		toldTaxonomy = new Taxonomy<ATermAppl>();
 
-		definitionOrder = null;
+		createDefinitionOrder();
 
 		conceptFlags = CollectionUtils.makeIdentityMap();
 	}

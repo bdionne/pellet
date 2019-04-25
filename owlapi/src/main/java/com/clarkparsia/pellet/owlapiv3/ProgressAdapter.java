@@ -67,9 +67,11 @@ public class ProgressAdapter implements ProgressMonitor  {
 
 	public void taskFinished() {
 		monitor.reasonerTaskStopped();
+		progress = 0;
 	}
 
 	public void taskStarted() {
+		progress = 0;
 		monitor.reasonerTaskStarted( title );
 	}
 	

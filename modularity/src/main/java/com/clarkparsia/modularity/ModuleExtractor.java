@@ -12,13 +12,17 @@ import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 import com.clarkparsia.pellet.expressivity.Expressivity;
+//import com.clarkparsia.pellet.owlapiv3.ProgressAdapter;
+
 import org.mindswap.pellet.taxonomy.Taxonomy;
 import org.mindswap.pellet.utils.Timers;
+import org.mindswap.pellet.utils.progress.ProgressMonitor;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLException;
 import org.semanticweb.owlapi.model.OWLOntology;
+//import org.semanticweb.owlapi.util.ProgressMonitor;
 
 /**
  * <p>
@@ -164,4 +168,6 @@ public interface ModuleExtractor {
 	 * ModuleExtractor
 	 */
 	public void load(ZipInputStream inputStream) throws IOException, IllegalArgumentException;
+
+	void setProgressMonitor(ProgressMonitor monitor);
 }

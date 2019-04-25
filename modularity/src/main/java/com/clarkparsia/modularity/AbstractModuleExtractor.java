@@ -37,13 +37,14 @@ import org.mindswap.pellet.taxonomy.TaxonomyNode;
 import org.mindswap.pellet.utils.MultiValueMap;
 import org.mindswap.pellet.utils.Timer;
 import org.mindswap.pellet.utils.Timers;
-import org.mindswap.pellet.utils.progress.ConsoleProgressMonitor;
+//import org.mindswap.pellet.utils.progress.ConsoleProgressMonitor;
 import org.mindswap.pellet.utils.progress.ProgressMonitor;
 import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLEntity;
 import org.semanticweb.owlapi.model.OWLException;
 import org.semanticweb.owlapi.model.OWLOntology;
+//import org.semanticweb.owlapi.util.ProgressMonitor;
 
 /**
  * <p>
@@ -100,6 +101,14 @@ public abstract class AbstractModuleExtractor implements ModuleExtractor {
 	private boolean nonLocalAxioms = false;
 
 	private final Timers timers = new Timers();
+	
+	private ProgressMonitor monitor = null;
+	
+	
+	public void setProgressMonitor(ProgressMonitor monitor) {
+		this.monitor = monitor;
+		
+	}
 
 	public AbstractModuleExtractor() {
 		this(LocalityClass.BOTTOM_BOTTOM);
@@ -235,7 +244,7 @@ public abstract class AbstractModuleExtractor implements ModuleExtractor {
 			return;
 		}
 
-		ProgressMonitor monitor = new ConsoleProgressMonitor();
+		//ProgressMonitor monitor = new ConsoleProgressMonitor();
 		monitor.setProgressTitle( "Extracting" );
 		monitor.setProgressLength( entities.size() );
 		monitor.taskStarted();
