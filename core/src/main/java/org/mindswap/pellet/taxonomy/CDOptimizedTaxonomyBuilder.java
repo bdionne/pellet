@@ -265,7 +265,7 @@ public class CDOptimizedTaxonomyBuilder implements TaxonomyBuilder {
 			
 				
 			classify( c, requireTopSearch );
-			System.out.println("classified: " + c.getName());
+			//System.out.println("classified: " + c.getName());
 			monitor.incrementProgress();
 			
 
