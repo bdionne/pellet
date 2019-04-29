@@ -252,7 +252,7 @@ public class CDOptimizedTaxonomyBuilder implements TaxonomyBuilder {
 	}
 	
 	protected boolean classify(Iterator<ATermAppl> phase, boolean requireTopSearch) {
-//		int lastPercent = -1;
+		//int lastPercent = -1;
 		
 		while( phase.hasNext() ) {
 
@@ -261,17 +261,22 @@ public class CDOptimizedTaxonomyBuilder implements TaxonomyBuilder {
 			if( log.isLoggable( Level.FINE ) ) {
 	            log.fine( "Classify (" + taxonomy.getNodes().size() + ") " + format( c ) + "..." );
             }
+			
+			
 				
 			classify( c, requireTopSearch );
+			System.out.println("classified: " + c.getName());
 			monitor.incrementProgress();
+			
 
-//			int percent = monitor.getProgressPercent();
-//			if( percent != lastPercent ) {
-//				lastPercent = percent;
-//				printStats();
-//				if( percent % 20 == 0 )
-//					printMemory();
-//			}
+			//int percent = monitor.getProgressPercent();
+			//if( percent != lastPercent ) {
+				//lastPercent = percent;
+				//printStats();
+				//if( percent % 20 == 0 )
+				
+					//printMemory();
+			//}
 			
 			kb.timers.getTimer( "classify" ).check();
 			
