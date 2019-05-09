@@ -8,10 +8,6 @@
 
 package com.clarkparsia.pellet.protege;
 
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import com.clarkparsia.pellet.service.reasoner.SchemaReasonerFactory;
 import com.complexible.pellet.client.ClientModule;
 import com.complexible.pellet.client.ClientTools;
@@ -19,11 +15,17 @@ import com.complexible.pellet.client.PelletService;
 import com.complexible.pellet.client.reasoner.SchemaOWLReasoner;
 import com.google.common.base.Optional;
 import com.google.inject.Guice;
+import edu.stanford.protege.metaproject.api.ProjectId;
+import edu.stanford.protege.metaproject.api.Role;
 import edu.stanford.protege.metaproject.api.ServerConfiguration;
+import edu.stanford.protege.metaproject.impl.RoleIdImpl;
+import org.protege.common.NotWorkflowManager;
 import org.protege.editor.core.ProtegeManager;
 import org.protege.editor.core.editorkit.EditorKit;
 import org.protege.editor.owl.client.ClientSession;
 import org.protege.editor.owl.client.LocalHttpClient;
+import org.protege.editor.owl.client.api.Client;
+import org.protege.editor.owl.client.api.exception.ClientRequestException;
 import org.protege.editor.owl.client.util.ClientUtils;
 import org.protege.editor.owl.model.OWLModelManager;
 import org.protege.editor.owl.model.OWLWorkspace;
@@ -35,6 +37,10 @@ import org.semanticweb.owlapi.reasoner.BufferingMode;
 import org.semanticweb.owlapi.reasoner.OWLReasoner;
 import org.semanticweb.owlapi.reasoner.OWLReasonerConfiguration;
 import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
+
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * @author Evren Sirin
@@ -63,13 +69,13 @@ public class RemotePelletReasonerFactory implements OWLReasonerFactory {
 			connectionManager = modelManager.get(ClientSession.ID);
 
 			System.out.println("No connection manager can be found");
-		}
-		else {
+		} else {
 			VersionedOWLOntology vont = connectionManager.getActiveVersionOntology();
 			if (vont != null) {
 				try {
 					// FIXME also compare the vont version with the remote version
-					List<OWLOntologyChange> uncommitted = ClientUtils.getUncommittedChanges(modelManager.getHistoryManager(), ontology, vont.getChangeHistory());
+					List<OWLOntologyChange> uncommitted = ClientUtils.getUncommittedChanges(
+						modelManager.getHistoryManager(), ontology, vont.getChangeHistory());
 					LOGGER.info("There are " + uncommitted.size() + " uncommitted change(s)");
 					if (!uncommitted.isEmpty()) {
 						LOGGER.info("Sending " + uncommitted.size() + " uncommitted changes to the remote server");
@@ -77,8 +83,7 @@ public class RemotePelletReasonerFactory implements OWLReasonerFactory {
 						reasoner.getListener().ontologiesChanged(uncommitted);
 						reasoner.flush();
 					}
-				}
-				catch (Exception e) {
+				} catch (Exception e) {
 					LOGGER.log(Level.WARNING, "Cannot synchronize remote reasoner with uncommitted changes", e);
 				}
 			}
@@ -92,7 +97,7 @@ public class RemotePelletReasonerFactory implements OWLReasonerFactory {
 			workspace.reasonerRestartCallback = Optional.of(() -> {
 				LocalHttpClient client = (LocalHttpClient) connectionManager.getActiveClient();
 				if (!client.isWorkFlowManager(connectionManager.getActiveProject())) {
-					throw new RuntimeException("Not a workflow manager");
+					throw new NotWorkflowManager();
 				}
 				final String serverURL = PelletReasonerPreferences.getInstance().getServerURL();
 				ServerConfiguration serverConfiguration = client.getConfig().getCurrentConfig();
@@ -105,8 +110,7 @@ public class RemotePelletReasonerFactory implements OWLReasonerFactory {
 		}
 		return reasoner;
 	}
-	
-	@Override
+
 	public OWLReasoner createNonBufferingReasoner(final OWLOntology ontology) {
 		return createReasoner(ontology, BufferingMode.NON_BUFFERING);
 	}
@@ -117,7 +121,7 @@ public class RemotePelletReasonerFactory implements OWLReasonerFactory {
 	}
 
 	@Override
-	public OWLReasoner createNonBufferingReasoner(final OWLOntology ontology,  final OWLReasonerConfiguration owlReasonerConfiguration) {
+	public OWLReasoner createNonBufferingReasoner(final OWLOntology ontology, final OWLReasonerConfiguration owlReasonerConfiguration) {
 		return createNonBufferingReasoner(ontology);
 	}
 
