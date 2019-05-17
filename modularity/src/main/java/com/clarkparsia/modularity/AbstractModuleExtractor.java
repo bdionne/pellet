@@ -246,8 +246,9 @@ public abstract class AbstractModuleExtractor implements ModuleExtractor {
 
 		//ProgressMonitor monitor = new ConsoleProgressMonitor();
 		monitor.setProgressTitle( "Extracting" );
-		monitor.setProgressLength( entities.size() );
 		monitor.taskStarted();
+		monitor.setProgressLength( entities.size() );
+		
 
 		extractModuleSignatures(entities, monitor);
 
