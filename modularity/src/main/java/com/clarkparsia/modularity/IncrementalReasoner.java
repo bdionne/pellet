@@ -139,8 +139,13 @@ public class IncrementalReasoner extends AbstractOWLListeningReasoner {
 	private boolean classified = false;
 
 	private boolean realized = false;
+	
+	private IncrementalReasonerConfiguration config;
 
 	public IncrementalReasoner(OWLOntology ontology, IncrementalReasonerConfiguration config) {
+		
+		this.config = config;
+		
 		extractor = config.getModuleExtractor() != null ? config.getModuleExtractor() : ModuleExtractorFactory.createModuleExtractor();
 
 		extractor.setProgressMonitor(new ProgressAdapter(config.getProgressMonitor()));
@@ -397,7 +402,7 @@ public class IncrementalReasoner extends AbstractOWLListeningReasoner {
         }
 
 		// load the extracted module to a new reasoner
-		PelletReasoner moduleReasoner = PelletReasonerFactory.getInstance().createReasoner( owlModule );
+		PelletReasoner moduleReasoner = PelletReasonerFactory.getInstance().createReasoner( owlModule, config );
 
 		// classify the module
 		moduleReasoner.getKB().classify();
