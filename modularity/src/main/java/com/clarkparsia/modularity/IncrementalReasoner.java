@@ -546,9 +546,10 @@ public class IncrementalReasoner extends AbstractOWLListeningReasoner {
 			if( multiThreaded ) {
 				classy.start();
 				partitioning.start();
-
-				classy.join();
+				
 				partitioning.join();
+				classy.join();
+				
 			}
 			else {
 				partitioning.run();
