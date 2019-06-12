@@ -55,6 +55,7 @@ import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.reasoner.AxiomNotInProfileException;
 import org.semanticweb.owlapi.reasoner.BufferingMode;
 import org.semanticweb.owlapi.reasoner.ClassExpressionNotInProfileException;
+import org.semanticweb.owlapi.reasoner.ConsoleProgressMonitor;
 import org.semanticweb.owlapi.reasoner.FreshEntitiesException;
 import org.semanticweb.owlapi.reasoner.FreshEntityPolicy;
 import org.semanticweb.owlapi.reasoner.IllegalConfigurationException;
@@ -148,7 +149,8 @@ public class IncrementalReasoner extends AbstractOWLListeningReasoner {
 		
 		extractor = config.getModuleExtractor() != null ? config.getModuleExtractor() : ModuleExtractorFactory.createModuleExtractor();
 
-		extractor.setProgressMonitor(new ProgressAdapter(config.getProgressMonitor()));
+		//extractor.setProgressMonitor(new ProgressAdapter(config.getProgressMonitor()));
+		extractor.setProgressMonitor(new ProgressAdapter(new ConsoleProgressMonitor()));
 		
 		timers = extractor.getTimers();
 
