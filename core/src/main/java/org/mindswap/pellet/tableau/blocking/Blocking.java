@@ -117,13 +117,16 @@ public abstract class Blocking {
 		if( PelletOptions.USE_ANYWHERE_BLOCKING ) {					
 			assert cxt.blocker.isRoot();
 
-			return isDirectlyBlockedByDescendant( cxt );			
+			return isDirectlyBlockedByDescendant( cxt, 0 );			
 		}
 		
 		return false;
 	}
 
-	protected boolean isDirectlyBlockedByDescendant(BlockingContext cxt) {
+	protected boolean isDirectlyBlockedByDescendant(BlockingContext cxt, int depth) {
+		if (depth > 5) {
+			return true;
+		}
 		if( cxt.blocked.getParent().equals( cxt.blocker ) )
 			return false;
 		
@@ -139,7 +142,7 @@ public abstract class Blocking {
 			Node child = e.getTo();
 
 			if( cxt.moveBlockerDown( child ) ) {
-				if( isDirectlyBlockedByDescendant( cxt ) ) {			
+				if( isDirectlyBlockedByDescendant( cxt, depth + 1 ) ) {			
 					return true;
 				}
 				cxt.moveBlockerUp();
