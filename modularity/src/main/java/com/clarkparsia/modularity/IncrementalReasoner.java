@@ -461,10 +461,13 @@ public class IncrementalReasoner extends AbstractOWLListeningReasoner {
 	}
 
 	public boolean isSatisfiable(OWLClassExpression description) {
+		/**
+		
 		if( description.isAnonymous() || !isClassified() ) {
 	        return reasoner.isSatisfiable( description );
         }
-
+        **/
+        
 		return !getUnsatisfiableClasses().contains( (OWLClass) description );
 	}
 
@@ -1001,6 +1004,7 @@ public class IncrementalReasoner extends AbstractOWLListeningReasoner {
 
 		final OWLDataFactory factory = getManager().getOWLDataFactory();
 		
+			
 		return getInferredClasses(factory, taxonomy.getClasses());
 	}
 	
