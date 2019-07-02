@@ -124,7 +124,7 @@ public abstract class Blocking {
 	}
 
 	protected boolean isDirectlyBlockedByDescendant(BlockingContext cxt, int depth) {
-		if (depth > 5) {
+		if (depth > 3) {
 			return true;
 		}
 		if( cxt.blocked.getParent().equals( cxt.blocker ) )
